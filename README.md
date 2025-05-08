@@ -1,7 +1,7 @@
-# proyecto_2025
+proyecto_2025
 
-# Nombre del proyecto:
+Nombre del proyecto:LeyendAR
 
-#Descripcion / Enunciado del proyecto: 
+Es un mapa interactivo con los mitos y leyendas de la republica Argentina 
 
-# Integrantes:
+Integrantes:Martin Lage, Zoe Bree, Juan Cruz, Jeremias Lorenzo, Joaquin Gutti
