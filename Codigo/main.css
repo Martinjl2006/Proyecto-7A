@@ -1,0 +1,158 @@
+:root {
+      --azul-logo: #1f2f40;
+      --fondo-claro: #f4f1ed;
+      --acento-1: #b04c3e;   /* Rojo vino */
+      --acento-2: #c7a76c;   /* Dorado suave */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, var(--fondo-claro), #fff);
+      color: var(--azul-logo);
+      overflow-x: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 2rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      background-color: rgba(244, 241, 237, 0.95);
+      backdrop-filter: blur(6px);
+      z-index: 10;
+      box-shadow: 0 5px 8px rgba(0,0,0,0.05);
+      min-width:400px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .brand img {
+      height: 42px;
+    }
+
+    .brand span {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--azul-logo);
+    }
+
+    nav a.login-btn {
+      background-color: transparent;
+      border: 2px solid var(--azul-logo);
+      padding: 0.5rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 600;
+      color: var(--azul-logo);
+      transition: background-color 0.3s, color 0.3s;
+      text-decoration: none;
+      width: 80%;
+    }
+
+    nav a.login-btn:hover {
+      background-color: var(--azul-logo);
+      color: white;
+    }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 7rem 2rem 3rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      color: var(--azul-logo);
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 500px;
+      opacity: 0.9;
+    }
+
+@keyframes gradienteSuave {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.btn {
+  margin-top: 2.5rem;
+  background: linear-gradient(90deg, var(--acento-1), var(--acento-2));
+  background-size: 150% 150%;
+  color: white;
+  border: none;
+  padding: 0.9rem 2.8rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  font-weight: 600;
+  }
+
+
+
+.btn:hover {
+    transition: 1s ease-in-out;
+  transform: scale(1.05);
+  animation: gradienteSuave 1.5s infinite alternate; /* Se aplica la animación */
+}
+
+
+
+    .features {
+      margin-top: 4rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .feature {
+      text-align: center;
+      width: 180px;
+      padding: 1rem;
+      transition: transform 0.3s;
+    }
+
+    .feature img {
+      height: 50px;
+      margin-bottom: 0.8rem;
+    }
+
+    .feature p {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--azul-logo);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      background-color: #f0ece9;
+      margin-top: 4rem;
+      position:bottom;
+    }
