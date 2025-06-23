@@ -1,11 +1,7 @@
 
 CREATE DATABASE LegendAR;
 
-DROP TABLE IF EXISTS MitoLeyenda;
-DROP TABLE IF EXISTS Usuarios;
-DROP TABLE IF EXISTS Ciudad;
-DROP TABLE IF EXISTS Provincias;
-
+USE LegendAR;
 
 CREATE TABLE Provincias (
     id_provincia INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -49,59 +45,38 @@ CREATE TABLE MitoLeyenda (
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_Usuario)
 );
 
--- Insertar las 23 provincias y CABA
-INSERT INTO Provincias (Nombre) VALUES
-('Buenos Aires'),
-('Catamarca'),
-('Chaco'),
-('Chubut'),
-('Córdoba'),
-('Corrientes'),
-('Entre Ríos'),
-('Formosa'),
-('Jujuy'),
-('La Pampa'),
-('La Rioja'),
-('Mendoza'),
-('Misiones'),
-('Neuquén'),
-('Río Negro'),
-('Salta'),
-('San Juan'),
-('San Luis'),
-('Santa Cruz'),
-('Santa Fe'),
-('Santiago del Estero'),
-('Tierra del Fuego'),
-('Tucumán'),
-('Ciudad Autónoma de Buenos Aires');
+-- PROVINCIAS
+INSERT INTO Provincias (Coordenada_long, Coordenada_lat, Nombre) VALUES
+(-65, -26, 'Tucumán'),
+(-58, -34, 'Buenos Aires'),
+(-68, -32, 'Mendoza'),
+(-64, -31, 'Córdoba'),
+(-60, -27, 'Santa Fe');
 
--- Insertar capitales de provincias (una ciudad por provincia)
-INSERT INTO Ciudad (Nombre, id_provincia) VALUES
-('La Plata', 1),                -- Buenos Aires
-('San Fernando del Valle de Catamarca', 2),
-('Resistencia', 3),
-('Rawson', 4),
-('Córdoba', 5),
-('Corrientes', 6),
-('Paraná', 7),
-('Formosa', 8),
-('San Salvador de Jujuy', 9),
-('Santa Rosa', 10),
-('La Rioja', 11),
-('Mendoza', 12),
-('Posadas', 13),
-('Neuquén', 14),
-('Viedma', 15),
-('Salta', 16),
-('San Juan', 17),
-('San Luis', 18),
-('Río Gallegos', 19),
-('Santa Fe', 20),
-('Santiago del Estero', 21),
-('Ushuaia', 22),
-('San Miguel de Tucumán', 23),
-('Ciudad Autónoma de Buenos Aires', 24); -- CABA
+-- CIUDADES (ID Provincia coincidente)
+INSERT INTO Ciudad (Nombre, Coordenada_long, Coordenada_lat, id_provincia) VALUES
+('San Miguel de Tucumán', -65, -26, 1),
+('La Plata', -58, -34, 2),
+('Godoy Cruz', -68, -32, 3),
+('Villa Carlos Paz', -64, -31, 4),
+('Rosario', -60, -27, 5);
+
+-- USUARIOS (ID Provincia y Ciudad existente)
+INSERT INTO Usuarios (Nombre, mail, apellido, Username, contraseña, id_provincia, id_ciudad) VALUES
+('Lucía', 'lucia@gmail.com', 'Pérez', 'luperez', 'clave123', 1, 1),
+('Martín', 'martin@gmail.com', 'Gómez', 'mgomez', 'segura456', 2, 2),
+('Sofía', 'sofia@hotmail.com', 'López', 'soflope', 'myp4ss789', 3, 3),
+('Carlos', 'carlos@yahoo.com', 'Ramírez', 'caram', 'passw0rd', 4, 4),
+('Valentina', 'valen@gmail.com', 'Díaz', 'valediaz', 'qwerty321', 5, 5);
+
+-- MITOLEYENDA (ID Ciudad, Provincia y Usuario que ya existen)
+INSERT INTO MitoLeyenda (Titulo, Descripcion, Fecha, id_ciudad, id_provincia, id_usuario) VALUES
+('La Luz Mala', 'Un espíritu errante que aparece como una luz en los campos tucumanos.', '2024-05-10', 1, 1, 1),
+('El Lobizón', 'Un mito urbano sobre el séptimo hijo varón transformado en bestia.', '2024-04-22', 2, 2, 2),
+('El Futre', 'Un elegante fantasma que aparece en bodegas mendocinas.', '2024-03-15', 3, 3, 3),
+('La Pelada de Carlos Paz', 'Una mujer sin cabello que asusta a los conductores de noche.', '2024-06-01', 4, 4, 4),
+('La Llorona de Rosario', 'Un alma en pena que llora por sus hijos cerca del río Paraná.', '2024-01-30', 5, 5, 5);
+
 
 
 
