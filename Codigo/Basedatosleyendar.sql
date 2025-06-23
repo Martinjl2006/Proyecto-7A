@@ -1,16 +1,24 @@
+
+CREATE DATABASE LegendAR;
+
 DROP TABLE IF EXISTS MitoLeyenda;
 DROP TABLE IF EXISTS Usuarios;
 DROP TABLE IF EXISTS Ciudad;
 DROP TABLE IF EXISTS Provincias;
 
+
 CREATE TABLE Provincias (
     id_provincia INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    Coordenada_long INT NOT NULL,
+    Coordenada_lat INT NOT NULL,
     Nombre VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE Ciudad (
     id_ciudad INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Nombre TEXT NOT NULL,
+    Coordenada_long INT NOT NULL,
+    Coordenada_lat INT NOT NULL,
     id_provincia INT NOT NULL,
     FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia)
 );
