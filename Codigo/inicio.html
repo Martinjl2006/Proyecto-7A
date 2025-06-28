@@ -202,11 +202,11 @@
     <h2>Bienvenido/a</h2>
     <p>Accedé al mapa interactivo y descubrí mitos y leyendas de cada rincón de Argentina.</p>
 
-    <form>
-      <input type="email" placeholder="Correo electrónico" required>
-      <input type="password" placeholder="Contraseña" required>
-      <button class="btn" type="submit">Iniciar sesión</button>
-    </form>
+   <form action="login.php" method="POST">
+  <input type="email" name="email" placeholder="Correo electrónico" required>
+  <input type="password" name="password" placeholder="Contraseña" required>
+  <button class="btn" type="submit">Iniciar sesión</button>
+</form>
 
     <div class="extra">
       <a href="#">¿Olvidaste tu contraseña?</a><br>
