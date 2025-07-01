@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: dashboard.php");
         exit();
     } else {
-        echo "<script>alert('Correo o contraseña incorrectos'); window.location.href='index.html';</script>";
+        echo "<script>alert('Correo o contraseña incorrectos'); window.location.href='inicio.html';</script>";
     }
 }
 
