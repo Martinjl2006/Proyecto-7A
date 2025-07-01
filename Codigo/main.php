@@ -4,7 +4,7 @@ session_start();
 $host = "localhost";
 $user = "root";
 $password = ""; 
-$db = "LegendAR";
+$db = "Basedatoslegendar";
 
 
 $conn = new mysqli($host, $user, $password, $db);
