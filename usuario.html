@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Página de Mitos</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    body {
+      background-color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: white;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .perfil {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .perfil .foto {
+      width: 70px;
+      height: 70px;
+      background-color: #ccc;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .perfil span {
+      font-size: 1.1rem;
+    }
+
+    .explorar {
+      padding: 0.7rem 1.5rem;
+      background: linear-gradient(to right, #c94b4b, #de6262);
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 2rem;
+      cursor: pointer;
+    }
+
+    main {
+      padding: 2rem;
+      flex-grow: 1;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .mito {
+      position: relative;
+      background-color: #bbb;
+      border-radius: 20px;
+      padding: 2.5rem 1rem 3rem;
+      text-align: center;
+      overflow: visible;
+      box-shadow: 1px 3px 4.3px rgba(0, 0, 0, 0.25);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .mito:hover {
+      transform: scale(1.05);
+      box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.35);
+      z-index: 2;
+    }
+
+    .mito .imagen-mito {
+      position: absolute;
+      top: -30px;
+      left: -30px;
+      width: 70px;
+      height: 70px;
+      background-color: #ddd;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      text-align: center;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .mito h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .mito p {
+      font-size: 0.95rem;
+    }
+
+    .leer-mas {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.6rem 2rem;
+      background: linear-gradient(to right, #2c00ff, #8b00ff);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      translate: 0px 75px;
+    }
+
+    .mito:hover .leer-mas {
+      display: inline-block;
+      transform: scale(1.5);
+    }
+
+    footer {
+      background-color: white;
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 1.2rem;
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="perfil">
+      <div class="foto">foto de<br>perfil</div>
+      <span>Nombre de usuario</span>
+    </div>
+    <button class="explorar">Explorar mapa</button>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div class="mito">
+        <div class="imagen-mito">imagen<br>de mito</div>
+        <h3>Título del mito</h3>
+        <p>Texto del mito</p>
+        <button class="leer-mas">Leer más</button>
+      </div>
+
+      <div class="mito">
+        <div class="imagen-mito">imagen<br>de mito</div>
+        <h3>Título del mito</h3>
+        <p>Texto del mito</p>
+        <button class="leer-mas">Leer más</button>
+      </div>
+
+      <div class="mito">
+        <div class="imagen-mito">imagen<br>de mito</div>
+        <h3>Título del mito</h3>
+        <p>Texto del mito</p>
+        <button class="leer-mas">Leer más</button>
+      </div>
+
+      <div class="mito">
+        <div class="imagen-mito">imagen<br>de mito</div>
+        <h3>Título del mito</h3>
+        <p>Texto del mito</p>
+        <button class="leer-mas">Leer más</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>Footer</footer>
+</body>
+</html>
+
