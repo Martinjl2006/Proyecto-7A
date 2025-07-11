@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Verificamos si hay una sesión iniciada
 if (!isset($_SESSION["id_usuario"])) {
     header("Location: inicio.html");
     exit();
