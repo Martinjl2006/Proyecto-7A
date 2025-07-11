@@ -6,43 +6,135 @@
   <title>Registrarse - LeyendAR</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --azul: #1d2e42;
+      --azul-claro: #3c506d;
+      --beige: #f7f4ee;
+      --blanco: #f4f1ed;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Quicksand', sans-serif;
       background-color: #c49b5b;
-      padding: 40px 0;
+      background-image: url('fondo-login.png');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+      background-size: auto;
+      min-height: 100vh;
       display: flex;
+      overflow-x: hidden;
+      overflow-y: auto;
+      position: relative;
+      padding: 40px 0;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
     }
+
+    .aura-bg {
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(245, 166, 35, 0.12), rgba(29, 46, 66, 0.4));
+      animation: auraFlow 20s ease-in-out infinite;
+      z-index: 0;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    @keyframes auraFlow {
+      0% { transform: scale(1) translate(0%, 0%); }
+      50% { transform: scale(1.1) translate(10%, 10%); }
+      100% { transform: scale(1) translate(0%, 0%); }
+    }
+
     .register-box {
-      background: rgba(255,255,255,0.95);
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      width: 400px;
+      background: rgba(244, 241, 237, 0.95);
+      padding: 50px 40px;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      width: 420px;
       text-align: center;
+      z-index: 1;
+      position: relative;
     }
+
+    h2 {
+      font-size: 2rem;
+      color: var(--azul);
+      margin-bottom: 20px;
+    }
+
     input, select {
       width: 100%;
-      padding: 12px;
+      padding: 12px 14px;
       margin: 10px 0;
-      border-radius: 10px;
+      border-radius: 12px;
       border: 1px solid #ccc;
+      font-size: 1rem;
+      background: #fafafa;
+      transition: 0.3s ease;
     }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--azul-claro);
+      box-shadow: 0 0 8px rgba(29, 46, 66, 0.3);
+    }
+
     button {
-      padding: 12px 20px;
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
       border: none;
-      background: linear-gradient(to right, #1d2e42, #3c506d);
+      border-radius: 30px;
+      background: linear-gradient(90deg, var(--azul), var(--azul-claro));
       color: white;
-      border-radius: 20px;
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
-      font-weight: bold;
-      margin-top: 15px;
+      transition: transform 0.3s ease, background 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:hover {
+      background: var(--azul);
+      transform: scale(1.03);
+    }
+
+    p {
+      margin-top: 20px;
+      font-size: 0.95rem;
+    }
+
+    a {
+      color: var(--azul-claro);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .register-box {
+        width: 90%;
+        padding: 35px 25px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="aura-bg"></div>
   <div class="register-box">
     <h2>Crear cuenta</h2>
     <form action="registro.php" method="POST">
@@ -51,25 +143,59 @@
       <input type="email" name="email" placeholder="Correo electrónico" required>
       <input type="text" name="usuario" placeholder="Nombre de usuario" required>
       <input type="password" name="clave" placeholder="Contraseña" required>
-      <select name="provincia" required>
+      <input type="date" name="fecha_nacimiento" required>
+
+      <select id="provincia" name="provincia" required>
         <option value="">Seleccionar provincia</option>
-        <option value="1">Tucumán</option>
-        <option value="2">Buenos Aires</option>
-        <option value="3">Mendoza</option>
-        <option value="4">Córdoba</option>
-        <option value="5">Santa Fe</option>
+        <option value="Buenos Aires">Buenos Aires</option>
+        <option value="Córdoba">Córdoba</option>
+        <option value="Santa Fe">Santa Fe</option>
+        <option value="Mendoza">Mendoza</option>
+        <option value="Tucumán">Tucumán</option>
+        <option value="Salta">Salta</option>
+        <option value="Jujuy">Jujuy</option>
+        <option value="Neuquén">Neuquén</option>
+        <option value="Chaco">Chaco</option>
+        <option value="Misiones">Misiones</option>
+        <!-- Agregá más si querés -->
       </select>
-      <select name="ciudad" required>
+
+      <select id="ciudad" name="ciudad" required>
         <option value="">Seleccionar ciudad</option>
-        <option value="1">San Miguel de Tucumán</option>
-        <option value="2">La Plata</option>
-        <option value="3">Godoy Cruz</option>
-        <option value="4">Villa Carlos Paz</option>
-        <option value="5">Rosario</option>
       </select>
+
       <button type="submit">Registrarse</button>
     </form>
     <p>¿Ya tenés cuenta? <a href="inicio.html">Iniciá sesión</a></p>
   </div>
+
+  <script>
+    const provinciasYciudades = {
+      "Buenos Aires": ["La Plata", "Mar del Plata", "Bahía Blanca", "Quilmes"],
+      "Córdoba": ["Córdoba Capital", "Villa Carlos Paz", "Río Cuarto"],
+      "Santa Fe": ["Rosario", "Santa Fe Capital", "Rafaela"],
+      "Mendoza": ["Godoy Cruz", "Guaymallén", "Mendoza Capital"],
+      "Tucumán": ["San Miguel de Tucumán", "Yerba Buena"],
+      "Salta": ["Salta Capital", "Cafayate"],
+      "Jujuy": ["San Salvador de Jujuy", "Palpalá"],
+      "Neuquén": ["Neuquén Capital", "Centenario"],
+      "Chaco": ["Resistencia", "Barranqueras"],
+      "Misiones": ["Posadas", "Oberá"]
+    };
+
+    const provinciaSelect = document.getElementById("provincia");
+    const ciudadSelect = document.getElementById("ciudad");
+
+    provinciaSelect.addEventListener("change", function () {
+      const ciudades = provinciasYciudades[this.value] || [];
+      ciudadSelect.innerHTML = '<option value="">Seleccionar ciudad</option>';
+      ciudades.forEach(ciudad => {
+        const option = document.createElement("option");
+        option.value = ciudad;
+        option.textContent = ciudad;
+        ciudadSelect.appendChild(option);
+      });
+    });
+  </script>
 </body>
 </html>
