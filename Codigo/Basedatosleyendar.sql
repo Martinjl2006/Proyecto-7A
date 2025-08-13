@@ -37,6 +37,7 @@ CREATE TABLE MitoLeyenda (
     Titulo VARCHAR(255) NOT NULL,
     Descripcion TEXT NOT NULL,
     Fecha DATE NOT NULL,
+    imagen_url VARCHAR(255),
     id_ciudad INT NOT NULL,
     id_provincia INT NOT NULL,
     id_usuario INT NOT NULL,
@@ -71,11 +72,11 @@ INSERT INTO Usuarios (Nombre, mail, apellido, Username, contraseña, id_provinci
 
 -- MITOLEYENDA (ID Ciudad, Provincia y Usuario que ya existen)
 INSERT INTO MitoLeyenda (Titulo, Descripcion, Fecha, id_ciudad, id_provincia, id_usuario) VALUES
-('La Luz Mala', 'Un espíritu errante que aparece como una luz en los campos tucumanos.', '2024-05-10', 1, 1, 1),
-('El Lobizón', 'Un mito urbano sobre el séptimo hijo varón transformado en bestia.', '2024-04-22', 2, 2, 2),
-('El Futre', 'Un elegante fantasma que aparece en bodegas mendocinas.', '2024-03-15', 3, 3, 3),
-('La Pelada de Carlos Paz', 'Una mujer sin cabello que asusta a los conductores de noche.', '2024-06-01', 4, 4, 4),
-('La Llorona de Rosario', 'Un alma en pena que llora por sus hijos cerca del río Paraná.', '2024-01-30', 5, 5, 5);
+('La Luz Mala', 'Un espíritu errante que aparece como una luz en los campos tucumanos.', '2024-05-10','C:/Descargas/luzmalita.jpeg', 1, 1, 1),
+('El Lobizón', 'Un mito urbano sobre el séptimo hijo varón transformado en bestia.', '2024-04-22', 'C:/Descargas/luzmalita.jpeg', 2, 2, 2),
+('El Futre', 'Un elegante fantasma que aparece en bodegas mendocinas.', '2024-03-15', 'C:/Descargas/luzmalita.jpeg', 3, 3, 3),
+('La Pelada de Carlos Paz', 'Una mujer sin cabello que asusta a los conductores de noche.', 'C:/Descargas/luzmalita.jpeg', '2024-06-01', 4, 4, 4),
+('La Llorona de Rosario', 'Un alma en pena que llora por sus hijos cerca del río Paraná.', 'C:/Descargas/luzmalita.jpeg', '2024-01-30', 5, 5, 5);
 
 
 
