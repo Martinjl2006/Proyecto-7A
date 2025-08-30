@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Mapa coroplético de Argentina (Leaflet)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { height: 100%; }
+
+    /* Panel de info (como en el ejemplo de choropleth) */
+    .info {
+      padding: 8px 12px;
+      background: white;
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 6px;
+      font: 14px/1.4 Arial, sans-serif;
+    }
+    .info h4 {
+      margin: 0 0 6px;
+      color: #777;
+      font-size: 16px;
+    }
+
+    /* Leyenda */
+    .legend {
+      line-height: 18px;
+      color: #555;
+      background: white;
+      background: rgba(255,255,255,0.9);
+      padding: 8px 12px;
+      border-radius: 6px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    .legend i {
+      width: 18px;
+      height: 18px;
+      float: left;
+      margin-right: 8px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Leaflet -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    // 1) Crear mapa centrado en Argentina
+    const map = L.map('map', {
+      minZoom: 3,
+      maxZoom: 12,
+      attributionControl: true
+    }).setView([-38.4161, -63.6167], 4);
+
+    // 2) Capa base (OSM)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors'
+    }).addTo(map);
+
+    // 3) Tu dataset por provincia (si tu GeoJSON NO trae el valor a pintar)
+    //    Clave: nombre de provincia EXACTAMENTE como figure en feature.properties (ej: "name" o "provincia").
+    //    Valor: métrica para el coroplético (densidad, índice, total, etc.)
+    const valuesByProvince = {
+      // Ejemplos (REEMPLAZÁ con tus datos reales)
+      "Buenos Aires": 55,
+      "Ciudad Autónoma de Buenos Aires": 15000, // si tu GeoJSON trae CABA separada
+      "Catamarca": 4,
+      "Chaco": 10,
+      "Chubut": 2,
+      "Córdoba": 30,
+      "Corrientes": 11,
+      "Entre Ríos": 16,
+      "Formosa": 8,
+      "Jujuy": 12,
+      "La Pampa": 2,
+      "La Rioja": 3,
+      "Mendoza": 23,
+      "Misiones": 16,
+      "Neuquén": 6,
+      "Río Negro": 6,
+      "Salta": 11,
+      "San Juan": 7,
+      "San Luis": 6,
+      "Santa Cruz": 1,
+      "Santa Fe": 26,
+      "Santiago del Estero": 8,
+      "Tierra del Fuego, Antártida e Islas del Atlántico Sur": 1,
+      "Tucumán": 60
+    };
+
+    // 4) Escala de colores (como el ejemplo oficial)
+    function getColor(d) {
+      // Ajustá los cortes a tu distribución
+      return d > 1000 ? '#800026' :
+             d > 500  ? '#BD0026' :
+             d > 200  ? '#E31A1C' :
+             d > 100  ? '#FC4E2A' :
+             d > 50   ? '#FD8D3C' :
+             d > 20   ? '#FEB24C' :
+             d > 10   ? '#FED976' :
+                        '#FFEDA0';
+    }
+
+    function style(feature) {
+      const v = feature.properties._valueForChoro ?? 0;
+      return {
+        weight: 1,
+        opacity: 1,
+        color: '#FFFFFF',
+        dashArray: '3',
+        fillOpacity: 0.8,
+        fillColor: getColor(v)
+      };
+    }
+
+    // 5) Panel de info
+    const info = L.control();
+
+    info.onAdd = function () {
+      this._div = L.DomUtil.create('div', 'info');
+      this.update();
+      return this._div;
+    };
+
+    info.update = function (props) {
+      const title = '<h4>Argentina — Indicador por provincia</h4>';
+      if (!props) {
+        this._div.innerHTML = title + 'Pasá el mouse por una provincia';
+      } else {
+        // Ajustá "name" / "provincia" según tu GeoJSON
+        const nombre = props.name || props.provincia || 'Provincia';
+        const v = props._valueForChoro ?? 's/d';
+        this._div.innerHTML = `${title}<b>${nombre}</b><br/>Valor: <b>${v}</b>`;
+      }
+    };
+
+    info.addTo(map);
+
+    // 6) Interacción (hover + click)
+    let geojsonLayer; // scope para poder hacer reset
+
+    function highlightFeature(e) {
+      const layer = e.target;
+      layer.setStyle({
+        weight: 3,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.85
+      });
+
+      // enviar al frente (si el navegador lo soporta)
+      if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+      }
+
+      info.update(layer.feature.properties);
+    }
+
+    function resetHighlight(e) {
+      geojsonLayer.resetStyle(e.target);
+      info.update();
+    }
+
+    function zoomToFeature(e) {
+      map.fitBounds(e.target.getBounds(), { maxZoom: 8 });
+    }
+
+    function onEachFeature(feature, layer) {
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+      });
+
+      // Tooltip opcional
+      const nombre = feature.properties.name || feature.properties.provincia || 'Provincia';
+      const v = feature.properties._valueForChoro ?? 's/d';
+      layer.bindTooltip(`${nombre}: ${v}`, { sticky: true });
+    }
+
+    // 7) Cargar GeoJSON de provincias (mismo folder)
+    fetch('argentina-provincias.geojson')
+      .then(r => r.json())
+      .then(data => {
+        // Normalizar el valor a pintar en cada feature:
+        //  - Si tu GeoJSON YA trae el atributo, setealo acá (ej: feature.properties.density)
+        //  - Sino, buscamos en valuesByProvince por el nombre.
+        data.features.forEach(f => {
+          const props = f.properties || {};
+          const nombre = props.nombre || props.provincia || props.PROVINCIA || props.NOMBRE || '';
+          const fromGeo = props.density ?? props.valor ?? props.value; // <-- ajustá si tu campo tiene otro nombre
+          const fromDict = valuesByProvince[nombre];
+          const val = (typeof fromGeo === 'number' ? fromGeo : fromDict);
+          props._valueForChoro = (typeof val === 'number') ? val : 0;
+          f.properties = props;
+        });
+
+        // Agregar capa coroplética
+        geojsonLayer = L.geoJson(data, {
+          style,
+          onEachFeature
+        }).addTo(map);
+
+        // Intentá encuadrar el mapa a la capa
+        try {
+          map.fitBounds(geojsonLayer.getBounds(), { padding: [10, 10] });
+        } catch (e) { /* ignora si falla */ }
+
+        // 8) Leyenda
+        const legend = L.control({ position: 'bottomright' });
+
+        legend.onAdd = function () {
+          const div = L.DomUtil.create('div', 'legend');
+          const grades = [0, 10, 20, 50, 100, 200, 500, 1000];
+          let labels = [];
+          for (let i = 0; i < grades.length; i++) {
+            const from = grades[i];
+            const to = grades[i + 1];
+            const color = getColor(from + 0.01);
+            labels.push(
+              `<i style="background:${color}"></i> ${from}${to ? '&ndash;' + to : '+'}`
+            );
+          }
+          div.innerHTML = labels.join('<br>');
+          return div;
+        };
+
+        legend.addTo(map);
+      })
+      .catch(err => {
+        console.error('Error al cargar el GeoJSON:', err);
+        alert('No se pudo cargar "argentina-provincias.geojson". Verificá el nombre/ruta del archivo.');
+      });
+  </script>
+</body>
+</html>

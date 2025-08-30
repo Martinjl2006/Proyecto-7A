@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nuevo Mito</title>
+    <link rel="stylesheet" href="crearmito.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Crear Nuevo Mito</h1>
+        <p>Subí tu mito o leyenda para que otros puedan descubrirlo en el mapa interactivo de LeyendAR.</p>
+
+        <form>
+            <label for="titulo">Título del mito</label>
+            <input type="text" id="titulo" name="titulo" placeholder="Ej: El Lobizón">
+
+            <label for="provincia">Provincia relacionada</label>
+            <select id="provincia" name="provincia">
+                <option value="">Seleccioná una provincia</option>
+                <option>Buenos Aires</option>
+                <option>Catamarca</option>
+                <option>Chaco</option>
+                <option>Chubut</option>
+                <option>Córdoba</option>
+                <option>Corrientes</option>
+                <option>Entre Ríos</option>
+                <option>Formosa</option>
+                <option>Jujuy</option>
+                <option>La Pampa</option>
+                <option>La Rioja</option>
+                <option>Mendoza</option>
+                <option>Misiones</option>
+                <option>Neuquén</option>
+                <option>Río Negro</option>
+                <option>Salta</option>
+                <option>San Juan</option>
+                <option>San Luis</option>
+                <option>Santa Cruz</option>
+                <option>Santa Fe</option>
+                <option>Santiago del Estero</option>
+                <option>Tierra del Fuego</option>
+                <option>Tucumán</option>
+                
+            </select>
+
+            <label for="descripcion">Descripción del mito</label>
+            <textarea id="descripcion" name="descripcion" placeholder="Contanos la historia del mito..."></textarea>
+
+            <label for="imagen">Imagen del mito (opcional)</label>
+            <input type="file" id="imagen" name="imagen">
+
+            <button type="submit">Subir mito</button>
+        </form>
+    </div>
+
+</body>
+</html>
