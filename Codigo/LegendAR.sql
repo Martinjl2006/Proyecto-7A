@@ -46,6 +46,14 @@ CREATE TABLE MitoLeyenda (
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_Usuario)
 );
 
+CREATE TABLE Comentarios(
+	id_comentario INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	Descripcion TEXT NOT NULL,
+	Fecha DATE NOT NULL,
+    id_usuario INT NOT NULL
+
+);
+
 -- PROVINCIAS
 INSERT INTO Provincias (Coordenada_long, Coordenada_lat, Nombre) VALUES
 (-65, -26, 'Tucumán'),
@@ -71,13 +79,17 @@ INSERT INTO Usuarios (Nombre, mail, apellido, Username, contraseña, id_provinci
 ('Valentina', 'valen@gmail.com', 'Díaz', 'valediaz', 'qwerty321', 5, 5);
 
 -- MITOLEYENDA (ID Ciudad, Provincia y Usuario que ya existen)
-INSERT INTO MitoLeyenda (Titulo, Descripcion, Fecha, id_ciudad, id_provincia, id_usuario) VALUES
+INSERT INTO MitoLeyenda (Titulo, Descripcion, Fecha, foto,  id_ciudad, id_provincia, id_usuario) VALUES
 ('La Luz Mala', 'Un espíritu errante que aparece como una luz en los campos tucumanos.', '2024-05-10', 'Luz_mala.jpg', 1, 1, 1),
 ('El Lobizón', 'Un mito urbano sobre el séptimo hijo varón transformado en bestia.', '2024-04-22', 'Luz_mala.jpg',2, 2, 2),
 ('El Futre', 'Un elegante fantasma que aparece en bodegas mendocinas.', '2024-03-15', 'Luz_mala.jpg', 3, 3, 3),
 ('La Pelada de Carlos Paz', 'Una mujer sin cabello que asusta a los conductores de noche.', '2024-06-01', 'Luz_mala.jpg', 4, 4, 4),
 ('La Llorona de Rosario', 'Un alma en pena que llora por sus hijos cerca del río Paraná.', '2024-01-30','Luz_mala.jpg', 5, 5, 5);
 
+-- Comentarios ()
+INSERT INTO Comentarios (Descripcion, Fecha, id_usuario ) VALUES
+('viva peron carajo', '2025-05-10', 3),
+('borren el tester', '2025-05-14', 2);
 
 
 
