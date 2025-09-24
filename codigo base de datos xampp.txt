@@ -1,29 +1,27 @@
+
 CREATE DATABASE LegendAR;
+
 USE LegendAR;
 
 CREATE TABLE Provincias (
-    id_provincia INT PRIMARY KEY AUTO_INCREMENT,
-    Coordenada_long DECIMAL(9,6) NOT NULL,
-    Coordenada_lat DECIMAL(9,6) NOT NULL,
+    id_provincia INT PRIMARY KEY AUTO_INCREMENT NOT NULL,    
     Nombre VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE Ciudad (
-    id_ciudad INT PRIMARY KEY AUTO_INCREMENT,
-    Nombre VARCHAR(150) NOT NULL,
-    Coordenada_long DECIMAL(9,6) NOT NULL,
-    Coordenada_lat DECIMAL(9,6) NOT NULL,
+    id_ciudad INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    Nombre TEXT NOT NULL,,
     id_provincia INT NOT NULL,
     FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia)
 );
 
 CREATE TABLE Usuarios (
-    id_usuario INT PRIMARY KEY AUTO_INCREMENT,
-    Nombre VARCHAR(100) NOT NULL,
+    id_Usuario INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    Nombre TEXT NOT NULL,
     mail VARCHAR(255) NOT NULL,
-    apellido VARCHAR(100) NOT NULL,
+    apellido TEXT NOT NULL,
     Username VARCHAR(100) NOT NULL,
-    contrasena VARCHAR(100) NOT NULL,
+    contraseña VARCHAR(100) NOT NULL,
     id_provincia INT NOT NULL,
     id_ciudad INT NOT NULL,
     FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia),
@@ -31,47 +29,401 @@ CREATE TABLE Usuarios (
 );
 
 CREATE TABLE MitoLeyenda (
-    id_mitooleyenda INT PRIMARY KEY AUTO_INCREMENT,
+    id_mitooleyenda INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Titulo VARCHAR(255) NOT NULL,
+    textobreve TEXT NOT NULL,
     Descripcion TEXT NOT NULL,
     Fecha DATE NOT NULL,
-    foto VARCHAR(255), -- ahora solo guarda el nombre de archivo
+    foto VARBINARY(1000000),
     id_ciudad INT NOT NULL,
     id_provincia INT NOT NULL,
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad),
     FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia),
-    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_Usuario)
+);
+
+CREATE TABLE Comentarios(
+	id_comentario INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	Descripcion TEXT NOT NULL,
+	Fecha DATE NOT NULL,
+    id_usuario INT NOT NULL
+
 );
 
 -- PROVINCIAS
-INSERT INTO Provincias (Coordenada_long, Coordenada_lat, Nombre) VALUES
-(-65, -26, 'Tucumán'),
-(-58, -34, 'Buenos Aires'),
-(-68, -32, 'Mendoza'),
-(-64, -31, 'Córdoba'),
-(-60, -27, 'Santa Fe');
+INSERT INTO Provincias (Nombre) VALUES
+('Tucuman'),
+('Buenos Aires'),
+('Mendoza'),
+('Cordoba'),
+('Santa Fe'),
+('CABA'),
+('Salta'),
+('Jujuy'),
+('Santiago del Estero'),
+('Corrientes'),
+('Misiones'),
+('Entre Rios'),
+('San Luis'),
+('La Rioja'),
+('Catamarca'),
+('San Juan'),
+('Neuquen'),
+('Rio Negro'),
+('Chubut'),
+('Santa Cruz'),
+('Tierra del Fuego'),
+('Chaco'),
+('Formosa'),
+('La Pampa');
 
 -- CIUDADES
-INSERT INTO Ciudad (Nombre, Coordenada_long, Coordenada_lat, id_provincia) VALUES
-('San Miguel de Tucumán', -65, -26, 1),
-('La Plata', -58, -34, 2),
-('Godoy Cruz', -68, -32, 3),
-('Villa Carlos Paz', -64, -31, 4),
-('Rosario', -60, -27, 5);
+INSERT INTO Ciudad (Nombre, id_provincia) VALUES
+-- Buenos Aires (incluyendo zona sur)
+('La Plata', 2),
+('Mar del Plata', 2),
+('Bahia Blanca', 2),
+('Tandil', 2),
+('San Nicolas', 2),
+('Pergamino', 2),
+('Olavarria', 2),
+('Azul', 2),
+('Quilmes', 2),
+('Avellaneda', 2),
+('Lanus', 2),
+('Berazategui', 2),
+('Florencio Varela', 2),
+('Almirante Brown', 2),
+('Esteban Echeverria', 2),
+('Lomas de Zamora', 2),
+('Ezeiza', 2),
+('La Matanza', 2),
+('Moreno', 2),
+('Merlo', 2),
+('Moron', 2),
+('Tres de Febrero', 2),
+('San Martin', 2),
+('Vicente Lopez', 2),
+('San Isidro', 2),
+('Tigre', 2),
+('San Fernando', 2),
+('Escobar', 2),
 
--- USUARIOS
-INSERT INTO Usuarios (Nombre, mail, apellido, Username, contrasena, id_provincia, id_ciudad) VALUES
+-- CABA (barrios/comunas principales)
+('Retiro', 6),
+('San Nicolas', 6),
+('Puerto Madero', 6),
+('San Telmo', 6),
+('Montserrat', 6),
+('Constitucion', 6),
+('Barracas', 6),
+('La Boca', 6),
+('San Cristobal', 6),
+('Balvanera', 6),
+('Recoleta', 6),
+('Palermo', 6),
+('Villa Crespo', 6),
+('Almagro', 6),
+('Caballito', 6),
+('Flores', 6),
+('Parque Chacabuco', 6),
+('Boedo', 6),
+('Nueva Pompeya', 6),
+('Villa Soldati', 6),
+('Villa Riachuelo', 6),
+('Villa Lugano', 6),
+('Liniers', 6),
+('Mataderos', 6),
+('Parque Avellaneda', 6),
+('Floresta', 6),
+('Monte Castro', 6),
+('Versalles', 6),
+('Villa Luro', 6),
+('Villa del Parque', 6),
+('Villa Devoto', 6),
+('Villa Real', 6),
+('Villa General Mitre', 6),
+('Villa Urquiza', 6),
+('Villa Pueyrredon', 6),
+('Nunez', 6),
+('Saavedra', 6),
+('Coghlan', 6),
+('Belgrano', 6),
+('Colegiales', 6),
+('Chacarita', 6),
+('Villa Ortuzar', 6),
+('Parque Chas', 6),
+('Agronomia', 6),
+('Villa Santa Rita', 6),
+
+-- Tucuman
+('San Miguel de Tucuman', 1),
+('Concepcion', 1),
+('Tafi Viejo', 1),
+('Banda del Rio Sali', 1),
+('Yerba Buena', 1),
+('Alderetes', 1),
+('Aguilares', 1),
+('Monteros', 1),
+('Famailla', 1),
+('Lules', 1),
+
+-- Mendoza
+('Mendoza', 3),
+('Godoy Cruz', 3),
+('San Rafael', 3),
+('Maipu', 3),
+('Las Heras', 3),
+('Lujan de Cuyo', 3),
+('Guaymallen', 3),
+('Rivadavia', 3),
+('Junin', 3),
+('San Martin', 3),
+('Tunuyan', 3),
+('General Alvear', 3),
+('Malargue', 3),
+
+-- Cordoba
+('Cordoba', 4),
+('Villa Carlos Paz', 4),
+('Rio Cuarto', 4),
+('Villa Maria', 4),
+('San Francisco', 4),
+('Alta Gracia', 4),
+('Jesus Maria', 4),
+('La Falda', 4),
+('Bell Ville', 4),
+('Marcos Juarez', 4),
+('Villa Dolores', 4),
+('Cruz del Eje', 4),
+('Rio Tercero', 4),
+('Cosquin', 4),
+('Unquillo', 4),
+('Villa Allende', 4),
+
+-- Santa Fe
+('Santa Fe', 5),
+('Rosario', 5),
+('Rafaela', 5),
+('Venado Tuerto', 5),
+('Reconquista', 5),
+('Esperanza', 5),
+('Santo Tome', 5),
+('Casilda', 5),
+('Rio Tercero', 5),
+('Canada de Gomez', 5),
+('Firmat', 5),
+('Villa Constitucion', 5),
+('San Lorenzo', 5),
+('Funes', 5),
+
+-- Salta
+('Salta', 7),
+('San Ramon de la Nueva Oran', 7),
+('Tartagal', 7),
+('Metan', 7),
+('Guemes', 7),
+('Cafayate', 7),
+('Rosario de Lerma', 7),
+('El Carmen', 7),
+('Cerrillos', 7),
+('San Jose de Metan', 7),
+
+-- Jujuy
+('San Salvador de Jujuy', 8),
+('Palpala', 8),
+('Libertador General San Martin', 8),
+('Perico', 8),
+('El Carmen', 8),
+('San Pedro', 8),
+('Tilcara', 8),
+('Humahuaca', 8),
+('La Quiaca', 8),
+
+-- Santiago del Estero
+('Santiago del Estero', 9),
+('La Banda', 9),
+('Termas de Rio Hondo', 9),
+('Anatuya', 9),
+('Frias', 9),
+('Fernandez', 9),
+('Monte Quemado', 9),
+('Quimili', 9),
+('Suncho Corral', 9),
+
+-- Corrientes
+('Corrientes', 10),
+('Goya', 10),
+('Mercedes', 10),
+('Paso de los Libres', 10),
+('Curuzu Cuatia', 10),
+('Santo Tome', 10),
+('Monte Caseros', 10),
+('Esquina', 10),
+('Bella Vista', 10),
+
+-- Misiones
+('Posadas', 11),
+('Obera', 11),
+('Eldorado', 11),
+('Puerto Iguazu', 11),
+('Montecarlo', 11),
+('Apostoles', 11),
+('San Vicente', 11),
+('Leandro N. Alem', 11),
+('Puerto Rico', 11),
+('Jardin America', 11),
+
+-- Entre Rios
+('Parana', 12),
+('Concordia', 12),
+('Gualeguaychu', 12),
+('Concepcion del Uruguay', 12),
+('Chajari', 12),
+('Victoria', 12),
+('Villaguay', 12),
+('Crespo', 12),
+('Colon', 12),
+('Federacion', 12),
+
+-- San Luis
+('San Luis', 13),
+('Villa Mercedes', 13),
+('Merlo', 13),
+('Tilisarao', 13),
+('Justo Daract', 13),
+('La Toma', 13),
+('Concaran', 13),
+
+-- La Rioja
+('La Rioja', 14),
+('Chilecito', 14),
+('Aimogasta', 14),
+('Chamical', 14),
+('Chepes', 14),
+('Villa Union', 14),
+
+-- Catamarca
+('San Fernando del Valle de Catamarca', 15),
+('Andalgala', 15),
+('Belen', 15),
+('Tinogasta', 15),
+('Santa Maria', 15),
+('Recreo', 15),
+('Fiambala', 15),
+
+-- San Juan
+('San Juan', 16),
+('Rawson', 16),
+('Rivadavia', 16),
+('Chimbas', 16),
+('Santa Lucia', 16),
+('Pocito', 16),
+('9 de Julio', 16),
+('Caucete', 16),
+('Jachal', 16),
+
+-- Neuquen
+('Neuquen', 17),
+('Cipolletti', 17),
+('Plottier', 17),
+('San Martin de los Andes', 17),
+('Villa La Angostura', 17),
+('Zapala', 17),
+('Cutral Co', 17),
+('Plaza Huincul', 17),
+('Junin de los Andes', 17),
+('Centenario', 17),
+
+-- Rio Negro
+('Viedma', 18),
+('Bariloche', 18),
+('General Roca', 18),
+('Allen', 18),
+('Cipolletti', 18),
+('Villa Regina', 18),
+('Catriel', 18),
+('El Bolson', 18),
+('Ingeniero Jacobacci', 18),
+('Luis Beltran', 18),
+
+-- Chubut
+('Rawson', 19),
+('Comodoro Rivadavia', 19),
+('Puerto Madryn', 19),
+('Trelew', 19),
+('Esquel', 19),
+('Rada Tilly', 19),
+('Dolavon', 19),
+('Gaiman', 19),
+('Puerto Piramides', 19),
+('El Hoyo', 19),
+
+-- Santa Cruz
+('Rio Gallegos', 20),
+('Caleta Olivia', 20),
+('El Calafate', 20),
+('Rio Turbio', 20),
+('Puerto Deseado', 20),
+('Pico Truncado', 20),
+('Las Heras', 20),
+('28 de Noviembre', 20),
+('Puerto San Julian', 20),
+
+-- Tierra del Fuego
+('Ushuaia', 21),
+('Rio Grande', 21),
+('Tolhuin', 21),
+
+-- Chaco
+('Resistencia', 22),
+('Barranqueras', 22),
+('Saenz Pena', 22),
+('Villa Angela', 22),
+('Quitilipi', 22),
+('Charata', 22),
+('General Jose de San Martin', 22),
+('Machagai', 22),
+('Puerto Tirol', 22),
+
+-- Formosa
+('Formosa', 23),
+('Clorinda', 23),
+('Pirane', 23),
+('El Colorado', 23),
+('Ingeniero Juarez', 23),
+('Las Lomitas', 23),
+
+-- La Pampa
+('Santa Rosa', 24),
+('General Pico', 24),
+('Toay', 24),
+('Eduardo Castex', 24),
+('Realico', 24),
+('Intendente Alvear', 24),
+('Guatrache', 24);
+
+
+-- USUARIOS (ID Provincia y Ciudad existente)
+INSERT INTO Usuarios (Nombre, mail, apellido, Username, contraseña, id_provincia, id_ciudad) VALUES
 ('Lucía', 'lucia@gmail.com', 'Pérez', 'luperez', 'clave123', 1, 1),
 ('Martín', 'martin@gmail.com', 'Gómez', 'mgomez', 'segura456', 2, 2),
 ('Sofía', 'sofia@hotmail.com', 'López', 'soflope', 'myp4ss789', 3, 3),
 ('Carlos', 'carlos@yahoo.com', 'Ramírez', 'caram', 'passw0rd', 4, 4),
 ('Valentina', 'valen@gmail.com', 'Díaz', 'valediaz', 'qwerty321', 5, 5);
 
--- MITOLEYENDA
-INSERT INTO MitoLeyenda (Titulo, Descripcion, Fecha, foto, id_ciudad, id_provincia, id_usuario) VALUES
-('La Luz Mala', 'Un espíritu errante que aparece como una luz en los campos tucumanos.', '2024-05-10', 'Luz_mala.jpg', 1, 1, 1),
-('El Lobizón', 'Un mito urbano sobre el séptimo hijo varón transformado en bestia.', '2024-04-22', 'Luz_mala.jpg', 2, 2, 2),
+-- MITOLEYENDA (ID Ciudad, Provincia y Usuario que ya existen)
+INSERT INTO MitoLeyenda (Titulo, textobreve, Descripcion, Fecha, id_ciudad, id_provincia, id_usuario) VALUES
+('La Luz Mala', 'Un espíritu errante que aparece como una luz en los campos tucumanos.', '', '2024-05-10', 'Luz_mala.jpg', 1, 1, 1),
+('El Lobizón', 'Un mito urbano sobre el séptimo hijo varón transformado en bestia.', '2024-04-22', 'Luz_mala.jpg',2, 2, 2),
 ('El Futre', 'Un elegante fantasma que aparece en bodegas mendocinas.', '2024-03-15', 'Luz_mala.jpg', 3, 3, 3),
 ('La Pelada de Carlos Paz', 'Una mujer sin cabello que asusta a los conductores de noche.', '2024-06-01', 'Luz_mala.jpg', 4, 4, 4),
-('La Llorona de Rosario', 'Un alma en pena que llora por sus hijos cerca del río Paraná.', '2024-01-30', 'Luz_mala.jpg', 5, 5, 5);
+('La Llorona de Rosario', 'Un alma en pena que llora por sus hijos cerca del río Paraná.', '2024-01-30','Luz_mala.jpg', 5, 5, 5);
+
+-- Comentarios ()
+INSERT INTO Comentarios (Descripcion, Fecha, id_usuario ) VALUES
+('viva peron carajo', '2025-05-10', 3),
+('borren el tester', '2025-05-14', 2);
+
+
