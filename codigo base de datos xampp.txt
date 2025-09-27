@@ -10,7 +10,7 @@ CREATE TABLE Provincias (
 
 CREATE TABLE Ciudad (
     id_ciudad INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    Nombre TEXT NOT NULL,,
+    Nombre TEXT NOT NULL,
     id_provincia INT NOT NULL,
     FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia)
 );
@@ -35,7 +35,6 @@ CREATE TABLE MitoLeyenda (
     Descripcion TEXT NOT NULL,
     Fecha DATE NOT NULL,
     foto VARBINARY(1000000),
-    id_ciudad INT NOT NULL,
     id_provincia INT NOT NULL,
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad),
@@ -414,12 +413,16 @@ INSERT INTO Usuarios (Nombre, mail, apellido, Username, contraseña, id_provinci
 ('Valentina', 'valen@gmail.com', 'Díaz', 'valediaz', 'qwerty321', 5, 5);
 
 -- MITOLEYENDA (ID Ciudad, Provincia y Usuario que ya existen)
-INSERT INTO MitoLeyenda (Titulo, textobreve, Descripcion, Fecha, id_ciudad, id_provincia, id_usuario) VALUES
-('La Luz Mala', 'Un espíritu errante que aparece como una luz en los campos tucumanos.', '', '2024-05-10', 'Luz_mala.jpg', 1, 1, 1),
-('El Lobizón', 'Un mito urbano sobre el séptimo hijo varón transformado en bestia.', '2024-04-22', 'Luz_mala.jpg',2, 2, 2),
-('El Futre', 'Un elegante fantasma que aparece en bodegas mendocinas.', '2024-03-15', 'Luz_mala.jpg', 3, 3, 3),
-('La Pelada de Carlos Paz', 'Una mujer sin cabello que asusta a los conductores de noche.', '2024-06-01', 'Luz_mala.jpg', 4, 4, 4),
-('La Llorona de Rosario', 'Un alma en pena que llora por sus hijos cerca del río Paraná.', '2024-01-30','Luz_mala.jpg', 5, 5, 5);
+INSERT INTO MitoLeyenda (Titulo, textobreve, Descripcion, Fecha, id_provincia, id_usuario) VALUES
+('La Luz Mala', 'Un espíritu errante que aparece como una luz en los campos tucumanos.', 'La **luz mala** es una leyenda popular en diversas culturas, especialmente en América Latina y España. Se describe como una luz extraña o resplandor visible en la oscuridad, que aparece generalmente en zonas rurales o cerca de cementerios. Según las creencias, esta luz es un fenómeno paranormal, relacionado con espíritus o entidades sobrenaturales. En algunos relatos, la luz atrae a las personas hacia lugares peligrosos, como pantanos o acantilados, lo que puede llevar a accidentes o incluso la muerte. Se asocia a menudo con la idea de un "mal augurio" o un aviso de algo negativo.
+', '2024-05-10', 1, 1),
+('El Lobizón', 'Un mito urbano sobre el séptimo hijo varón transformado en bestia.', 'El Lobizón, también conocido como Luisón en guaraní, es una de las criaturas más temidas y conocidas del folklore argentino. Según el folclore, es el séptimo hijo de una familia quien está destinado a convertirse en Lobizón, y no cualquier persona. Esta leyenda tiene sus raíces en la mitología guaraní, donde Luisón era el séptimo hijo de Tau y keraná, que cargó con una maldición que pesaba sobre sus padres.
+Cuenta la leyenda que el lobizón es un ser parecido a un perro fornido, con orejas grandes, muy peludo, con patas y pezuñas y ojos que parecen echar fuego. Su apariencia es aterradora y su presencia genera terror en las comunidades rurales donde se dice que aparece, especialmente durante las noches de luna llena.
+Este personaje, que según las leyendas emerge en cada luna llena, ha sido objeto de fascinación en las regiones rurales y urbanas del país. Se dice que el Lobizón es un hombre que, víctima de un hechizo o como consecuencia de un legado ancestral, se transforma en una bestia sedienta de sangre.
+La transformación del séptimo hijo varón ocurre al cumplir la edad adulta, generalmente los viernes por la noche cuando hay luna llena. Durante estas noches malditas, el joven se convierte en una bestia feroz que recorre los campos en busca de carroña y desperdicios. Se alimenta principalmente de animales muertos y basura, lo que lo diferencia de otras versiones del hombre lobo que atacan a personas vivas.
+Esta creencia fue tan fuerte en Argentina que llevó a que muchos séptimos hijos varones fueran abandonados o asesinados por sus familias. Para combatir esta terrible práctica, en 1907 se estableció la tradición de que el Presidente de la República apadrinara a todos los séptimos hijos varones, otorgándoles una medalla de oro y una beca de estudios, tradición que continúa hasta hoy y se extendió también a las séptimas hijas mujeres.
+', '2024-05-10', 1, 1);
+
 
 -- Comentarios ()
 INSERT INTO Comentarios (Descripcion, Fecha, id_usuario ) VALUES
