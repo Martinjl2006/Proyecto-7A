@@ -34,7 +34,6 @@ CREATE TABLE MitoLeyenda (
     textobreve TEXT NOT NULL,
     Descripcion TEXT NOT NULL,
     Fecha DATE NOT NULL,
-    foto VARBINARY(1000000),
     id_provincia INT NOT NULL,
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad),
@@ -428,5 +427,6 @@ Esta creencia fue tan fuerte en Argentina que llevó a que muchos séptimos hijo
 INSERT INTO Comentarios (Descripcion, Fecha, id_usuario ) VALUES
 ('viva peron carajo', '2025-05-10', 3),
 ('borren el tester', '2025-05-14', 2);
+
 
 
