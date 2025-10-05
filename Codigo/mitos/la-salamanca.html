@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantalla de Mito - La Salamanca</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header .usuario {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+
+    header button {
+      background: #ff7b00;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .contenedor {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .imagen-principal {
+      width: 100%;
+      height: 250px;
+      background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+      display: flex;
+      justify-content: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .imagen-principal img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .relatos {
+      display: flex;
+      gap: 15px;
+    }
+
+    .relato {
+      flex: 1;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      border-color: #ff7b00;
+    }
+
+    .relato-imagen {
+      width: 100%;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .relato-imagen img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .relato-imagen.viuda { background: linear-gradient(135deg, #2c3e50 0%, #8e44ad 100%); }
+    .relato-imagen.familiar { background: linear-gradient(135deg, #c0392b 0%, #8e44ad 100%); }
+    .relato-imagen.lobizon { background: linear-gradient(135deg, #2c3e50 0%, #8b4513 100%); }
+
+    .relato-contenido {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato-titulo {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .relato-descripcion {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      flex: 1;
+    }
+
+    .relato-meta {
+      font-size: 10px;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .relato-region {
+      background: #ff7b00;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+      color: gray;
+    }
+
+    @media (max-width: 768px) {
+      .relatos {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .relato-imagen {
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="usuario">
+      <img src="#" alt="Foto usuario">
+      <span>Aquí va el nombre de usuario</span>
+    </div>
+    <button>Explorar mapa</button>
+  </header>
+
+  <div class="contenedor">
+    <div class="imagen-principal">
+      <img src="salamanca.jpg" alt="La Salamanca">
+    </div>
+
+    <h1>La Salamanca</h1>
+    <div class="meta">Buenos Aires · Tradición colonial · 5 min</div>
+
+    <div class="card">
+      <p>La Salamanca es una de las leyendas más difundidas del folclore argentino, con fuerte presencia en la región pampeana y del noroeste. En Buenos Aires, el mito se adaptó a las creencias rurales de la época colonial, donde se hablaba de cuevas ocultas bajo los campos y barrancas del río.</p>
+      
+      <p>Se dice que la Salamanca es una escuela mágica donde el diablo o un espíritu oscuro enseña a sus discípulos artes prohibidas: desde tocar la guitarra con virtuosismo hasta dominar a los animales o conseguir riquezas rápidas. Para ingresar, el iniciado debía renegar de la fe cristiana y entregar su alma a cambio de poder.</p>
+      
+      <p>El lugar de reunión se describía como una cueva iluminada por fuegos extraños, donde se escuchaba música de guitarras y bombos que resonaban durante la noche. Allí se realizaban bailes desenfrenados, pactos secretos y ceremonias de iniciación marcadas por símbolos de fuego y azufre.</p>
+      
+      <p>En Buenos Aires, muchos peones, gauchos y músicos eran acusados de haber “ido a la Salamanca” cuando mostraban talentos extraordinarios o un poder fuera de lo común. La creencia funcionaba como una explicación popular a lo inexplicable, pero también como advertencia moral contra la ambición y el pacto con lo oscuro.</p>
+      
+      <p>La leyenda advierte que quienes entraban a la Salamanca rara vez volvían siendo los mismos. Algunos regresaban con fama y fortuna, pero condenados a una vida corta y atormentada. Otros simplemente desaparecían, atrapados para siempre en los dominios del demonio.</p>
+      
+      <p>Hoy en día, la Salamanca sigue viva en el imaginario popular, especialmente en el interior de la provincia y en relatos transmitidos por las familias rurales. Su figura mezcla miedo, respeto y fascinación, siendo parte esencial de la mitología argentina.</p>
+    </div>
+
+    <div class="card">
+      <h2>Fuentes</h2>
+      <ul>
+        <li>Folclore Argentino - Biblioteca Nacional</li>
+        <li>Revista Todo es Historia</li>
+        <li>Instituto Nacional de Antropología y Pensamiento Latinoamericano</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Comentarios</h2>
+    </div>
+
+    <div class="card">
+      <h2>Relatos relacionados</h2>
+      
+      <div class="relatos">
+        <a href="la-viuda-del-valle.html" class="relato">
+          <div class="relato-imagen viuda">
+            <img src="viuda-valle.jpg" alt="La Viuda del Valle">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Viuda del Valle</div>
+            <div class="relato-descripcion">
+              Alma en pena de mujer abandonada que busca vengarse de los hombres infieles. Su presencia trae desgracias y mala suerte.
+            </div>
+            <div class="relato-meta">
+              <span>4 min lectura</span>
+              <span class="relato-region">Jujuy</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="el-familiar.html" class="relato">
+          <div class="relato-imagen familiar">
+            <img src="familiar.jpg" alt="El Familiar">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">El Familiar</div>
+            <div class="relato-descripcion">
+              Demonio que habita en los ingenios azucareros. Exige sacrificios humanos a cambio de prosperidad económica.
+            </div>
+            <div class="relato-meta">
+              <span>4 min lectura</span>
+              <span class="relato-region">Córdoba</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="el-lobizon.html" class="relato">
+          <div class="relato-imagen lobizon">
+            <img src="lobizon.jpeg" alt="El Lobizón">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">El Lobizón</div>
+            <div class="relato-descripcion">
+              Séptimo hijo varón maldito que se transforma en bestia durante las noches de luna llena. Leyenda guaraní.
+            </div>
+            <div class="relato-meta">
+              <span>4 min lectura</span>
+              <span class="relato-region">Buenos Aires</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © LeyendAR — Mitos y Leyendas de Argentina
+  </footer>
+
+</body>
+</html>

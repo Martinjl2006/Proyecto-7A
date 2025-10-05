@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantalla de Mito - La Difunta Correa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header .usuario {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+
+    header button {
+      background: #ff7b00;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .contenedor {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .imagen-principal {
+      width: 100%;
+      height: 250px;
+      background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+      display: flex;
+      justify-content: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .imagen-principal img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    /* Estilos para la sección de relatos relacionados - diseño horizontal */
+    .relatos {
+      display: flex;
+      gap: 15px;
+    }
+
+    .relato {
+      flex: 1;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      border-color: #ff7b00;
+    }
+
+    .relato-imagen {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .relato-imagen img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Placeholder para imágenes con gradientes únicos */
+    .relato-imagen.viuda { background: linear-gradient(135deg, #2c3e50 0%, #8e44ad 100%); }
+    .relato-imagen.familiar { background: linear-gradient(135deg, #c0392b 0%, #8e44ad 100%); }
+    .relato-imagen.lobizon { background: linear-gradient(135deg, #2c3e50 0%, #8b4513 100%); }
+
+    .relato-contenido {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato-titulo {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .relato-descripcion {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      flex: 1;
+    }
+
+    .relato-meta {
+      font-size: 10px;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .relato-region {
+      background: #ff7b00;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+      color: gray;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .relatos {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .relato-imagen {
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="usuario">
+      <img src="#" alt="Foto usuario">
+      <span>Aquí va el nombre de usuario</span>
+    </div>
+    <button>Explorar mapa</button>
+  </header>
+
+  <div class="contenedor">
+    <div class="imagen-principal">
+      <img src="difunta-correa.jpg" alt="La Difunta Correa">
+    </div>
+
+    <h1>La Difunta Correa</h1>
+    <div class="meta">San Juan · Siglo XIX · 5 min</div>
+
+    <div class="card">
+      <p>La Difunta Correa es la forma en que se conoce a Deolinda Correa de Bustos, una joven mujer argentina semilegendaria, de la que se cuenta que durante las prolongadas y sangrientas guerras civiles de ese país, murió deshidratada en los desiertos sanjuaninos logrando que su bebé de meses sobreviviera prendido de su pecho.</p>
+      
+      <p>Cuenta la historia y la leyenda que cuando su marido fue tomado prisionero en medio de los conflictos entre unitarios y federales, Deolinda Correa con su pequeño hijo en brazos partió en su búsqueda bajo el calcinante sol de la "travesía sanjuanina". Deolinda Correa, o Dalinda Antonia Correa, fue una mujer cuyo marido, Clemente Bustos, fue reclutado forzosamente hacia 1840, durante las guerras civiles.</p>
+      
+      <p>Su historia conmueve: Deolinda Correa, tras caminar por el desierto de Caucete cargando a su bebé en busca de su marido, fallece por deshidratación. Fue hallada sin vida, pero con su hijo aún amamantando. Posteriormente, la leyenda narra que unos arrieros encontraron el cuerpo de Deolinda en la Sierra Pie de Palo, ubicada al sureste de la provincia, y que el bebé aún lactaba de su pecho.</p>
+      
+      <p>Fue así que en aquel instante se confirmó el primer milagro que la canonizó como la santa popular "Difunta Correa". Sus fieles aseguran que el primer milagro que la Difunta Correa concedió fue el de dejar con vida a su pequeño hijo que pudo continuar alimentándose gracias a ella. Muchos dicen que cuando sintió que iba a morir, pidió un favor a alguna virgen para que, al menos, permitiera al niño vivir.</p>
+      
+      <p>El culto a la Difunta Correa se ha extendido por todo el territorio argentino y países vecinos como Uruguay y Chile. El santuario de la difunta está ubicado al norte de las vías del Ferrocarril General Belgrano (línea San Juan –Zerrezuela - Córdoba) a 500 mts. sobre el nivel del mar y 62 kilómetro de la ciudad de San Juan. Los devotos le llevan botellas de agua como ofrenda, recordando su muerte por sed en el desierto, y le atribuyen numerosos milagros relacionados con la protección de viajeros, madres y necesitados.</p>
+      
+      <p>Hoy su figura es símbolo de milagros y esperanza. El 1 de abril es el día principal de celebración, cuando miles de peregrinos acuden a Vallecito para honrar su memoria y pedir por sus favores. Su historia representa el amor maternal incondicional y la fe popular argentina, convirtiéndose en una de las devociones más arraigadas del país.</p>
+    </div>
+
+    <div class="card">
+      <h2>Fuentes</h2>
+      <ul>
+        <li>Wikipedia: <a href="https://es.wikipedia.org/wiki/Difunta_Correa" target="_blank">Difunta Correa</a></li>
+        <li>Museo Histórico Sarmiento</li>
+        <li>Argentina.gob.ar: <a href="https://www.argentina.gob.ar/viaja-por-argentina/que-hacer/visitar-el-santuario-difunta-correa" target="_blank">Visitar el santuario Difunta Correa</a></li>
+        <li>La Capital: <a href="https://www.lacapital.com.ar/informacion-general/la-historia-la-difunta-correa-una-santa-popular-la-que-muchos-le-ofrecen-agua-n2639718.html" target="_blank">La historia de la Difunta Correa</a></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Comentarios</h2>
+    </div>
+
+    <div class="card">
+      <h2>Relatos relacionados</h2>
+      
+      <div class="relatos">
+        <a href="la-viuda-del-valle.html" class="relato">
+          <div class="relato-imagen viuda">
+            <img src="viuda-valle.jpg" alt="La Viuda del Valle">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Viuda del Valle</div>
+            <div class="relato-descripcion">
+              Alma en pena de mujer abandonada que busca vengarse de los hombres infieles. Su presencia trae desgracias y mala suerte.
+            </div>
+            <div class="relato-meta">
+              <span>4 min lectura</span>
+              <span class="relato-region">Jujuy</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="el-familiar.html" class="relato">
+          <div class="relato-imagen familiar">
+            <img src="familiar.jpg" alt="El Familiar">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">El Familiar</div>
+            <div class="relato-descripcion">
+              Demonio que habita en los ingenios azucareros. Exige sacrificios humanos a cambio de prosperidad económica.
+            </div>
+            <div class="relato-meta">
+              <span>4 min lectura</span>
+              <span class="relato-region">Córdoba</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="el-lobizon.html" class="relato">
+          <div class="relato-imagen lobizon">
+            <img src="lobizon.jpg" alt="El Lobizón">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">El Lobizón</div>
+            <div class="relato-descripcion">
+              Séptimo hijo varón maldito que se transforma en bestia durante las noches de luna llena. Leyenda guaraní.
+            </div>
+            <div class="relato-meta">
+              <span>4 min lectura</span>
+              <span class="relato-region">Buenos Aires</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © LeyendAR — Mitos y Leyendas de Argentina
+  </footer>
+
+</body>
+</html>

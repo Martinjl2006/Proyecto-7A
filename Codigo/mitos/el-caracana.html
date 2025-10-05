@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantalla de Mito - El Caracaña</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header .usuario {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+
+    header button {
+      background: #ff7b00;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .contenedor {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .imagen-principal {
+      width: 100%;
+      height: 250px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      display: flex;
+      justify-content: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .imagen-principal img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    /* Estilos para la sección de relatos relacionados - diseño horizontal */
+    .relatos {
+      display: flex;
+      gap: 15px;
+    }
+
+    .relato {
+      flex: 1;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      border-color: #ff7b00;
+    }
+
+    .relato-imagen {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .relato-imagen img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Placeholder para imágenes con gradientes únicos */
+    .relato-imagen.familiar { background: linear-gradient(135deg, #8B0000 0%, #FF6347 100%); }
+    .relato-imagen.dama { background: linear-gradient(135deg, #4682B4 0%, #87CEEB 100%); }
+    .relato-imagen.luz { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); }
+
+    .relato-contenido {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato-titulo {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .relato-descripcion {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      flex: 1;
+    }
+
+    .relato-meta {
+      font-size: 10px;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .relato-region {
+      background: #ff7b00;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+      color: gray;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .relatos {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .relato-imagen {
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="usuario">
+      <img src="#" alt="Foto usuario">
+      <span>Aquí va el nombre de usuario</span>
+    </div>
+    <button>Explorar mapa</button>
+  </header>
+
+  <div class="contenedor">
+    <div class="imagen-principal">
+      <img src="caracana.jpg" alt="El Caracaña">
+    </div>
+
+    <h1>El Caracaña</h1>
+    <div class="meta">Chaco · Folklore del Litoral · 4 min</div>
+
+    <div class="card">
+      <p>El Caracaña es una misteriosa criatura del folklore de Formosa, especialmente en las zonas rurales cercanas al río Paraguay. Se describe como un ser extraño que mezcla características humanas y animales, con una apariencia que aterra a quienes tienen la desfortuna de encontrárselo en las noches oscuras.</p>
+      <p>Según las leyendas locales, el Caracaña tiene el cuerpo de un hombre muy alto y delgado, pero su cabeza es la de un caracú (un tipo de buitre carroñero). Sus ojos brillan en la oscuridad como brasas encendidas y emite un graznido horrible que hiela la sangre de quien lo escucha. Sus brazos son desproporcionadamente largos, con garras afiladas que utiliza para atrapar a sus víctimas.</p>
+      <p>Esta criatura aparece principalmente durante las noches de luna nueva, merodeando por los campos y acechando a los viajeros solitarios. Se dice que el Caracaña se alimenta de carroña y carne putrefacta, pero cuando no encuentra este tipo de alimento, puede atacar a animales e incluso personas. Los pobladores aseguran que es especialmente peligroso para los niños que se aventuran solos por los caminos rurales.</p>
+      <p>Los gauchos formoseños han transmitido durante generaciones las historias sobre encuentros con el Caracaña. Dicen que cuando se acerca, el aire se llena de un olor nauseabundo a muerte y descomposición. Para protegerse de él, los lugareños encienden fogatas grandes y mantienen a los animales cerca durante toda la noche, ya que se cree que el fuego y la compañía lo mantienen alejado.</p>
+    </div>
+
+    <div class="card">
+      <h2>Fuentes</h2>
+      <ul>
+        <li>Folklore de Formosa - Tradiciones del Litoral</li>
+        <li>Leyendas del Río Paraguay</li>
+        <li>Mitos y Criaturas del Norte Argentino</li>
+        <li>Relatos Gaucho de la Región</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Comentarios</h2>
+    </div>
+
+    <div class="card">
+      <h2>Relatos relacionados</h2>
+      
+      <div class="relatos">
+        <a href="el-familiar.html" class="relato">
+          <div class="relato-imagen familiar">
+            <img src="familiar.jpg" alt="El Familiar">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">El Familiar</div>
+            <div class="relato-descripcion">
+              Diabólica serpiente que protege los cañaverales a cambio de sacrificios humanos en los ingenios azucareros.
+            </div>
+            <div class="relato-meta">
+              <span>5 min lectura</span>
+              <span class="relato-region">Tucumán</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="la-dama-del-parana.html" class="relato">
+          <div class="relato-imagen dama">
+            <img src="dama-parana.jpg" alt="La Dama del Paraná">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Dama del Paraná</div>
+            <div class="relato-descripcion">
+              Misteriosa mujer vestida de blanco que aparece en las orillas del río Paraná durante las noches de tormenta.
+            </div>
+            <div class="relato-meta">
+              <span>3 min lectura</span>
+              <span class="relato-region">Entre Ríos</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="la-luz-mala.html" class="relato">
+          <div class="relato-imagen luz">
+            <img src="luzmala.jpg" alt="La Luz mala">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Luz de Neuquén</div>
+            <div class="relato-descripcion">
+              Extraña luz dorada que guía a los perdidos en la estepa patagónica, pero que puede llevarlos por caminos peligrosos.
+            </div>
+            <div class="relato-meta">
+              <span>4 min lectura</span>
+              <span class="relato-region">Neuquén</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © LeyendAR — Mitos y Leyendas de Argentina
+  </footer>
+
+</body>
+</html>

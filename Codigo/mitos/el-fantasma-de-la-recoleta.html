@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantalla de Mito - El Fantasma de Recoleta</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header .usuario {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+
+    header button {
+      background: #ff7b00;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .contenedor {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .imagen-principal {
+      width: 100%;
+      height: 250px;
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      display: flex;
+      justify-content: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .imagen-principal img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    /* Estilos para la sección de relatos relacionados - diseño horizontal */
+    .relatos {
+      display: flex;
+      gap: 15px;
+    }
+
+    .relato {
+      flex: 1;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      border-color: #ff7b00;
+    }
+
+    .relato-imagen {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .relato-imagen img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Placeholder para imágenes con gradientes únicos */
+    .relato-imagen.salamanca { background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); }
+    .relato-imagen.dama { background: linear-gradient(135deg, #f7f1f1 0%, #e8e8e8 100%); }
+    .relato-imagen.luz { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+
+    .relato-contenido {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato-titulo {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .relato-descripcion {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      flex: 1;
+    }
+
+    .relato-meta {
+      font-size: 10px;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .relato-region {
+      background: #ff7b00;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+      color: gray;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .relatos {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .relato-imagen {
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="usuario">
+      <img src="#" alt="Foto usuario">
+      <span>Aquí va el nombre de usuario</span>
+    </div>
+    <button>Explorar mapa</button>
+  </header>
+
+  <div class="contenedor">
+    <div class="imagen-principal">
+      <img src="fantasma-recoleta.jpg" alt="El Fantasma de Recoleta">
+    </div>
+
+    <h1>El Fantasma de Recoleta</h1>
+    <div class="meta">Ciudad de Buenos Aires · Leyenda Urbana · 4 min</div>
+
+    <div class="card">
+      <p>El Cementerio de la Recoleta, uno de los más elegantes y prestigiosos de Buenos Aires, alberga no solo los restos de 350 mil almas, sino también algunas de las leyendas paranormales más fascinantes de Argentina. Entre sus mausoleos art nouveau y sus pasillos de mármol, vagan los espíritus de personalidades ilustres que no encuentran descanso eterno.</p>
+      
+      <p>Construido en 1822, este cementerio que la revista Architectural Digest catalogó entre los diez más bellos del planeta, hospeda los restos de 29 presidentes, 200 héroes de la Independencia y dos Premios Nobel. Pero cuando llega la noche, según cuentan los testigos, sus 350 almas comienzan a remontar vuelo entre las criptas y monumentos históricos.</p>
+      
+      <p>Los visitantes y cuidadores han reportado fenómenos inexplicables: sombras que se deslizan entre los pasillos estrechos, susurros que provienen de tumbas selladas, y figuras etéreas que aparecen y desaparecen entre los mausoleos. Los 80 gatos que habitan el cementerio parecen percibir estas presencias, mostrando comportamientos extraños durante las horas nocturnas.</p>
+      
+      <p>Las leyendas más populares incluyen el espíritu de Rufina Cambaceres, quien según se cuenta, fue enterrada viva y ahora se aparece como una dama de blanco detrás de las puertas del cementerio en las madrugadas. También está la historia de Luz María García Velloso, fallecida a los 15 años, cuyo fantasma busca eternamente el amor que la muerte le arrebató.</p>
+      
+      <p>Durante el día, el cementerio es un atractivo turístico donde los guías narran la historia de estos ilustres personajes. Pero cuando la noche envuelve sus calles empedradas, la Recoleta se transforma en un lugar donde el velo entre el mundo de los vivos y los muertos se vuelve especialmente delgado, y donde las almas atormentadas continúan escribiendo sus historias desde el más allá.</p>
+    </div>
+
+    <div class="card">
+      <h2>Fuentes</h2>
+      <ul>
+        <li>Leyendas Urbanas de Buenos Aires</li>
+        <li>Historia del Cementerio de la Recoleta</li>
+        <li>Testimonios de Cuidadores y Visitantes</li>
+        <li>Gobierno de Buenos Aires: <a href="https://buenosaires.gob.ar/noticias/mitos-y-leyendas-del-cementerio-de-la-recoleta-el-lado-desconocido-de-buenos-aires" target="_blank">Mitos y leyendas del Cementerio de la Recoleta</a></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Comentarios</h2>
+    </div>
+
+    <div class="card">
+      <h2>Relatos relacionados</h2>
+      
+      <div class="relatos">
+        <a href="la-salamanca.html" class="relato">
+          <div class="relato-imagen salamanca">
+            <img src="salamanca.jpg" alt="La Salamanca">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Salamanca</div>
+            <div class="relato-descripcion">
+              Antro diabólico donde brujas y demonios celebran sus aquelarres. La entrada al infierno en los montes del norte.
+            </div>
+            <div class="relato-meta">
+              <span>5 min lectura</span>
+              <span class="relato-region">Santiago del Estero</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="dama-blanca.html" class="relato">
+          <div class="relato-imagen dama">
+            <img src="dama-blanca.jpg" alt="La Dama Blanca">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Dama Blanca</div>
+            <div class="relato-descripcion">
+              Joven espíritu que aparece vestida de blanco en las noches. Su historia de amor truncada la condena a vagar eternamente.
+            </div>
+            <div class="relato-meta">
+              <span>3 min lectura</span>
+              <span class="relato-region">Buenos Aires</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="luz-neuquen.html" class="relato">
+          <div class="relato-imagen luz">
+            <img src="luz-neuquen.jpg" alt="La Luz de Neuquén">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Luz de Neuquén</div>
+            <div class="relato-descripcion">
+              Misteriosa luminosidad que aparece en los campos patagónicos. Guía a los perdidos o los extravía para siempre.
+            </div>
+            <div class="relato-meta">
+              <span>3 min lectura</span>
+              <span class="relato-region">Neuquén</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © LeyendAR — Mitos y Leyendas de Argentina
+  </footer>
+
+</body>
+</html>

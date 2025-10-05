@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantalla de Mito - La Dama Blanca</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header .usuario {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+
+    header button {
+      background: #ff7b00;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .contenedor {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .imagen-principal {
+      width: 100%;
+      height: 250px;
+      background: linear-gradient(135deg, #f7f1f1 0%, #e8e8e8 100%);
+      display: flex;
+      justify-content: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .imagen-principal img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    /* Estilos para la sección de relatos relacionados - diseño horizontal */
+    .relatos {
+      display: flex;
+      gap: 15px;
+    }
+
+    .relato {
+      flex: 1;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      border-color: #ff7b00;
+    }
+
+    .relato-imagen {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .relato-imagen img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Placeholder para imágenes con gradientes únicos */
+    .relato-imagen.salamanca { background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); }
+    .relato-imagen.fantasma { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); }
+    .relato-imagen.luz { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+
+    .relato-contenido {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato-titulo {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .relato-descripcion {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      flex: 1;
+    }
+
+    .relato-meta {
+      font-size: 10px;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .relato-region {
+      background: #ff7b00;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+      color: gray;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .relatos {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .relato-imagen {
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="usuario">
+      <img src="#" alt="Foto usuario">
+      <span>Aquí va el nombre de usuario</span>
+    </div>
+    <button>Explorar mapa</button>
+  </header>
+
+  <div class="contenedor">
+    <div class="imagen-principal">
+      <img src="dama-blanca.jpg" alt="La Dama Blanca">
+    </div>
+
+    <h1>La Dama Blanca</h1>
+    <div class="meta">Santa fe · Leyenda Universal · 3 min</div>
+
+    <div class="card">
+      <p>La Dama Blanca es una de las apariciones más universales y persistentes del folklore argentino, presente en diferentes regiones del país bajo distintas variantes pero manteniendo siempre su esencia melancólica. Se trata del espíritu de una joven mujer vestida completamente de blanco que aparece en caminos, puentes, cementerios y casas abandonadas, generalmente durante las noches de luna llena.</p>
+      
+      <p>Según las leyendas más extendidas, la Dama Blanca es el alma en pena de una joven que murió trágicamente el día de su boda, ya sea por un accidente, un crimen pasional o por suicidio tras ser abandonada por su prometido. Su vestido de novia blanco se convierte en su mortaja eterna, y su espíritu vaga buscando el amor perdido o la justicia que la muerte le negó.</p>
+      
+      <p>En Buenos Aires, la Dama Blanca es frecuentemente avistada en el Cementerio de la Recoleta, donde se la asocia con Rufina Cambaceres, quien supuestamente fue enterrada viva y cuyo espíritu busca salir de su tumba. En la zona de Barrancas de Belgrano, los vecinos relatan apariciones de una figura femenina en blanco que camina por las barrancas durante las madrugadas.</p>
+      
+      <p>Los testigos describen a la Dama Blanca como una figura etérea de extraordinaria belleza, con largos cabellos oscuros que contrastan con su vestimenta inmaculada. Su rostro suele mostrar una expresión de profunda tristeza, y sus ojos reflejan una melancolía infinita. Algunos relatan que cuando se acercan a ella, la figura se desvanece como niebla, dejando solo un perfume a jazmines y un frío sobrenatural.</p>
+      
+      <p>Más allá de su aspecto aterrador, la Dama Blanca no suele ser considerada maligna, sino más bien una presencia melancólica que busca completar algo que quedó inconcluso en vida. Representa el arquetipo universal del amor truncado, la injusticia sin reparar y la imposibilidad del alma de encontrar paz cuando la muerte llega de manera prematura o violenta. Su presencia en el folklore argentino conecta con las tradiciones españolas medievales y se ha adaptado a la sensibilidad criolla, convirtiéndose en una de las leyendas más emotivas y perdurables del imaginario popular nacional.</p>
+    </div>
+
+    <div class="card">
+      <h2>Fuentes</h2>
+      <ul>
+        <li>Leyendas Urbanas Argentinas</li>
+        <li>Folklore Universal - Apariciones</li>
+        <li>Testimonios de Testigos Oculares</li>
+        <li>Wikipedia: <a href="https://es.wikipedia.org/wiki/Dama_de_blanco" target="_blank">Dama de blanco</a></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Comentarios</h2>
+    </div>
+
+    <div class="card">
+      <h2>Relatos relacionados</h2>
+      
+      <div class="relatos">
+        <a href="la-salamanca.html" class="relato">
+          <div class="relato-imagen salamanca">
+            <img src="salamanca.jpg" alt="La Salamanca">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Salamanca</div>
+            <div class="relato-descripcion">
+              Antro diabólico donde brujas y demonios celebran sus aquelarres. La entrada al infierno en los montes del norte.
+            </div>
+            <div class="relato-meta">
+              <span>5 min lectura</span>
+              <span class="relato-region">Santiago del Estero</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="el-fantasma-de-la-recoleta.html" class="relato">
+          <div class="relato-imagen fantasma">
+            <img src="fantasma-recoleta.jpg" alt="El Fantasma de Recoleta">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">El Fantasma de Recoleta</div>
+            <div class="relato-descripcion">
+              Espíritus que vagan entre las tumbas del cementerio más elegante de Buenos Aires. Almas ilustres que no encuentran descanso.
+            </div>
+            <div class="relato-meta">
+              <span>4 min lectura</span>
+              <span class="relato-region">Buenos Aires</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="la-luz-mala.html" class="relato">
+          <div class="relato-imagen luz">
+            <img src="luzmala.jpg" alt="Luz mala">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Luz de Neuquén</div>
+            <div class="relato-descripcion">
+              Misteriosa luminosidad que aparece en los campos patagónicos. Guía a los perdidos o los extravía para siempre.
+            </div>
+            <div class="relato-meta">
+              <span>3 min lectura</span>
+              <span class="relato-region">Neuquén</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © LeyendAR — Mitos y Leyendas de Argentina
+  </footer>
+
+</body>
+</html>

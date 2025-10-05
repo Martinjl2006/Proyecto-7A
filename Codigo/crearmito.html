@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nuevo Mito</title>
+    <link rel="stylesheet" href="crearmito.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Crear Nuevo Mito</h1>
+        <p>Subí tu mito o leyenda para que otros puedan descubrirlo en el mapa interactivo de LeyendAR.</p>
+
+        <form action="cargarmitos.php" method="POST" enctype="multipart/form-data">
+            <label>Título:</label>
+            <input type="text" name="titulo" required><br><br>
+
+            <label>Texto breve:</label>
+            <textarea name="textobreve" required></textarea><br><br>
+
+            <label>Descripción:</label>
+            <textarea name="descripcion" required></textarea><br><br>
+
+            <label>Fecha:</label>
+            <input type="date" name="fecha"><br><br>
+
+            <label>Provincia:</label>
+            <input type="text" name="provincia" required><br><br>
+
+            <label>Imagen:</label>
+            <input type="file" name="imagen" accept="image/*"><br><br>
+
+            <button type="submit">Subir mito</button>
+        </form>
+    </div>
+
+</body>
+</html>

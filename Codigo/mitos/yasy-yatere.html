@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantalla de Mito - Yasí Yateré</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header .usuario {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+
+    header button {
+      background: #ff7b00;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .contenedor {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .imagen-principal {
+      width: 100%;
+      height: 250px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      display: flex;
+      justify-content: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .imagen-principal img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    /* Estilos para la sección de relatos relacionados - diseño horizontal */
+    .relatos {
+      display: flex;
+      gap: 15px;
+    }
+
+    .relato {
+      flex: 1;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      border-color: #ff7b00;
+    }
+
+    .relato-imagen {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .relato-imagen img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Placeholder para imágenes con gradientes únicos */
+    .relato-imagen.luzmala { background: linear-gradient(135deg, rgba(67, 233, 123, 0.3) 0%, rgba(56, 249, 215, 0.3) 100%); }
+    .relato-imagen.pombero { background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); }
+    .relato-imagen.kurupi { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+    .relato-contenido {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato-titulo {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .relato-descripcion {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      flex: 1;
+    }
+
+    .relato-meta {
+      font-size: 10px;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .relato-region {
+      background: #ff7b00;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+      color: gray;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .relatos {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .relato-imagen {
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="usuario">
+      <img src="#" alt="Foto usuario">
+      <span>Aquí va el nombre de usuario</span>
+    </div>
+    <button>Explorar mapa</button>
+  </header>
+
+  <div class="contenedor">
+    <div class="imagen-principal">
+      <img src="YasyYatere.jpg" alt="Yasí Yateré">
+    </div>
+
+    <h1>El Yasí Yateré</h1>
+    <div class="meta">Litoral Argentino · Mitología Guaraní · 3 min</div>
+
+    <div class="card">
+      <p>El Yasí Yateré es uno de los personajes más enigmáticos de la mitología guaraní, presente en las leyendas del noreste argentino, especialmente en Corrientes y Misiones. Su nombre en guaraní significa "fragmento de luna" y es considerado el protector de la siesta, ese momento sagrado del mediodía cuando el sol abrasa la tierra y los adultos descansan.</p>
+      <p>Se lo describe como un niño pequeño de extraordinaria belleza, con cabello dorado como los rayos del sol y ojos azules como el cielo despejado. Porta un bastón de oro mágico que le otorga sus poderes sobrenaturales y con el cual puede hipnotizar a sus víctimas. Su silbido melodioso tiene la capacidad de atraer irresistiblemente a los niños que desobedecen la orden de dormir la siesta.</p>
+      <p>Durante las horas de la siesta, cuando el calor es más intenso y los mayores duermen, el Yasí Yateré recorre los campos y patios en busca de niños desobedientes. Los atrae con su silbido hipnótico y los lleva al monte, donde los retiene durante horas o días. Los niños regresan sin recordar lo sucedido, a veces con pequeños regalos como frutas silvestres o miel, pero siempre con una lección aprendida sobre la importancia de respetar el descanso del mediodía.</p>
+      <p>Las madres guaraníes advierten a sus hijos que nunca deben salir durante la siesta, especialmente si escuchan un silbido dulce y melodioso. Se dice que el Yasí Yateré no es malvado, sino travieso, y que su misión es enseñar a los niños a respetar las tradiciones y los momentos de descanso de sus mayores.</p>
+    </div>
+
+    <div class="card">
+      <h2>Fuentes</h2>
+      <ul>
+        <li>Mitología Guaraní - Tradiciones del Litoral</li>
+        <li>Leyendas de Corrientes y Misiones</li>
+        <li>Folklore del Nordeste Argentino</li>
+        <li>Wikipedia: <a href="https://es.wikipedia.org/wiki/Yasy_Yateré" target="_blank">Yasí Yateré</a></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Comentarios</h2>
+    </div>
+
+    <div class="card">
+      <h2>Relatos relacionados</h2>
+      
+      <div class="relatos">
+        <a href="luz-mala.html" class="relato">
+          <div class="relato-imagen luzmala">
+            <img src="luzmala.jpg" alt="La Luz Mala">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Luz Mala</div>
+            <div class="relato-descripcion">
+              Misteriosa luz que aparece en las noches. Se dice que son almas en pena buscando descanso eterno.
+            </div>
+            <div class="relato-meta">
+              <span>4 min lectura</span>
+              <span class="relato-region">Litoral</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="el-pombero.html" class="relato">
+          <div class="relato-imagen pombero">
+            <img src="Elpombero.jpg" alt="El Pombero">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">El Pomberito</div>
+            <div class="relato-descripcion">
+              Guardián travieso del monte guaraní. Protege la naturaleza y castiga a quienes dañan el bosque.
+            </div>
+            <div class="relato-meta">
+              <span>2 min lectura</span>
+              <span class="relato-region">Misiones</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="el-kurupi.html" class="relato">
+          <div class="relato-imagen kurupi">
+            <img src="kurupi.jpg" alt="kurupi">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">El Kurupí</div>
+            <div class="relato-descripcion">
+              Ser selvático cubierto de pelos, protector de la flora y fauna. Castiga a quienes dañan el monte.
+            </div>
+            <div class="relato-meta">
+              <span>5 min lectura</span>
+              <span class="relato-region">Paraguay</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © LeyendAR — Mitos y Leyendas de Argentina
+  </footer>
+
+</body>
+</html>

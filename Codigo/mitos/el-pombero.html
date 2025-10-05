@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantalla de Mito</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header .usuario {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+
+    header button {
+      background: #ff7b00;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .contenedor {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .imagen-principal {
+      width: 100%;
+      height: 250px;
+      background: linear-gradient(135deg, rgba(139, 69, 19, 0.3) 0%, rgba(210, 105, 30, 0.3) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .imagen-principal img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    /* Estilos para la sección de relatos relacionados - diseño horizontal */
+    .relatos {
+      display: flex;
+      gap: 15px;
+    }
+
+    .relato {
+      flex: 1;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      border-color: #ff7b00;
+    }
+
+    .relato-imagen {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .relato-imagen img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Placeholder para imágenes con gradientes únicos */
+    .relato-imagen.yasi { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .relato-imagen.luz-mala { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .relato-imagen.kurupi { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+
+
+
+    .relato-contenido {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato-titulo {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .relato-descripcion {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      flex: 1;
+    }
+
+    .relato-meta {
+      font-size: 10px;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .relato-region {
+      background: #ff7b00;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+      color: gray;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .relatos {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .relato-imagen {
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="usuario">
+      <img src="#" alt="Foto usuario">
+      <span>Aquí va el nombre de usuario</span>
+    </div>
+    <button>Explorar mapa</button>
+  </header>
+
+  <div class="contenedor">
+    <div class="imagen-principal">
+      <img src="Elpombero.jpg" alt="El Pombero">
+    </div>
+
+    <h1>El Pomberito</h1>
+    <div class="meta">Misiones · Criatura Mitológica · 2 min</div>
+
+    <div class="card">
+      <p>El Pomberito, o Pombero, es un ser mítico del folclore guaraní, muy conocido en las provincias del litoral argentino, Paraguay y el sur de Brasil. Se lo describe como un hombre bajo, de aspecto rústico, con barba abundante y un gran sombrero de paja que lo protege del sol.</p>
+      <p>Es considerado el guardián del monte y de los animales silvestres. Según las creencias, puede hacerse invisible y moverse con rapidez para proteger la naturaleza o castigar a quienes dañan el bosque, cazan de más o maltratan a los animales.</p>
+      <p>También es conocido por su carácter travieso: suele asustar a los caminantes, desatar caballos, mover objetos o emitir silbidos en la oscuridad. Para evitar su enojo, la gente acostumbra dejarle ofrendas como tabaco, miel o aguardiente.</p>
+    </div>
+
+    <div class="card">
+      <h2>Fuentes</h2>
+      <ul>
+        <li>Folclore del Litoral Argentino – Compilación Guaraní</li>
+        <li>Revista de Tradiciones Populares de Misiones</li>
+        <li>Wikipedia: <a href="https://es.wikipedia.org/wiki/Pombero" target="_blank">Pombero</a></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Comentarios</h2>
+    </div>
+
+    <div class="card">
+      <h2>Relatos relacionados</h2>
+      
+      <div class="relatos">
+        <a href="yasy-yatere.html" class="relato">
+          <div class="relato-imagen yasi">
+            <img src="YasyYatere.jpg" alt="yasi-yatere">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">El Yasí Yateré</div>
+            <div class="relato-descripcion">
+              Pequeño ser rubio que atrae a los niños con su silbido mágico y bastón dorado. Protector de la siesta.
+            </div>
+            <div class="relato-meta">
+              <span>3 min lectura</span>
+              <span class="relato-region">Corrientes</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="luz-mala.html" class="relato">
+          <div class="relato-imagen luz-mala">
+            <img src="luzmala.jpg" alt="luzmala">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Luz Mala</div>
+            <div class="relato-descripcion">
+              Misteriosa luz que aparece en cementerios y campos. Alma en pena que busca guiar o perderse en la noche.
+            </div>
+            <div class="relato-meta">
+              <span>4 min lectura</span>
+              <span class="relato-region">Litoral</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="el-kurupi.html" class="relato">
+          <div class="relato-imagen kurupi">
+            <img src="kurupi.jpg" alt="kurupi">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">El Kurupí</div>
+            <div class="relato-descripcion">
+              Ser selvático cubierto de pelos, protector de la flora y fauna. Castiga a quienes dañan el monte.
+            </div>
+            <div class="relato-meta">
+              <span>5 min lectura</span>
+              <span class="relato-region">Paraguay</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © LeyendAR — Mitos y Leyendas de Argentina
+  </footer>
+
+
+
+</body>
+</html>

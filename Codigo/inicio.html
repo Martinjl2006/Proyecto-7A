@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Iniciar sesión - LeyendAR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --azul: #1d2e42;
+      --azul-claro: #3c506d;
+      --beige: #f7f4ee;
+      --blanco: #f4f1ed;
+      --naranja: #f5a623;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+  font-family: 'Quicksand', sans-serif;
+  background-color: #c49b5b;
+  background-image: url('fondo-login.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: auto;
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  padding: 40px 0;
+}
+
+    .aura-bg {
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(245, 166, 35, 0.12), rgba(29, 46, 66, 0.4));
+      animation: auraFlow 20s ease-in-out infinite;
+      z-index: 0;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    @keyframes auraFlow {
+      0% {
+        transform: scale(1) translate(0%, 0%);
+      }
+      50% {
+        transform: scale(1.1) translate(10%, 10%);
+      }
+      100% {
+        transform: scale(1) translate(0%, 0%);
+      }
+    }
+
+    .login-box {
+      display: flex-box;
+      background: rgba(244, 241, 237, 0.95);
+      border-radius: 24px;
+      padding: 50px 40px;
+      width: 420px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+      animation: fadeInZoom 1.4s ease;
+    }
+
+    @keyframes fadeInZoom {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .logo img {
+      height: 220px;
+      width: 220px;
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: var(--azul);
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    p {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 25px;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 14px 16px;
+      margin: 12px 0;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      font-size: 1rem;
+      background: #fafafa;
+      transition: 0.3s ease;
+      box-shadow: inset 0 0 0 transparent;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--azul-claro);
+      box-shadow: 0 0 8px rgba(29, 46, 66, 0.3);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 30px;
+      background: linear-gradient(90deg, var(--azul), var(--azul-claro));
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      left: -50%;
+      top: 0;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+      transform: translateX(-100%);
+      animation: shine 3s infinite linear;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .btn:hover {
+      background: var(--azul);
+      transform: scale(1.03);
+    }
+
+    .extra {
+      font-size: 0.9rem;
+      margin-top: 25px;
+    }
+
+    .extra a {
+      color: var(--azul-claro);
+      text-decoration: none;
+      margin: 0 5px;
+    }
+
+    .extra a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .login-box {
+        padding: 35px 25px;
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="aura-bg"></div>
+
+  <div class="login-box">
+    <div class="logo">
+      <a href="../index.php"><img src="logo.jpg" alt="Logo LeyendAR"></a>
+
+    </div>
+
+    <h2>Bienvenido/a</h2>
+    <p>Accedé al mapa interactivo y descubrí mitos y leyendas de cada rincón de Argentina.</p>
+
+   <form action="main.php" method="POST">
+  <input type="email" name="email" placeholder="Correo electrónico" required>
+  <input type="password" name="password" placeholder="Contraseña" required>
+  <button class="btn" type="submit">Iniciar sesión</button>
+</form>
+
+    <div class="extra">
+      <a href="#">¿Olvidaste tu contraseña?</a><br>
+      <a href="registro.html">¿No tenés cuenta? Registrate</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantalla de Mito - La Viuda del Valle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header .usuario {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+
+    header button {
+      background: #ff7b00;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .contenedor {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .imagen-principal {
+      width: 100%;
+      height: 250px;
+      background: linear-gradient(135deg, #2c3e50 0%, #8e44ad 100%);
+      display: flex;
+      justify-content: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .imagen-principal img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    /* Estilos para la sección de relatos relacionados - diseño horizontal */
+    .relatos {
+      display: flex;
+      gap: 15px;
+    }
+
+    .relato {
+      flex: 1;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      border-color: #ff7b00;
+    }
+
+    .relato-imagen {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .relato-imagen img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Placeholder para imágenes con gradientes únicos */
+    .relato-imagen.difunta { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+    .relato-imagen.salamanca { background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); }
+    .relato-imagen.dama { background: linear-gradient(135deg, #f7f1f1 0%, #e8e8e8 100%); }
+
+    .relato-contenido {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .relato-titulo {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .relato-descripcion {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      flex: 1;
+    }
+
+    .relato-meta {
+      font-size: 10px;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .relato-region {
+      background: #ff7b00;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+      color: gray;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .relatos {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .relato-imagen {
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="usuario">
+      <img src="#" alt="Foto usuario">
+      <span>Aquí va el nombre de usuario</span>
+    </div>
+    <button>Explorar mapa</button>
+  </header>
+
+  <div class="contenedor">
+    <div class="imagen-principal">
+      <img src="viuda-valle.jpg" alt="La Viuda del Valle">
+    </div>
+
+    <h1>La Viuda del Valle</h1>
+    <div class="meta">Jujuy · Norte Argentino · 4 min</div>
+
+    <div class="card">
+      <p>La Viuda del Valle es una de las leyendas más temidas y extendidas del noroeste argentino, especialmente arraigada en Jujuy y las provincias andinas como Salta, Catamarca, La Rioja, Tucumán, Santiago del Estero y Córdoba. Esta figura siniestra forma parte del imaginario popular que explica desgracias y castiga la infidelidad masculina.</p>
+      
+      <p>La leyenda dice que la Viuda sería el alma en pena de una mujer o de una bruja, que al quedar sola y abandonada al morir el amor de su vida, enloqueció de pena y rabia, y por ello decidió vengarse de todo hombre. Fue así como se dice que producto del odio eterno que sentía hacia los hombres, esta figura fantasmal busca vengarse de los hombres infieles.</p>
+      
+      <p>Esta leyenda está relacionada con engaños amorosos y apariciones macabras. Se cuenta que una mujer que fue engañada y abandonada por su amante se convierte en una figura fantasmal que busca vengarse de los hombres infieles. Se dice que su presencia trae mala suerte y desgracias, especialmente a aquellos que han traicionado el amor de una mujer.</p>
+      
+      <p>Los relatos populares describen encuentros terroríficos en los que La Viuda aparece como una mujer enlutada que seduce a hombres casados o comprometidos durante las noches. Su aspecto puede ser engañoso al principio, presentándose como una bella mujer, pero gradualmente revela su naturaleza espectral y vengativa. Quienes han logrado escapar de sus encuentros cuentan que sus ojos despiden un brillo sobrenatural y que su presencia genera un frío sobrenatural.</p>
+      
+      <p>La popularidad de este mito ha dado lugar a expresiones populares como "Te va a salir la viuda" o "Tené cuidado, no te vaya a salir la viuda", frases que se utilizan como advertencia para los hombres infieles. En el contexto del valle de Lerma en Salta y otras regiones andinas, La Viuda representa la justicia poética contra la traición amorosa y funciona como un mecanismo social para desalentar la infidelidad masculina, convirtiendo el miedo en guardian de la moral familiar y comunitaria.</p>
+    </div>
+
+    <div class="card">
+      <h2>Fuentes</h2>
+      <ul>
+        <li>Wikipedia: <a href="https://es.wikipedia.org/wiki/Viuda_(mitología)" target="_blank">Viuda (mitología)</a></li>
+        <li>Leyendas de Jujuy: <a href="https://leyendascorta.com/mitos-y-leyendas-de-jujuy/" target="_blank">Mitos y leyendas de Jujuy</a></li>
+        <li>Folklore del Norte Argentino</li>
+        <li>FM Tiempo: <a href="https://tiemporojas.com/la-viuda/" target="_blank">La viuda</a></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Comentarios</h2>
+    </div>
+
+    <div class="card">
+      <h2>Relatos relacionados</h2>
+      
+      <div class="relatos">
+        <a href="la-difunta-correa.html" class="relato">
+          <div class="relato-imagen difunta">
+            <img src="difunta-correa.jpg" alt="La Difunta Correa">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Difunta Correa</div>
+            <div class="relato-descripcion">
+              Mujer que murió en el desierto buscando a su marido. Su bebé sobrevivió amamantando de su cuerpo sin vida. Santa popular.
+            </div>
+            <div class="relato-meta">
+              <span>5 min lectura</span>
+              <span class="relato-region">San Juan</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="la-salamanca.html" class="relato">
+          <div class="relato-imagen salamanca">
+            <img src="salamanca.jpg" alt="La Salamanca">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Salamanca</div>
+            <div class="relato-descripcion">
+              Antro diabólico donde brujas y demonios celebran sus aquelarres. La entrada al infierno en los montes del norte.
+            </div>
+            <div class="relato-meta">
+              <span>5 min lectura</span>
+              <span class="relato-region">Santiago del Estero</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="la-dama-blanca.html" class="relato">
+          <div class="relato-imagen dama">
+            <img src="dama-blanca.jpg" alt="La Dama Blanca">
+          </div>
+          <div class="relato-contenido">
+            <div class="relato-titulo">La Dama Blanca</div>
+            <div class="relato-descripcion">
+              Joven espíritu que aparece vestida de blanco en las noches. Su historia de amor truncada la condena a vagar eternamente.
+            </div>
+            <div class="relato-meta">
+              <span>3 min lectura</span>
+              <span class="relato-region">Buenos Aires</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © LeyendAR — Mitos y Leyendas de Argentina
+  </footer>
+
+</body>
+</html>

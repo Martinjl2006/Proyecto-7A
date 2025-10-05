@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LeyendAR • Perfil de Usuario</title>
+  <style>
+    :root {
+      --page-bg: #F3F4F6;
+      --brand: #1E3A8A;
+      --nav-text: #1E40AF;
+      --danger: #DC2626;
+      --danger-hover: #B91C1C;
+      --primary: #1E3A8A;
+      --primary-hover: #1D4ED8;
+      --text-muted: #6B7280;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      background: var(--page-bg);
+      color: #111827;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 2rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      background-color: rgba(244, 241, 237, 0.95);
+      backdrop-filter: blur(6px);
+      z-index: 10;
+      box-shadow: 0 5px 8px rgba(0,0,0,0.05);
+      min-width:400px;
+      
+      
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .brand img {
+      height: 42px;
+    }
+
+    .brand span {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--azul-logo);
+    }
+    nav {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    nav a {
+      text-decoration: none;
+      font-weight: 500;
+      color: var(--nav-text);
+    }
+    nav a:hover { color: var(--primary-hover); }
+    .logout-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: var(--danger);
+      color: #fff;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background-color .2s;
+    }
+    .logout-btn:hover { background: var(--danger-hover); }
+
+    /* Perfil usuario */
+    .profile-card {
+      background: #fff;
+      border-radius: 40px;
+      box-shadow: var(--shadow-md);
+      padding: 30px;
+      margin: 24px auto;
+      max-width: 900px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-top: 100px;
+    }
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #D1D5DB;
+    }
+    .profile-info { flex: 1; }
+    .profile-info h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1F2937;
+    }
+    .profile-info p {
+      margin: 4px 0 0;
+      font-size: 14px;
+      color: #6B7280;
+    }
+    .edit-btn {
+      padding: 6px 16px;
+      border-radius: 6px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background-color .2s;
+    }
+    .edit-btn:hover { background: var(--primary-hover); }
+
+    /* Sección mitos */
+    .section {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      padding: 24px;
+      margin: 24px auto;
+      max-width: 1000px;
+      
+    }
+    .section h3 {
+      margin: 0 0 16px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1F2937;
+    }
+    .carousel {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .carousel::-webkit-scrollbar { display: none; }
+
+    .card-col {
+      flex: 0 0 280px;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .card-col h4 {
+      margin: 0 0 8px;
+      font-weight: 600;
+    }
+    .myths-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .myth-item {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+    .more-link {
+      font-size: 14px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    /* Colores secciones */
+    .col-mismitos { background: #EFF6FF; }
+    .col-mismitos h4 { color: #1E3A8A; }
+
+    .col-leidos { background: #DBEAFE; }
+    .col-leidos h4 { color: #1E40AF; }
+
+    .col-favoritos { background: #BFDBFE; }
+    .col-favoritos h4 { color: #1E3A8A; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="Codigo/logo.jpg" alt="Logo LeyendAR" />
+      <span>LeyendAR</span>
+    </div>
+    <nav>
+      <a href="#">Inicio</a>
+      <a href="#" class="logout-btn">Cerrar sesión</a>
+    </nav>
+  </header>
+  
+  <section class="profile-card">
+    <div class="avatar"></div>
+    <div class="profile-info">
+      <h2>Nombre de Usuario</h2>
+      <p>Descripción de usuario</p>
+    </div>
+    <a href="#" class="edit-btn">Editar perfil</a>
+  </section>
+
+  <section class="section">
+    <h3>Mis mitos y leyendas</h3>
+    <div class="carousel">
+      <div class="card-col col-mismitos">
+        <h4>Mis mitos</h4>
+        <div class="myths-list">
+          <div class="myth-item">Mito creado: “El guardián del río”</div>
+          <div class="myth-item">Mito compartido: “La dama de fuego”</div>
+          <div class="more-link">+ Ver más</div>
+        </div>
+      </div>
+
+      <div class="card-col col-leidos">
+        <h4>Mitos leídos</h4>
+        <div class="myths-list">
+          <div class="myth-item">“La leyenda del árbol sagrado”</div>
+          <div class="myth-item">“El espíritu de la montaña”</div>
+          <div class="more-link">+ Ver más</div>
+        </div>
+      </div>
+
+      <div class="card-col col-favoritos">
+        <h4>Mitos favoritos</h4>
+        <div class="myths-list">
+          <div class="myth-item">“La sirena”</div>
+          <div class="myth-item">“El zorro”</div>
+          <div class="more-link">+ Ver más</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

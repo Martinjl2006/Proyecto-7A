@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sobre el Proyecto - leyendAR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --azul-profundo: #1d2e42;
+      --fondo-claro: #f2f2f2;
+      --blanco: #ffffff;
+      --gris: #555;
+      --sombra-suave: rgba(0, 0, 0, 0.1);
+      --azul-accion: #3478f6;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--fondo-claro);
+      color: var(--gris);
+    }
+
+    header {
+      background: var(--blanco);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      box-shadow: 0 2px 6px var(--sombra-suave);
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo img {
+      height: 44px;
+      margin-right: 12px;
+    }
+
+    .logo span {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--azul-profundo);
+    }
+
+    nav a {
+      color: var(--azul-profundo);
+      text-decoration: none;
+      margin-left: 24px;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: var(--azul-accion);
+    }
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .hero-text {
+      flex: 1 1 480px;
+      max-width: 600px;
+      padding: 20px;
+    }
+
+    .hero-text h1 {
+      font-size: 2.8rem;
+      color: var(--azul-profundo);
+      margin-bottom: 20px;
+    }
+
+    .hero-text p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .hero-text .btn {
+      background-color: var(--azul-accion);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.3s ease;
+    }
+
+    .hero-text .btn:hover {
+      background-color: #245fd1;
+    }
+
+    .hero-img {
+      flex: 1 1 400px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .hero-img img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    footer {
+      background-color: #eaeaea;
+      text-align: center;
+      padding: 20px;
+      margin-top: 60px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column-reverse;
+      }
+
+      .hero-text h1 {
+        font-size: 2rem;
+      }
+
+      nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+
+      <span>leyendAR</span>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="usuario.html">Mitos y leyendas</a>
+      <a href="sobre.html">Sobre el proyecto</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>¿Qué es leyendAR?</h1>
+      <p>
+        <strong>leyendAR</strong> es una experiencia interactiva que rescata mitos y leyendas de todo el país, conectando cultura, geografía y tecnología en un solo lugar.
+      </p>
+      <p>
+        Nuestro objetivo es preservar el patrimonio oral de Argentina a través de un mapa que permite explorar cada provincia y sus historias típicas. Ideal para el ámbito educativo y el público general.
+      </p>
+      <p>
+        Desde la difunta Correa hasta el pombero, leyendAR pone en valor nuestras raíces, invitando a conocerlas de forma visual, atractiva y accesible.
+      </p>
+      <a class="btn" href="leyendas.html">Explorar leyendas</a>
+    </div>
+    <div class="hero-img">
+      <img src="mapa-ilustrado.png" alt="Ilustración del proyecto">
+    </div>
+  </section>
+
+  <footer>
+    © 2025 leyendAR - Mitos y Leyendas Argentinas
+  </footer>
+</body>
+</html>
