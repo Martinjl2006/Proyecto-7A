@@ -14,30 +14,19 @@ CREATE TABLE Ciudad (
     FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia)
 );
 
-CREATE TABLE Usuarios (
-    id_Usuario INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    Nombre TEXT NOT NULL,
-    mail VARCHAR(255) NOT NULL,
-    apellido TEXT NOT NULL,
-    Username VARCHAR(100) NOT NULL,
-    contraseña VARCHAR(100) NOT NULL,
-    id_provincia INT NOT NULL,
-    id_ciudad INT NOT NULL,
-    FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia),
-    FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad)
-);
-
 CREATE TABLE MitoLeyenda (
     id_mitooleyenda INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Titulo VARCHAR(255) NOT NULL,
     textobreve TEXT NOT NULL,
     Descripcion TEXT NOT NULL,
+    imagen VARCHAR(255) DEFAULT NULL,   -- <-- campo agregado para la ruta de la imagen
     Fecha DATE NOT NULL,
     id_provincia INT NOT NULL,
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia),
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_Usuario)
 );
+
 
 CREATE TABLE Comentarios(
     id_comentario INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
