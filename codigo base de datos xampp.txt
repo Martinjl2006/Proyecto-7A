@@ -2,6 +2,21 @@ CREATE DATABASE LegendAR IF NOT EXISTS LegendAR;
 
 USE LegendAR;
 
+CREATE TABLE Usuarios (
+    id_usuario INT(11) NOT NULL AUTO_INCREMENT,
+    Nombre VARCHAR(150) NOT NULL,
+    apellido VARCHAR(150) NOT NULL,
+    mail VARCHAR(255) NOT NULL UNIQUE,
+    Username VARCHAR(100) NOT NULL UNIQUE,
+    contrasena VARCHAR(100) NOT NULL,
+    id_provincia INT(11) NOT NULL,
+    id_ciudad INT(11) NOT NULL,
+    PRIMARY KEY (id_usuario),
+    FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia),
+    FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad)
+);
+
+
 CREATE TABLE Provincias (
     id_provincia INT PRIMARY KEY AUTO_INCREMENT NOT NULL,    
     Nombre VARCHAR(100) NOT NULL
