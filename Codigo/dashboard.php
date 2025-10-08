@@ -90,6 +90,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
         }
     }
 
+    elseif ($action === "foto_perfil") {
+        if (isset($_FILES['foto']) && $_FILES['foto']['error'] == UPLOAD_ERR_OK) {
+            $carpetaDestino = "usuarios/"; 
+            if (!is_dir($carpetaDestino)) {
+                mkdir($carpetaDestino, 0777, true);
+            }
+
+            $nombreArchivo = time() . "_" . basename($_FILES["foto"]["name"]);
+            $rutaDestino   = $carpetaDestino . $nombreArchivo;
+
+            if (move_uploaded_file($_FILES["foto"]["tmp_name"], $rutaDestino)) {
+            // Guardar en la base de datos
+                $stmt = $conn->prepare("UPDATE Usuarios SET foto=? WHERE id_usuario=?");
+                $stmt->bind_param("si", $rutaDestino, $id_usuario);
+                if ($stmt->execute()) {
+                    $mensaje = "✅ Foto actualizada correctamente.";
+                } else {
+                    $mensaje = "❌ Error al actualizar la foto.";
+                }
+                $stmt->close();
+            } else {
+                $mensaje = "❌ Error al mover la imagen al directorio destino.";
+            }
+        } else {
+            $mensaje = "❌ No se seleccionó ninguna imagen válida.";
+        }
+    }  
+
+
     // Borrar cuenta
     elseif ($action === "borrar_cuenta") {
         $stmt = $conn->prepare("DELETE FROM Usuarios WHERE id_Usuario=?");
@@ -608,7 +637,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             <div class="map-container">
                 <img src="logo.jpg" alt="" srcset="">
             </div>
-            <button class="explore-btn" onclick="location.href='mapa.html'">Explorar mapa</button>
+            <button class="explore-btn" onclick="location.href='mapa.php'">Explorar mapa</button>
 
             <!-- Features Grid -->
             <div class="features-grid">
@@ -707,6 +736,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                 <input type="hidden" name="action" value="cambiar_clave">
                 <button type="submit" class="form-btn">Actualizar Contraseña</button>
             </form>
+
+            <form method="POST" class="profile-form" enctype="multipart/form-data">
+                <h3>Foto de perfil</h3>
+                <label>Imagen:</label>
+                <input type="file" name="foto" accept="image/*" required><br><br>
+                <input type="hidden" name="action" value="foto_perfil">
+                <button type="submit">Guardar</button>
+            </form>
+
 
             <!-- Borrar cuenta -->
             <form method="POST" class="profile-form" onsubmit="return confirmDelete()">

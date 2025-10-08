@@ -8,7 +8,7 @@ require_once "main.php"; // Asegurate que aquí se conecta a la base de datos
 // Verificar si el usuario está logueado
 $usuarioLogueado = isset($_SESSION["username"]) && isset($_SESSION["id_usuario"]);
 $nombreUsuario = $usuarioLogueado ? htmlspecialchars($_SESSION["username"]) : null;
-
+$foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SESSION["foto"]) : null;
 ?>
 
 
@@ -231,21 +231,74 @@ $nombreUsuario = $usuarioLogueado ? htmlspecialchars($_SESSION["username"]) : nu
       <span>leyendAR</span>
     </div>
     <nav>
-  <?php if ($usuarioLogueado): ?>
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <?php if ($fotoPerfil): ?>
-        <img src="<?= $fotoPerfil ?>" alt="Perfil" style="height: 40px; width: 40px; border-radius: 50%; object-fit: cover;">
-      <?php else: ?>
-        <div style="height: 40px; width: 40px; border-radius: 50%; background-color: #ccc; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-          <?= strtoupper(substr($nombreUsuario, 0, 1)) ?>
-        </div>
-      <?php endif; ?>
-      <span style="font-weight: 600;"><?= $nombreUsuario ?></span>
-      <a href="logout.php" style="margin-left: 10px; color: #1E3A8A; text-decoration: underline;">Cerrar sesión</a>
-    </div>
-  <?php else: ?>
-    <a href="inicio.html" class="login-button">Iniciar sesión</a>
-  <?php endif; ?>
+<?php if ($usuarioLogueado): ?>
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <?php
+      $src = null;
+      if (!empty($foto)) {
+          // Normalizar y separar
+          $fotoNorm = str_replace('\\', '/', $foto);
+          $dir  = dirname($fotoNorm);
+          $file = basename($fotoNorm);
+          $encFile = rawurlencode($file);
+
+          // Comprobar rutas en el sistema de ficheros (usamos el nombre sin codificar)
+          $fsCandidates = [
+              // ruta relativa al DOCUMENT_ROOT (p. ej. /proyecto/.../usuarios/archivo.png)
+              rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/' . ltrim($fotoNorm, '/'),
+              // ruta relativa al directorio del script (p. ej. __DIR__/usuarios/archivo.png)
+              __DIR__ . '/' . $fotoNorm,
+              // ruta directa en la carpeta usuarios junto al script
+              __DIR__ . '/usuarios/' . $file,
+              // ruta en DOCUMENT_ROOT/usuarios/
+              rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/usuarios/' . $file
+          ];
+
+          foreach ($fsCandidates as $fs) {
+              if (file_exists($fs)) {
+                  // Si la ruta está dentro del document root, construimos la URL desde ahí
+                  $docroot = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
+                  if (strpos($fs, $docroot) === 0) {
+                      $web = substr($fs, strlen($docroot));        // /proyecto/.../usuarios/archivo.png
+                      $web = str_replace($file, $encFile, $web);  // encodear solo el nombre de archivo
+                      $src = $web;
+                  } else {
+                      // fallback: ruta relativa al script (usuarios/archivo%20con%20espacio.png)
+                      if ($dir === '.' || $dir === '/') {
+                          $src = $encFile;
+                      } else {
+                          $src = $dir . '/' . $encFile;
+                      }
+                  }
+                  break;
+              }
+          }
+
+          // Si no encontramos el fichero, usamos la ruta original pero con el nombre codificado
+          if (!$src) {
+              if ($dir === '.' || $dir === '/') {
+                  $src = $encFile;
+              } else {
+                  $src = $dir . '/' . $encFile;
+              }
+          }
+      }
+    ?>
+
+    <?php if (!empty($src)): ?>
+      <img src="<?php echo htmlspecialchars($src); ?>" width="50" alt="Foto de perfil" style="object-fit:cover;border-radius:50%">
+    <?php else: ?>
+      <div style="height: 40px; width: 40px; border-radius: 50%; background-color: #ccc; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+        <?= strtoupper(substr($nombreUsuario, 0, 1)) ?>
+      </div>
+    <?php endif; ?>
+
+    <span style="font-weight: 600;"><?= $nombreUsuario ?></span>
+    <a href="logout.php" style="margin-left: 10px; color: #1E3A8A; text-decoration: underline;">Cerrar sesión</a>
+  </div>
+<?php else: ?>
+  <a href="inicio.html" class="login-button">Iniciar sesión</a>
+<?php endif; ?>
 </nav>
 
   </header>
@@ -694,7 +747,7 @@ $nombreUsuario = $usuarioLogueado ? htmlspecialchars($_SESSION["username"]) : nu
 
 <div class="cards" style="max-width:1200px; width:97%; margin: 1rem auto;">
   
-  <a href="inicio-de-sesion.html" class="card" style="text-decoration:none; color:inherit;">
+  <a href="dashboard.php" class="card" style="text-decoration:none; color:inherit;">
     <div class="card-icon">📌</div>
     <div class="card-title">Inicio</div>
     <div class="card-text">Accedé al minimapa, descubrí un mito recomendado y navegá por las opciones principales.</div>
@@ -706,13 +759,13 @@ $nombreUsuario = $usuarioLogueado ? htmlspecialchars($_SESSION["username"]) : nu
     <div class="card-text">Enterate de la finalidad, inspiración y cómo se construyó este mapa interactivo.</div>
   </a>
 
-  <a href="inicio-de-sesion.html" class="card" style="text-decoration:none; color:inherit;">
+  <a href="lista_mitos.php" class="card" style="text-decoration:none; color:inherit;">
     <div class="card-icon">👻</div>
     <div class="card-title">Mitos</div>
     <div class="card-text">Explorá la colección completa de leyendas y relatos de cada región de Argentina.</div>
   </a>
 
-  <a href="inicio-de-sesion.html" class="card" style="text-decoration:none; color:inherit;">
+  <a href="crearmito.html" class="card" style="text-decoration:none; color:inherit;">
     <div class="card-icon">🔍</div>
     <div class="card-title">Agregar mito</div>
     <div class="card-text">¿Conocés una historia o leyenda local? ¡Sumala al mapa para que otros la descubran!</div>
