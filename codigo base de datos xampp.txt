@@ -2,6 +2,21 @@ CREATE DATABASE LegendAR IF NOT EXISTS LegendAR;
 
 USE LegendAR;
 
+CREATE TABLE Usuarios (
+    id_usuario INT(11) NOT NULL AUTO_INCREMENT,
+    Nombre VARCHAR(150) NOT NULL,
+    apellido VARCHAR(150) NOT NULL,
+    mail VARCHAR(255) NOT NULL UNIQUE,
+    Username VARCHAR(100) NOT NULL UNIQUE,
+    contrasena VARCHAR(100) NOT NULL,
+    id_provincia INT(11) NOT NULL,
+    id_ciudad INT(11) NOT NULL,
+    PRIMARY KEY (id_usuario),
+    FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia),
+    FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad)
+);
+
+
 CREATE TABLE Provincias (
     id_provincia INT PRIMARY KEY AUTO_INCREMENT NOT NULL,    
     Nombre VARCHAR(100) NOT NULL
@@ -14,30 +29,19 @@ CREATE TABLE Ciudad (
     FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia)
 );
 
-CREATE TABLE Usuarios (
-    id_Usuario INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    Nombre TEXT NOT NULL,
-    mail VARCHAR(255) NOT NULL,
-    apellido TEXT NOT NULL,
-    Username VARCHAR(100) NOT NULL,
-    contraseña VARCHAR(100) NOT NULL,
-    id_provincia INT NOT NULL,
-    id_ciudad INT NOT NULL,
-    FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia),
-    FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad)
-);
-
 CREATE TABLE MitoLeyenda (
     id_mitooleyenda INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Titulo VARCHAR(255) NOT NULL,
     textobreve TEXT NOT NULL,
     Descripcion TEXT NOT NULL,
+    imagen VARCHAR(255) DEFAULT NULL,   -- <-- campo agregado para la ruta de la imagen
     Fecha DATE NOT NULL,
     id_provincia INT NOT NULL,
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia),
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_Usuario)
 );
+
 
 CREATE TABLE Comentarios(
     id_comentario INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -557,4 +561,10 @@ Algunos la interpretan como un espíritu protector del río, otros como un espec
 INSERT INTO Comentarios (Descripcion, Fecha, id_usuario , id_mitooleyenda) VALUES
 ('viva peron carajo', '2025-05-10', 3 ,2),
 ('borren el tester', '2025-05-14', 2, 2);
+
+
+ALTER TABLE Usuarios ADD COLUMN foto VARCHAR(255) NULL AFTER contrasena;
+
+ALTER TABLE MitoLeyenda 
+ADD COLUMN foto VARCHAR(255) NULL AFTER Descripcion;
 
