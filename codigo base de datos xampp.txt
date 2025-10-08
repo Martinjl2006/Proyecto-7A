@@ -547,3 +547,9 @@ INSERT INTO Comentarios (Descripcion, Fecha, id_usuario , id_mitooleyenda) VALUE
 ('viva peron carajo', '2025-05-10', 3 ,2),
 ('borren el tester', '2025-05-14', 2, 2);
 
+
+ALTER TABLE Usuarios ADD COLUMN foto VARCHAR(255) NULL AFTER contrasena;
+
+ALTER TABLE MitoLeyenda 
+ADD COLUMN foto VARCHAR(255) NULL AFTER Descripcion;
+
