@@ -1,38 +1,76 @@
 <?php
+session_start();
 include 'main.php';
+
+// Inicializar variables
+$mito = null;
+$error = null;
 
 // Verificar si se recibió un ID válido por GET
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = intval($_GET['id']);
 
-    // Consultar mito por ID (sin imagen porque tu tabla no la tiene)
-    $sql = "SELECT id_mitooleyenda, Titulo, Descripcion FROM MitoLeyenda WHERE id_mitooleyenda = ?";
+    // Consultar mito por ID con JOIN a Provincias
+    $sql = "SELECT m.id_mitooleyenda, m.Titulo, m.textobreve, m.Descripcion, m.imagen, p.Nombre as Provincia 
+            FROM MitoLeyenda m
+            INNER JOIN Provincias p ON m.id_provincia = p.id_provincia
+            WHERE m.id_mitooleyenda = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $resultado = $stmt->get_result();
+    
+    if ($stmt) {
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
 
-    if ($resultado->num_rows > 0) {
-        $mito = $resultado->fetch_assoc();
+        if ($resultado->num_rows > 0) {
+            $mito = $resultado->fetch_assoc();
+        } else {
+            $error = "No se encontró el mito con ID: $id";
+        }
+        $stmt->close();
     } else {
-        $error = "No se encontró el mito solicitado.";
+        $error = "Error en la consulta SQL: " . $conn->error;
     }
-
-    $stmt->close();
 } else {
-    $error = "No se especificó un mito válido.";
+    $error = "No se especificó un ID de mito válido.";
+}
+
+// Obtener mitos relacionados (3 aleatorios)
+$mitosRelacionados = [];
+if ($mito) {
+    $sqlRelacionados = "SELECT m.id_mitooleyenda, m.Titulo, m.textobreve, m.Descripcion, p.Nombre as Provincia 
+                        FROM MitoLeyenda m
+                        INNER JOIN Provincias p ON m.id_provincia = p.id_provincia
+                        WHERE m.id_mitooleyenda != ? 
+                        ORDER BY RAND() 
+                        LIMIT 3";
+    $stmtRel = $conn->prepare($sqlRelacionados);
+    $stmtRel->bind_param("i", $id);
+    $stmtRel->execute();
+    $resultadoRel = $stmtRel->get_result();
+    
+    while ($row = $resultadoRel->fetch_assoc()) {
+        $mitosRelacionados[] = $row;
+    }
+    $stmtRel->close();
+}
+
+// Calcular tiempo de lectura
+function calcularTiempoLectura($texto) {
+    $palabras = str_word_count(strip_tags($texto));
+    $minutos = ceil($palabras / 200);
+    return $minutos;
 }
 
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pantalla de Mito - <?php echo isset($mito) ? htmlspecialchars($mito['Titulo']) : "Error"; ?></title>
+  <title><?php echo $mito ? htmlspecialchars($mito['Titulo']) : "Error"; ?> - Pantalla de Mito</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -63,7 +101,14 @@ $conn->close();
       background: #ccc;
     }
 
-    header button {
+    header .botones {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    header button,
+    header a.btn-pdf {
       background: #ff7b00;
       border: none;
       padding: 10px 15px;
@@ -71,6 +116,15 @@ $conn->close();
       border-radius: 20px;
       cursor: pointer;
       font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.3s ease;
+      font-size: 14px;
+    }
+
+    header button:hover,
+    header a.btn-pdf:hover {
+      background: #e66d00;
     }
 
     .contenedor {
@@ -82,7 +136,7 @@ $conn->close();
     .imagen-principal {
       width: 100%;
       height: 250px;
-      background: linear-gradient(135deg, #8B0000 0%, #FF6347 100%);
+      background: linear-gradient(135deg, #2c3e50 0%, #8b4513 100%);
       display: flex;
       justify-content: center;
       border-radius: 10px;
@@ -118,6 +172,15 @@ $conn->close();
     .card h2 {
       font-size: 18px;
       margin-bottom: 15px;
+    }
+
+    .card p {
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .card ul {
+      line-height: 1.8;
     }
 
     /* Estilos para la sección de relatos relacionados - diseño horizontal */
@@ -165,9 +228,9 @@ $conn->close();
     }
 
     /* Placeholder para imágenes con gradientes únicos */
-    .relato-imagen.bruja { background: linear-gradient(135deg, #E6E6FA 0%, #4169E1 100%); }
-    .relato-imagen.tunate { background: linear-gradient(135deg, #DEB887 0%, #8B4513 100%); }
-    .relato-imagen.caracana { background: linear-gradient(135deg, #2F4F4F 0%, #696969 100%); }
+    .relato-imagen.salamanca { background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); }
+    .relato-imagen.fantasma { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); }
+    .relato-imagen.familiar { background: linear-gradient(135deg, #c0392b 0%, #8e44ad 100%); }
 
     .relato-contenido {
       padding: 12px;
@@ -209,6 +272,21 @@ $conn->close();
       font-weight: bold;
     }
 
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      margin: 40px 0;
+      border: 1px solid #f5c6cb;
+    }
+
+    .error h2 {
+      margin: 0 0 15px 0;
+      font-size: 20px;
+    }
+
     footer {
       text-align: center;
       padding: 15px;
@@ -226,6 +304,17 @@ $conn->close();
       .relato-imagen {
         height: 100px;
       }
+
+      header .botones {
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      header button,
+      header a.btn-pdf {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
     }
   </style>
 </head>
@@ -237,94 +326,98 @@ $conn->close();
       <span>Aquí va el nombre de usuario</span>
     </div>
     <div class="botones">
-      <a href="..\tcpdf.php".php?id=<?php echo $mito['id_mitooleyenda']; ?>" class="btn-pdf">Descargar PDF</a>
+      <a href="tcpdf.php?id=<?php echo $mito ? $mito['id_mitooleyenda'] : ''; ?>" class="btn-pdf" target="_blank">Descargar PDF</a>
       <button onclick="location.href='mapa.html'">Explorar mapa</button>
-    </div>
-    <div class="back-btn">
-        <a href="dashboard.php" class="btn btn-secondary">⬅ Volver</a>
     </div>
   </header>
 
+  <?php if ($error): ?>
+    <div class="contenedor">
+      <div class="error">
+        <h2>⚠️ Error</h2>
+        <p><?php echo htmlspecialchars($error); ?></p>
+        <p><a href="mapa.html">← Volver al mapa</a></p>
+      </div>
+    </div>
+  <?php else: ?>
+
   <div class="contenedor">
     <div class="imagen-principal">
-      <img src="familiar.jpg" alt="El Familiar">
+      <?php if (!empty($mito['imagen'])): ?>
+        <img src="<?php echo htmlspecialchars($mito['imagen']); ?>" alt="<?php echo htmlspecialchars($mito['Titulo']); ?>">
+      <?php else: ?>
+        <span style="font-size: 72px;">📖</span>
+      <?php endif; ?>
     </div>
 
     <h1><?php echo htmlspecialchars($mito['Titulo']); ?></h1>
-    <div class="meta">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minima a, quaerat reprehenderit fugiat exercitationem odio corrupti iusto nihil labore accusantium assumenda, iste hic fugit sint. Dignissimos dolor nihil ex numquam.</div>
+    <div class="meta">
+      <?php echo htmlspecialchars($mito['Provincia']); ?> · Mitología Guaraní · <?php echo calcularTiempoLectura($mito['Descripcion']); ?> min
+    </div>
 
     <div class="card">
-        <p><?php echo nl2br(htmlspecialchars($mito['Descripcion'])); ?></p>
+      <?php 
+        // Dividir descripción en párrafos
+        $parrafos = explode("\n\n", $mito['Descripcion']);
+        foreach ($parrafos as $parrafo) {
+          $parrafo = trim($parrafo);
+          if (!empty($parrafo)) {
+            echo "<p>" . nl2br(htmlspecialchars($parrafo)) . "</p>";
+          }
+        }
+      ?>
     </div>
 
     <div class="card">
       <h2>Fuentes</h2>
       <ul>
-        <li>Folklore de los Ingenios Azucareros</li>
-        <li>Leyendas de Tucumán - Tradición Oral</li>
-        <li>Historia Social del Noroeste Argentino</li>
-        <li>Relatos de Trabajadores Rurales</li>
+        <li>Mitología Guaraní - Tradiciones Ancestrales</li>
+        <li>Folklore Argentino - Leyendas Rurales</li>
+        <li>Recopilación de Relatos Populares</li>
       </ul>
     </div>
 
     <div class="card">
       <h2>Comentarios</h2>
+      <p style="color: #999; text-align: center; padding: 20px;">
+        Sistema de comentarios próximamente...
+      </p>
     </div>
 
+    <?php if (count($mitosRelacionados) > 0): ?>
     <div class="card">
       <h2>Relatos relacionados</h2>
       
       <div class="relatos">
-         <a href="la-viuda-del-valle.html" class="relato">
-          <div class="relato-imagen viuda">
-            <img src="viuda-valle.jpg" alt="La Viuda del Valle">
-          </div>
-          <div class="relato-contenido">
-            <div class="relato-titulo">La Viuda del Valle</div>
-            <div class="relato-descripcion">
-              Alma en pena de mujer abandonada que busca vengarse de los hombres infieles. Su presencia trae desgracias y mala suerte.
+        <?php foreach ($mitosRelacionados as $relacionado): ?>
+          <a href="mitos.php?id=<?php echo $relacionado['id_mitooleyenda']; ?>" class="relato">
+            <div class="relato-imagen">
+              <span style="font-size: 48px;">📖</span>
             </div>
-            <div class="relato-meta">
-              <span>4 min lectura</span>
-              <span class="relato-region">Jujuy</span>
+            <div class="relato-contenido">
+              <div class="relato-titulo"><?php echo htmlspecialchars($relacionado['Titulo']); ?></div>
+              <div class="relato-descripcion">
+                <?php 
+                  // Usar textobreve o primeros 100 caracteres
+                  $desc = !empty($relacionado['textobreve']) 
+                          ? $relacionado['textobreve'] 
+                          : mb_substr(strip_tags($relacionado['Descripcion']), 0, 100) . '...';
+                  echo htmlspecialchars($desc);
+                ?>
+              </div>
+              <div class="relato-meta">
+                <span><?php echo calcularTiempoLectura($relacionado['Descripcion']); ?> min lectura</span>
+                <span class="relato-region"><?php echo htmlspecialchars($relacionado['Provincia']); ?></span>
+              </div>
             </div>
-          </div>
-        </a>
-
-        <a href="el-lobizon.html" class="relato">
-          <div class="relato-imagen lobizon">
-            <img src="lobizon.jpeg" alt="El Lobizón">
-          </div>
-          <div class="relato-contenido">
-            <div class="relato-titulo">El Lobizón</div>
-            <div class="relato-descripcion">
-              Séptimo hijo varón maldito que se transforma en bestia durante las noches de luna llena. Leyenda guaraní.
-            </div>
-            <div class="relato-meta">
-              <span>4 min lectura</span>
-              <span class="relato-region">Buenos Aires</span>
-            </div>
-          </div>
-        </a>
-
-        <a href="el-caracana.html" class="relato">
-          <div class="relato-imagen caracana">
-            <img src="caracana.jpg" alt="El Caracaña">
-          </div>
-          <div class="relato-contenido">
-            <div class="relato-titulo">El Caracaña</div>
-            <div class="relato-descripcion">
-              Criatura híbrida con cuerpo humano y cabeza de buitre que acecha en los campos formoseños.
-            </div>
-            <div class="relato-meta">
-              <span>4 min lectura</span>
-              <span class="relato-region">Formosa</span>
-            </div>
-          </div>
-        </a>
+          </a>
+        <?php endforeach; ?>
       </div>
     </div>
+    <?php endif; ?>
   </div>
+
+  <?php endif; ?>
 
   <footer>
     © LeyendAR — Mitos y Leyendas de Argentina

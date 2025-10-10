@@ -2,12 +2,6 @@
 include 'main.php';
 
 
-// Debug: ver qué está recibiendo
-echo "ID recibido: " . (isset($_GET['id']) ? $_GET['id'] : 'NINGUNO');
-echo "<br>";
-echo "URL completa: " . $_SERVER['REQUEST_URI'];
-exit; // Detener aquí para ver el debug
-
 
 /* Importar Librería TCPDF */
 require_once('tcpdf/TCPDF-main/tcpdf.php');

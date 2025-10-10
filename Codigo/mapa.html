@@ -385,83 +385,98 @@ header {
     };
 
     // Mitos por provincia — cada mito tiene titulo, descripcion y link (puedes editar / agregar)
-    const mitosByProvince = {
-      "Buenos Aires": [
-        { titulo: "La Salamanca", descripcion: "Ritual y encuentro en cuevas y cavernas del pago chico.", link: "mitos/la-salamanca.html" },
-        { titulo: "El Lobizón", descripcion: "La leyenda del hombre-lobo en la provincia.", link: "mitos/pantallas-ellobizon.html"}
-      ],
-      "Ciudad Autónoma de Buenos Aires": [
-        { titulo: "El Fantasma de la Recoleta", descripcion: "Historias de apariciones entre mausoleos.", link: "mitos/fantasma-recoleta.html" }
-      ],
-      "Catamarca": [
-        { titulo: "La Madre del Cerro", descripcion: "Leyenda sobre espíritus protectores de la montaña.", link: "mitos/madre-cerro.html" }
-      ],
-      "Chaco": [
-        { titulo: "El Carcarañá", descripcion: "Mito sobre aves y brujas chaqueñas.", link: "mitos/carcarana.html" }
-      ],
-      "Chubut": [
-        { titulo: "La Luz del Golfo", descripcion: "Relatos marinos y luces en la costa.", link: "mitos/luz-golfo.html" }
-      ],
-      "Córdoba": [
-        { titulo: "El Familiar", descripcion: "Mito en los ingenios y parajes serranos.", link: "mitos/el-familiar.html" },
-        { titulo: "El Pombero", descripcion: "Ser del monte que protege la naturaleza.", link: "mitos/el-pombero.html" }
-      ],
-      "Corrientes": [
-        { titulo: "La Luz Mala", descripcion: "Fenómeno de luz errante en las islas y bañados.", link: "mitos/luz-mala.html" }
-      ],
-      "Entre Ríos": [
-        { titulo: "La Dama del Paraná", descripcion: "Leyenda ribereña de aparición nocturna.", link: "mitos/dama-parana.html" }
-      ],
-      "Formosa": [
-        { titulo: "El Yasy Yateré", descripcion: "Figura mítica guaraní que encanta a los viajeros.", link: "mitos/yasy-yatere.html" }
-      ],
-      "Jujuy": [
-        { titulo: "La Viuda del Valle", descripcion: "Relato de pena y protección en los valles.", link: "mitos/viuda-valle.html" }
-      ],
-      "La Pampa": [
-        { titulo: "El Caleuche Pampeano", descripcion: "Fábulas sobre viajes nocturnos en la pampa.", link: "mitos/caleuche-pampa.html" }
-      ],
-      "La Rioja": [
-        { titulo: "El Tunche", descripcion: "Cuentos de aparecidos y ritos serranos.", link: "mitos/el-tunche.html" }
-      ],
-      "Mendoza": [
-        { titulo: "El Lobizón Andino", descripcion: "Versión andina de la criatura nocturna.", link: "mitos/lobizon-andes.html" }
-      ],
-      "Misiones": [
-        { titulo: "El Pombero", descripcion: "Protector del monte, travieso y poderoso.", link: "mitos/pombero-misiones.html" },
-        { titulo: "Yasy Yateré", descripcion: "Personaje del folklore guaraní.", link: "mitos/yasy-misiones.html" }
-      ],
-      "Neuquén": [
-        { titulo: "La Luz de la Neuquén", descripcion: "Relatos de luces nocturnas en la estepa.", link: "mitos/luz-neuquen.html" }
-      ],
-      "Río Negro": [
-        { titulo: "La Doncella de la Cordillera", descripcion: "Mito ligado a lagunas y montañas.", link: "mitos/doncella-rn.html" }
-      ],
-      "Salta": [
-        { titulo: "El Diablo del Carnaval", descripcion: "Figura del carnaval y el rito andino.", link: "mitos/diablo-carnaval.html" }
-      ],
-      "San Juan": [
-        { titulo: "La Difunta Correa", descripcion: "Maravillas y devoción en rutas y parajes.", link: "mitos/difunta-correa.html" }
-      ],
-      "San Luis": [
-        { titulo: "El Encantador de Sierras", descripcion: "Leyendas de brujos y pactos serranos.", link: "mitos/encantador-sierras.html" }
-      ],
-      "Santa Cruz": [
-        { titulo: "La Bruja del Hielo", descripcion: "Relatos del viento y la soledad sureña.", link: "mitos/bruja-hielo.html" }
-      ],
-      "Santa Fe": [
-        { titulo: "La Dame Blanche", descripcion: "Aparición de mujer en la ribera.", link: "mitos/dame-blanche.html" }
-      ],
-      "Santiago del Estero": [
-        { titulo: "El Familiar Chaqueño", descripcion: "Mito adaptado al calor y monte norteño.", link: "mitos/familiar-sde.html" }
-      ],
-      "Tierra del Fuego, Antártida e Islas del Atlántico Sur": [
-        { titulo: "El Silbador del Fin del Mundo", descripcion: "Leyenda de marinos y faros australes.", link: "mitos/silbador-tdf.html" }
-      ],
-      "Tucumán": [
-        { titulo: "El Tunante del Azúcar", descripcion: "Historias de ingenio y misterio tucumano.", link: "mitos/tunante-tucuman.html" }
-      ]
-    };
+    // Mitos por provincia — cada mito tiene titulo, descripcion y link
+// ====================================
+// REEMPLAZA el objeto mitosByProvince en mapa.html
+// con este que tiene TODOS los links correctos
+// ====================================
+
+const mitosByProvince = {
+  "Buenos Aires": [
+    { titulo: "La Salamanca", descripcion: "Ritual y encuentro en cuevas del pago chico.", link: "mitos.php?id=1" },
+    { titulo: "El Lobizón", descripcion: "La leyenda del hombre-lobo en la provincia.", link: "mitos.php?id=2"}
+  ],
+  
+  "Ciudad Autónoma de Buenos Aires": [
+    { titulo: "El Fantasma de la Recoleta", descripcion: "Historias de apariciones entre mausoleos.", link: "mitos.php?id=3" }
+  ],
+  
+  "La Pampa": [
+    { titulo: "El Caleuche Pampeano", descripcion: "Barco fantasma que viaja por la pampa.", link: "mitos.php?id=3" }
+  ],
+  
+  "Santa Fe": [
+    { titulo: "La Dame Blanche", descripcion: "Aparición de mujer en la ribera santafesina.", link: "mitos.php?id=4" }
+  ],
+  
+  "Neuquén": [
+    { titulo: "La Luz de Neuquén", descripcion: "Relatos de luces en la estepa patagónica.", link: "mitos.php?id=5" }
+  ],
+  
+  "Tucumán": [
+    { titulo: "El Tunante del Azúcar", descripcion: "Historias de misterio en los ingenios tucumanos.", link: "mitos.php?id=6" }
+  ],
+  
+  "Chaco": [
+    { titulo: "El Carcarañá", descripcion: "Mito de aves y brujas en el Chaco.", link: "mitos.php?id=7" }
+  ],
+  
+  "Río Negro": [
+    { titulo: "La Doncella de la Cordillera", descripcion: "Espíritu en lagunas y montañas.", link: "mitos.php?id=8" }
+  ],
+  
+  "Santa Cruz": [
+    { titulo: "La Bruja del Hielo", descripcion: "Relatos del viento y la soledad sureña.", link: "mitos.php?id=9" }
+  ],
+  
+  "Tierra del Fuego, Antártida e Islas del Atlántico Sur": [
+    { titulo: "El Silbador del Fin del Mundo", descripcion: "Leyenda de marinos y faros australes.", link: "mitos.php?id=10" }
+  ],
+  
+  "Jujuy": [
+    { titulo: "La Viuda del Valle", descripcion: "Relato de pena y protección en los valles jujeños.", link: "mitos.php?id=11" }
+  ],
+  
+  "Misiones": [
+    { titulo: "El Pombero", descripcion: "Protector del monte, travieso y poderoso.", link: "mitos.php?id=12" },
+    { titulo: "Yasy Yateré", descripcion: "Duende del folklore guaraní.", link: "mitos.php?id=13" }
+  ],
+  
+  "Salta": [
+    { titulo: "El Diablo del Carnaval", descripcion: "Figura del carnaval andino en Salta.", link: "mitos.php?id=14" }
+  ],
+  
+  "San Juan": [
+    { titulo: "La Difunta Correa", descripcion: "Devoción popular en San Juan.", link: "mitos.php?id=15" }
+  ],
+  
+  "San Luis": [
+    { titulo: "El Encantador de Sierras", descripcion: "Brujos y pactos en las sierras puntanas.", link: "mitos.php?id=16" }
+  ],
+  
+  "Corrientes": [
+    { titulo: "La Luz Mala", descripcion: "Fenómeno de luz errante en los bañados.", link: "mitos.php?id=17" }
+  ],
+  
+  "Santiago del Estero": [
+    { titulo: "El Familiar Chaqueño", descripcion: "Mito adaptado al calor y monte norteño.", link: "mitos.php?id=18" }
+  ],
+  
+  "Catamarca": [
+    { titulo: "La Madre del Cerro", descripcion: "Espíritu protector de la montaña.", link: "mitos.php?id=19" }
+  ],
+  
+  "Entre Ríos": [
+    { titulo: "La Dama del Paraná", descripcion: "Aparición en las orillas del río.", link: "mitos.php?id=20" }
+  ],
+
+  // Provincias sin mitos cargados (opcional)
+  "Córdoba": [],
+  "Mendoza": [],
+  "Formosa": [],
+  "La Rioja": [],
+  "Chubut": []
+};
 
     /* ========================
        Normalización y helpers
@@ -629,37 +644,38 @@ header {
     // normalizar elementos
     function aObjetos(lista){
       return (lista || []).map(item=>{
-        if (typeof item === 'string'){
-          return {
-            titulo: item,
-            descripcion: "Leyenda popular de la región.",
-            slug: slugify(item)
-          };
-        }
+      if (typeof item === 'string'){
         return {
-          titulo: item.titulo,
-          descripcion: item.descripcion || "Leyenda popular de la región.",
-          slug: item.slug || slugify(item.titulo || item.titulo)
-        };
-      });
+        titulo: item,
+        descripcion: "Leyenda popular de la región.",
+        slug: slugify(item),
+        link: null  // ✅ Agregado
+      };
     }
-
+      return {
+        titulo: item.titulo,
+        descripcion: item.descripcion || "Leyenda popular de la región.",
+        slug: item.slug || slugify(item.titulo || item.titulo),
+        link: item.link || null  // ✅ ESTO FALTABA - Preserva el link original
+      };
+    });
+}
     function renderMitosDeProvincia(nombreProv){
       const lista = aObjetos(mitosByProvince[nombreProv]);
       const html = (lista.length ? lista.map(m => `
-        <a class="mito-card" href="${m.link || ('mitos/' + m.slug + '.html')}" aria-label="${m.titulo}">
-          <h4>${m.titulo}</h4>
-          <p>${m.descripcion}</p>
-        </a>
-      `).join('') : `<p>No hay mitos cargados para esta provincia.</p>`);
+      <a class="mito-card" href="${m.link || ('mitos.php?id=' + m.slug)}" aria-label="${m.titulo}">
+      <h4>${m.titulo}</h4>
+      <p>${m.descripcion}</p>
+    </a>
+  `).join('') : `<p>No hay mitos cargados para esta provincia.</p>`);
 
       const tituloEl = document.getElementById('titulo-panel');
       if (tituloEl) tituloEl.textContent = nombreProv || 'Mitos';
 
       if (contenidoMitos) contenidoMitos.innerHTML = html;
       openPanel();
-      panel.scrollTop = 0;
-    }
+    panel.scrollTop = 0;
+  }
 
     /* ========================
        Interacción con GeoJSON
