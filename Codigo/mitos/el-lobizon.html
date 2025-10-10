@@ -34,7 +34,14 @@
       background: #ccc;
     }
 
-    header button {
+    header .botones {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    header button,
+    header a.btn-pdf {
       background: #ff7b00;
       border: none;
       padding: 10px 15px;
@@ -42,6 +49,15 @@
       border-radius: 20px;
       cursor: pointer;
       font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.3s ease;
+      font-size: 14px;
+    }
+
+    header button:hover,
+    header a.btn-pdf:hover {
+      background: #e66d00;
     }
 
     .contenedor {
@@ -197,6 +213,17 @@
       .relato-imagen {
         height: 100px;
       }
+
+      header .botones {
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      header button,
+      header a.btn-pdf {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
     }
   </style>
 </head>
@@ -207,7 +234,10 @@
       <img src="#" alt="Foto usuario">
       <span>Aquí va el nombre de usuario</span>
     </div>
-    <button>Explorar mapa</button>
+    <div class="botones">
+      <a href="..\tcpdf.php" class="btn-pdf" target="_blank">Descargar PDF</a>
+      <button>Explorar mapa</button>
+    </div>
   </header>
 
   <div class="contenedor">
