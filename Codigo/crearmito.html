@@ -12,12 +12,13 @@
         <h1>Crear Nuevo Mito</h1>
         <p>Subí tu mito o leyenda para que otros puedan descubrirlo en el mapa interactivo de LeyendAR.</p>
 
-        <form action="cargarmitos.php" method="POST">
+        <!-- IMPORTANTE: enctype para permitir subida de archivos -->
+        <form action="cargarmitos.php" method="POST" enctype="multipart/form-data">
             <label for="titulo">Título del mito</label>
-            <input type="text" id="titulo" name="titulo" placeholder="Ej: El Lobizón">
+            <input type="text" id="titulo" name="titulo" placeholder="Ej: El Lobizón" required>
 
             <label for="provincia">Provincia relacionada</label>
-            <select id="provincia" name="provincia">
+            <select id="provincia" name="provincia" required>
                 <option value="">Seleccioná una provincia</option>
                 <option>Buenos Aires</option>
                 <option>Catamarca</option>
@@ -42,14 +43,16 @@
                 <option>Santiago del Estero</option>
                 <option>Tierra del Fuego</option>
                 <option>Tucumán</option>
-                
             </select>
 
-            <label for="descripcion">Descripción del mito</label>
-            <textarea id="descripcion" name="descripcion" placeholder="Contanos la historia del mito..."></textarea>
+            <label for="textobreve">Descripción breve del mito</label>
+            <textarea id="textobreve" name="textobreve" placeholder="Resuminos tu mito" required></textarea>
+
+            <label for="descripcion">Descripción completa del mito</label>
+            <textarea id="descripcion" name="descripcion" placeholder="Contanos la historia del mito..." required></textarea>
 
             <label for="imagen">Imagen del mito (opcional)</label>
-            <input type="file" id="imagen" name="imagen">
+            <input type="file" id="imagen" name="imagen" accept="image/*">
 
             <button type="submit">Subir mito</button>
         </form>

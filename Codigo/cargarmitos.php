@@ -3,18 +3,40 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-include("main.php"); // aquí debería estar tu $conn
+include("main.php"); // conexión en $conn
 
 // Recibir datos del formulario
 $titulo      = $_POST['titulo']      ?? '';
 $descripcion = $_POST['descripcion'] ?? '';
-$fecha       = $_POST['fecha']       ?? date("Y-m-d"); // usa fecha actual si no la mandan
-$foto        = $_POST['imagen']        ?? ''; // puede ser ruta de la imagen o nombre de archivo
+$texto       = $_POST['textobreve']  ?? '';
+$fecha       = $_POST['fecha']       ?? date("Y-m-d"); 
 $id_ciudad   = 1;
-$nombre_provincia= $_POST['provincia'];
+$nombre_provincia = $_POST['provincia'] ?? '';
 $id_usuario  = $_SESSION['id_usuario'] ?? ($_POST['id_usuario'] ?? 0); 
-// lo ideal es tomarlo de la sesión si es un usuario logueado
 
+// ================== SUBIDA DE IMAGEN ==================
+$foto = null;
+
+if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
+    $carpetaDestino = "mitos/";
+
+    // Crear carpeta si no existe
+    if (!file_exists($carpetaDestino)) {
+        mkdir($carpetaDestino, 0777, true);
+    }
+
+    // Nombre único para evitar choques
+    $nombreImagen = time() . "_" . basename($_FILES["imagen"]["name"]);
+    $rutaDestino  = $carpetaDestino . $nombreImagen;
+
+    if (move_uploaded_file($_FILES["imagen"]["tmp_name"], $rutaDestino)) {
+        $foto = $nombreImagen; // guardamos solo el nombre en la BD
+    } else {
+        die("❌ Error al mover la imagen al directorio 'mitos/'.");
+    }
+}
+
+// ================== OBTENER ID PROVINCIA ==================
 $stmt = $conn->prepare("SELECT id_provincia FROM Provincias WHERE Nombre = ?");
 $stmt->bind_param("s", $nombre_provincia);
 $stmt->execute();
@@ -25,17 +47,25 @@ if ($fila = $result->fetch_assoc()) {
 } else {
     die("❌ La provincia '$nombre_provincia' no existe en la tabla Provincias");
 }
-
 $stmt->close();
 
-// Preparar consulta
+// ================== INSERTAR REGISTRO ==================
 $stmt = $conn->prepare("
     INSERT INTO MitoLeyenda 
-    (Titulo, Descripcion, Fecha, foto, id_ciudad, id_provincia, id_usuario)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    (Titulo, Descripcion, textobreve, Fecha, imagen, id_ciudad, id_provincia, id_usuario)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 ");
 
-$stmt->bind_param("ssssiii", $titulo, $descripcion, $fecha, $foto, $id_ciudad, $id_provincia, $id_usuario);
+$stmt->bind_param("sssssiii", 
+    $titulo, 
+    $descripcion, 
+    $texto, 
+    $fecha, 
+    $foto,       // ahora es el nombre del archivo
+    $id_ciudad, 
+    $id_provincia, 
+    $id_usuario
+);
 
 if ($stmt->execute()) {
     echo "✅ Registro cargado correctamente con ID " . $stmt->insert_id;
@@ -44,7 +74,6 @@ if ($stmt->execute()) {
 }
 
 $stmt->close();
-
 ?>
 
 <!DOCTYPE html>
@@ -58,8 +87,15 @@ $stmt->close();
     <h2>Vista previa del registro</h2>
     <div><b>Título:</b> <?php echo htmlspecialchars($titulo); ?></div>
     <div><b>Descripción:</b> <?php echo nl2br(htmlspecialchars($descripcion)); ?></div>
+    <div><b>Texto breve:</b> <?php echo nl2br(htmlspecialchars($texto)); ?></div>
     <div><b>Fecha:</b> <?php echo htmlspecialchars($fecha); ?></div>
-    <div><b>Foto:</b> <?php echo htmlspecialchars($foto); ?></div>
+    <div><b>Foto:</b> 
+        <?php if ($foto): ?>
+            <img src="mitos/<?php echo htmlspecialchars($foto); ?>" alt="Imagen del mito" width="200">
+        <?php else: ?>
+            No se subió imagen
+        <?php endif; ?>
+    </div>
     <div><b>Ciudad ID:</b> <?php echo htmlspecialchars($id_ciudad); ?></div>
     <div><b>Provincia ID:</b> <?php echo htmlspecialchars($id_provincia); ?></div>
     <div><b>Usuario ID:</b> <?php echo htmlspecialchars($id_usuario); ?></div>

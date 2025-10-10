@@ -24,7 +24,7 @@ $total = (int) $row['total'];
 $mito_id = rand(1, $total);
 
 // Consulta del mito (incluyendo el id para poder usarlo en el enlace)
-$nombre = $conn->query("SELECT id_mitooleyenda, Titulo, Descripcion 
+$nombre = $conn->query("SELECT id_mitooleyenda, Titulo, Descripcion,textobreve,imagen 
                         FROM MitoLeyenda 
                         ORDER BY RAND() 
                         LIMIT 1");
@@ -345,6 +345,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             height: 50px;
             background: #ddd;
             border-radius: 50%;
+            overflow: hidden;
+            align-items: center;
+
         }
 
         .author-name {
@@ -602,11 +605,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             <div class="map-container">
                 <img src="logo.jpg" alt="" srcset="">
             </div>
-            <button class="explore-btn" onclick="location.href='mapa.html'">Explorar mapa</button>
+            <button class="explore-btn" onclick="location.href='mapa.php'">Explorar mapa</button>
 
             <!-- Features Grid -->
             <div class="features-grid">
-                <div class="feature-card" onclick="openRegionalExploration()">
+                <div class="feature-card" onclick="location.href='lista_mitos.php'">
                     <div class="feature-icon">🗺️</div>
                     <div class="feature-title">Exploración Regional</div>
                     <div class="feature-description">Recorré cada provincia y conocé sus leyendas más populares.</div>
@@ -618,7 +621,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                     <div class="feature-description">Ideal para enseñar identidad, historia oral y cultura local en escuelas.</div>
                 </div>
 
-                <div class="feature-card" onclick="openCreaturesMyths()">
+                <div class="feature-card" onclick="location.href='lista_mitos.php'">
                     <div class="feature-icon">🦄</div>
                     <div class="feature-title">Criaturas y Mitos</div>
                     <div class="feature-description">Historias del Pombero, la Llorona, el Lobizón y muchos más</div>
@@ -637,11 +640,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             <!-- Story Preview -->
             <div class="story-preview">
                 <div class="story-author">
-                    <div class="author-pic"></div>
+                    <div class="author-pic">
+                        <img src="mitos/<?php echo htmlspecialchars($mito_actual['imagen']); ?>" alt="Imagen del mito" width="50" class="imagen_mito">
+                    </div>
                     <div class="author-name"> <?php echo $mito_actual['Titulo']; ?></div>
                 </div>
                 <div class="story-content">
-                    <?php echo $mito_actual['Descripcion']; ?>
+                    <?php echo $mito_actual['textobreve']; ?>
                 </div>
                 <button 
                     class="read-more-btn" 

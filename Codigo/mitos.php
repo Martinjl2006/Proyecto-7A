@@ -38,7 +38,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 // Obtener mitos relacionados (3 aleatorios)
 $mitosRelacionados = [];
 if ($mito) {
-    $sqlRelacionados = "SELECT m.id_mitooleyenda, m.Titulo, m.textobreve, m.Descripcion, p.Nombre as Provincia 
+    $sqlRelacionados = "SELECT m.id_mitooleyenda, m.Titulo, m.textobreve, m.Descripcion, m.imagen, p.Nombre as Provincia
                         FROM MitoLeyenda m
                         INNER JOIN Provincias p ON m.id_provincia = p.id_provincia
                         WHERE m.id_mitooleyenda != ? 
@@ -317,8 +317,11 @@ $conn->close();
       }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
 </head>
-<body>
+<body id="contenido">
 
   <header>
     <div class="usuario">
@@ -326,8 +329,8 @@ $conn->close();
       <span>Aquí va el nombre de usuario</span>
     </div>
     <div class="botones">
-      <a href="tcpdf.php?id=<?php echo $mito ? $mito['id_mitooleyenda'] : ''; ?>" class="btn-pdf" target="_blank">Descargar PDF</a>
-      <button onclick="location.href='mapa.html'">Explorar mapa</button>
+      <button  type="button" onclick="generarPDF()">Generar PDF</button>
+      <button onclick="location.href='mapa.php'">Explorar mapa</button>
     </div>
   </header>
 
@@ -336,7 +339,7 @@ $conn->close();
       <div class="error">
         <h2>⚠️ Error</h2>
         <p><?php echo htmlspecialchars($error); ?></p>
-        <p><a href="mapa.html">← Volver al mapa</a></p>
+        <p><a href="mapa.php">← Volver al mapa</a></p>
       </div>
     </div>
   <?php else: ?>
@@ -344,7 +347,8 @@ $conn->close();
   <div class="contenedor">
     <div class="imagen-principal">
       <?php if (!empty($mito['imagen'])): ?>
-        <img src="<?php echo htmlspecialchars($mito['imagen']); ?>" alt="<?php echo htmlspecialchars($mito['Titulo']); ?>">
+        <img src="<?php echo !empty($mito['imagen']) ? 'mitos/' . htmlspecialchars($mito['imagen']) : ''; ?>" 
+      alt="<?php echo htmlspecialchars($mito['Titulo']); ?>">
       <?php else: ?>
         <span style="font-size: 72px;">📖</span>
       <?php endif; ?>
@@ -367,6 +371,19 @@ $conn->close();
         }
       ?>
     </div>
+
+    <div id="pdf-content" style="display:none;">
+      <h1><?php echo htmlspecialchars($mito['Titulo']); ?></h1>
+
+      <?php if (!empty($mito['imagen'])): ?>
+        <img src="<?php echo htmlspecialchars($mito['imagen']); ?>" 
+          alt="<?php echo htmlspecialchars($mito['Titulo']); ?>" 
+          style="max-width: 100%; height: auto;">
+      <?php endif; ?>
+
+      <p><?php echo nl2br(htmlspecialchars($mito['Descripcion'])); ?></p>
+    </div>
+
 
     <div class="card">
       <h2>Fuentes</h2>
@@ -422,6 +439,92 @@ $conn->close();
   <footer>
     © LeyendAR — Mitos y Leyendas de Argentina
   </footer>
+  <script>
+  const pdfMito = {
+    title: <?php echo json_encode($mito ? $mito['Titulo'] : ''); ?>,
+    imagen: <?php echo json_encode($mito && !empty($mito['imagen']) ? 'mitos/' . $mito['imagen'] : ''); ?>,
+    descripcion: <?php echo json_encode($mito ? strip_tags($mito['Descripcion']) : ''); ?>
+  };
+</script>
+<script>
+  // helper: carga imagen y la convierte a dataURL usando canvas.
+  function loadImageAsDataURL(url) {
+    return new Promise((resolve, reject) => {
+      if (!url) return resolve(null);
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          canvas.getContext('2d').drawImage(img, 0, 0);
+          const dataURL = canvas.toDataURL('image/jpeg', 0.92);
+          resolve({ dataURL, width: img.naturalWidth, height: img.naturalHeight, type: 'JPEG' });
+        } catch (e) {
+          reject(e); // probable CORS al intentar toDataURL
+        }
+      };
+      img.onerror = () => reject(new Error('No se pudo cargar la imagen: ' + url));
+      img.src = url + (url.indexOf('?') === -1 ? '?' : '&') + 'cb=' + Date.now(); // cache buster
+    });
+  }
+
+  async function generarPDF() {
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      const maxWidth = pageWidth - margin * 2;
+      let y = 20;
+
+      // Título centrado
+      doc.setFontSize(18);
+      doc.text(pdfMito.title || 'Mito', pageWidth / 2, y, { align: 'center' });
+      y += 12;
+
+      // Imagen (si existe)
+      if (pdfMito.imagen) {
+        try {
+          const img = await loadImageAsDataURL(pdfMito.imagen);
+          if (img && img.dataURL) {
+            const pxToMm = 0.264583; // aproximación
+            let imgWidthMM = Math.min(maxWidth, img.width * pxToMm);
+            const imgHeightMM = (img.height / img.width) * imgWidthMM;
+            if (y + imgHeightMM > pageHeight - margin) { doc.addPage(); y = 20; }
+            doc.addImage(img.dataURL, img.type, margin, y, imgWidthMM, imgHeightMM);
+            y += imgHeightMM + 8;
+          }
+        } catch (err) {
+          console.warn('No se pudo incrustar la imagen (CORS o error):', err);
+          // seguimos sin imagen
+        }
+      }
+
+      // Descripción
+      doc.setFontSize(12);
+      const texto = pdfMito.descripcion || '';
+      const lines = doc.splitTextToSize(texto, maxWidth);
+      const lineHeight = 7; // mm aprox
+      for (let i = 0; i < lines.length; i++) {
+        if (y + lineHeight > pageHeight - margin) { doc.addPage(); y = 20; }
+        doc.text(lines[i], margin, y);
+        y += lineHeight;
+      }
+      // Reemplaza espacios y caracteres raros por guiones bajos para evitar problemas
+      const fileName = (pdfMito.title || 'mito')
+                    .replace(/[^a-z0-9áéíóúüñ\s]/gi, '')  // limpia caracteres raros
+                    .replace(/\s+/g, '_')                // espacios por guion bajo
+                    + '.pdf';
+      doc.save(fileName);
+    } catch (e) {
+      console.error(e);
+      alert('Error al generar PDF. Revisá la consola.');
+    }
+  }
+</script>
 
 </body>
 </html>

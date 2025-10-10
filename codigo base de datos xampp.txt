@@ -582,3 +582,14 @@ Algunos la interpretan como un espíritu protector del río, otros como un espec
 INSERT INTO Comentarios (Descripcion, Fecha, id_usuario, id_mitooleyenda) VALUES
 ('Excelente recopilación de esta leyenda bonaerense', '2024-05-10', 3, 2),
 ('Me encantaría conocer más sobre el Lobizón', '2024-05-14', 2, 2);
+
+
+ALTER TABLE MitoLeyenda
+ADD COLUMN id_ciudad INT NULL AFTER id_provincia;
+
+ALTER TABLE MitoLeyenda
+ADD CONSTRAINT fk_mito_ciudad
+FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad)
+ON DELETE SET NULL
+ON UPDATE CASCADE;
+
