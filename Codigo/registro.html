@@ -19,6 +19,11 @@
       padding: 0;
     }
 
+    html {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       font-family: 'Quicksand', sans-serif;
       background-color: #c49b5b;
@@ -26,15 +31,62 @@
       background-repeat: no-repeat;
       background-position: center center;
       background-attachment: fixed;
-      background-size: auto;
+      background-size: cover;
+      width: 100%;
       min-height: 100vh;
       display: flex;
+      justify-content: center;
+      align-items: center;
       overflow-x: hidden;
       overflow-y: auto;
       position: relative;
-      padding: 40px 0;
-      justify-content: center;
-      align-items: center;
+      padding: 80px 1rem 40px;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: linear-gradient(135deg, #2c3e50, #34495e);
+      color: white;
+      padding: 12px 32px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      z-index: 10;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
+    .back-button::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .back-button:hover {
+      background: linear-gradient(135deg, #34495e, #2c3e50);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
 
     .aura-bg {
@@ -58,17 +110,18 @@
 
     .register-box {
       background: rgba(244, 241, 237, 0.95);
-      padding: 50px 40px;
+      padding: 40px 35px;
       border-radius: 24px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      width: 420px;
+      width: 100%;
+      max-width: 420px;
       text-align: center;
       z-index: 1;
       position: relative;
     }
 
     h2 {
-      font-size: 2rem;
+      font-size: clamp(1.5rem, 5vw, 2rem);
       color: var(--azul);
       margin-bottom: 20px;
     }
@@ -76,12 +129,13 @@
     input, select {
       width: 100%;
       padding: 12px 14px;
-      margin: 10px 0;
+      margin: 8px 0;
       border-radius: 12px;
       border: 1px solid #ccc;
-      font-size: 1rem;
+      font-size: clamp(0.9rem, 3vw, 1rem);
       background: #fafafa;
       transition: 0.3s ease;
+      height: 48px;
     }
 
     input:focus, select:focus {
@@ -90,30 +144,50 @@
       box-shadow: 0 0 8px rgba(29, 46, 66, 0.3);
     }
 
-    button {
+    button[type="submit"] {
       width: 100%;
       padding: 14px;
       margin-top: 20px;
       border: none;
       border-radius: 30px;
-      background: linear-gradient(90deg, var(--azul), var(--azul-claro));
+      background: linear-gradient(135deg, var(--azul), var(--azul-claro));
       color: white;
-      font-size: 1rem;
+      font-size: clamp(0.9rem, 3vw, 1rem);
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.3s ease, background 0.4s ease;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       position: relative;
       overflow: hidden;
+      height: 50px;
     }
 
-    button:hover {
-      background: var(--azul);
-      transform: scale(1.03);
+    button[type="submit"]::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+
+    button[type="submit"]:hover {
+      background: linear-gradient(135deg, var(--azul-claro), var(--azul));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
 
     p {
       margin-top: 20px;
-      font-size: 0.95rem;
+      font-size: clamp(0.85rem, 2.5vw, 0.95rem);
     }
 
     a {
@@ -126,14 +200,57 @@
     }
 
     @media (max-width: 480px) {
+      body {
+        padding: 70px 0.8rem 20px;
+        background-attachment: scroll;
+      }
+
+      .aura-bg {
+        display: none;
+      }
+
+      .back-button {
+        top: 12px;
+        left: 12px;
+        padding: 9px 20px;
+        font-size: 0.8rem;
+      }
+
       .register-box {
-        width: 90%;
-        padding: 35px 25px;
+        width: 100%;
+        max-width: 100%;
+        padding: 30px 20px;
+      }
+
+      h2 {
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+      }
+
+      input, select {
+        padding: 10px 12px;
+        margin: 6px 0;
+        font-size: 0.9rem;
+        height: 44px;
+      }
+
+      button[type="submit"] {
+        padding: 12px;
+        margin-top: 15px;
+        font-size: 0.9rem;
+        height: 46px;
+      }
+
+      p {
+        margin-top: 15px;
+        font-size: 0.8rem;
       }
     }
   </style>
 </head>
 <body>
+  <button class="back-button" onclick="window.history.back();">Volver</button>
+
   <div class="aura-bg"></div>
   <div class="register-box">
     <h2>Crear cuenta</h2>
@@ -157,7 +274,6 @@
         <option value="Neuquén">Neuquén</option>
         <option value="Chaco">Chaco</option>
         <option value="Misiones">Misiones</option>
-        <!-- Agregá más si querés -->
       </select>
 
       <select id="ciudad" name="ciudad" required>

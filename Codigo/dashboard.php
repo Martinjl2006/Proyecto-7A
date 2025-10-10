@@ -16,21 +16,15 @@ $username = htmlspecialchars($_SESSION["username"]);
 $mensaje = "";
 
 // mito aleatorio
-$result = $conn->query("SELECT id_mitooleyenda FROM MitoLeyenda");
-$ids = [];
-while ($row = $result->fetch_assoc()) {
-    $ids[] = $row['id_mitooleyenda'];
-}
+$result = $conn->query("SELECT COUNT(*) AS total FROM MitoLeyenda");
+$row = $result->fetch_assoc();
+$total = (int) $row['total'];
 
-if (count($ids) === 0) {
-    die("❌ No hay mitos en la base de datos");
-}
-
-// Elegir un ID aleatorio del array
-$mito_id = $ids[array_rand($ids)];
+// Elegir id aleatorio (entre 1 y $total)
+$mito_id = rand(1, $total);
 
 // Consulta del mito (incluyendo el id para poder usarlo en el enlace)
-$nombre = $conn->query("SELECT id_mitooleyenda, Titulo, textobreve, imagen 
+$nombre = $conn->query("SELECT id_mitooleyenda, Titulo, Descripcion 
                         FROM MitoLeyenda 
                         ORDER BY RAND() 
                         LIMIT 1");
@@ -89,35 +83,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             $mensaje = "Todos los campos son obligatorios.";
         }
     }
-
-    elseif ($action === "foto_perfil") {
-        if (isset($_FILES['foto']) && $_FILES['foto']['error'] == UPLOAD_ERR_OK) {
-            $carpetaDestino = "usuarios/"; 
-            if (!is_dir($carpetaDestino)) {
-                mkdir($carpetaDestino, 0777, true);
-            }
-
-            $nombreArchivo = time() . "_" . basename($_FILES["foto"]["name"]);
-            $rutaDestino   = $carpetaDestino . $nombreArchivo;
-
-            if (move_uploaded_file($_FILES["foto"]["tmp_name"], $rutaDestino)) {
-            // Guardar en la base de datos
-                $stmt = $conn->prepare("UPDATE Usuarios SET foto=? WHERE id_usuario=?");
-                $stmt->bind_param("si", $rutaDestino, $id_usuario);
-                if ($stmt->execute()) {
-                    $mensaje = "✅ Foto actualizada correctamente.";
-                } else {
-                    $mensaje = "❌ Error al actualizar la foto.";
-                }
-                $stmt->close();
-            } else {
-                $mensaje = "❌ Error al mover la imagen al directorio destino.";
-            }
-        } else {
-            $mensaje = "❌ No se seleccionó ninguna imagen válida.";
-        }
-    }  
-
 
     // Borrar cuenta
     elseif ($action === "borrar_cuenta") {
@@ -637,11 +602,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             <div class="map-container">
                 <img src="logo.jpg" alt="" srcset="">
             </div>
-            <button class="explore-btn" onclick="location.href='mapa.php'">Explorar mapa</button>
+            <button class="explore-btn" onclick="location.href='mapa.html'">Explorar mapa</button>
 
             <!-- Features Grid -->
             <div class="features-grid">
-                <div class="feature-card" onclick="location.href='lista_mitos.php'">
+                <div class="feature-card" onclick="openRegionalExploration()">
                     <div class="feature-icon">🗺️</div>
                     <div class="feature-title">Exploración Regional</div>
                     <div class="feature-description">Recorré cada provincia y conocé sus leyendas más populares.</div>
@@ -653,7 +618,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                     <div class="feature-description">Ideal para enseñar identidad, historia oral y cultura local en escuelas.</div>
                 </div>
 
-                <div class="feature-card" onclick="location.href='lista_mitos.php'">
+                <div class="feature-card" onclick="openCreaturesMyths()">
                     <div class="feature-icon">🦄</div>
                     <div class="feature-title">Criaturas y Mitos</div>
                     <div class="feature-description">Historias del Pombero, la Llorona, el Lobizón y muchos más</div>
@@ -672,11 +637,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             <!-- Story Preview -->
             <div class="story-preview">
                 <div class="story-author">
-                    <div class="author-pic"><img src="<?php echo htmlspecialchars($mito_actual['imagen']); ?>" width="50"></div>
+                    <div class="author-pic"></div>
                     <div class="author-name"> <?php echo $mito_actual['Titulo']; ?></div>
                 </div>
                 <div class="story-content">
-                    <?php echo $mito_actual['textobreve']; ?>
+                    <?php echo $mito_actual['Descripcion']; ?>
                 </div>
                 <button 
                     class="read-more-btn" 
@@ -736,15 +701,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                 <input type="hidden" name="action" value="cambiar_clave">
                 <button type="submit" class="form-btn">Actualizar Contraseña</button>
             </form>
-
-            <form method="POST" class="profile-form" enctype="multipart/form-data">
-                <h3>Foto de perfil</h3>
-                <label>Imagen:</label>
-                <input type="file" name="foto" accept="image/*" required><br><br>
-                <input type="hidden" name="action" value="foto_perfil">
-                <button type="submit">Guardar</button>
-            </form>
-
 
             <!-- Borrar cuenta -->
             <form method="POST" class="profile-form" onsubmit="return confirmDelete()">

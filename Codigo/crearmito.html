@@ -12,24 +12,44 @@
         <h1>Crear Nuevo Mito</h1>
         <p>Subí tu mito o leyenda para que otros puedan descubrirlo en el mapa interactivo de LeyendAR.</p>
 
-        <form action="cargarmitos.php" method="POST" enctype="multipart/form-data">
-            <label>Título:</label>
-            <input type="text" name="titulo" required><br><br>
+        <form action="cargarmitos.php" method="POST">
+            <label for="titulo">Título del mito</label>
+            <input type="text" id="titulo" name="titulo" placeholder="Ej: El Lobizón">
 
-            <label>Texto breve:</label>
-            <textarea name="textobreve" required></textarea><br><br>
+            <label for="provincia">Provincia relacionada</label>
+            <select id="provincia" name="provincia">
+                <option value="">Seleccioná una provincia</option>
+                <option>Buenos Aires</option>
+                <option>Catamarca</option>
+                <option>Chaco</option>
+                <option>Chubut</option>
+                <option>Córdoba</option>
+                <option>Corrientes</option>
+                <option>Entre Ríos</option>
+                <option>Formosa</option>
+                <option>Jujuy</option>
+                <option>La Pampa</option>
+                <option>La Rioja</option>
+                <option>Mendoza</option>
+                <option>Misiones</option>
+                <option>Neuquén</option>
+                <option>Río Negro</option>
+                <option>Salta</option>
+                <option>San Juan</option>
+                <option>San Luis</option>
+                <option>Santa Cruz</option>
+                <option>Santa Fe</option>
+                <option>Santiago del Estero</option>
+                <option>Tierra del Fuego</option>
+                <option>Tucumán</option>
+                
+            </select>
 
-            <label>Descripción:</label>
-            <textarea name="descripcion" required></textarea><br><br>
+            <label for="descripcion">Descripción del mito</label>
+            <textarea id="descripcion" name="descripcion" placeholder="Contanos la historia del mito..."></textarea>
 
-            <label>Fecha:</label>
-            <input type="date" name="fecha"><br><br>
-
-            <label>Provincia:</label>
-            <input type="text" name="provincia" required><br><br>
-
-            <label>Imagen:</label>
-            <input type="file" name="imagen" accept="image/*"><br><br>
+            <label for="imagen">Imagen del mito (opcional)</label>
+            <input type="file" id="imagen" name="imagen">
 
             <button type="submit">Subir mito</button>
         </form>

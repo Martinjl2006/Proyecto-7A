@@ -15,11 +15,20 @@
       --azul-accion: #3478f6;
     }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       margin: 0;
       font-family: 'Montserrat', sans-serif;
       background-color: var(--fondo-claro);
       color: var(--gris);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
     header {
@@ -38,17 +47,23 @@
     .logo {
       display: flex;
       align-items: center;
+      gap: 12px;
     }
 
     .logo img {
       height: 44px;
-      margin-right: 12px;
+      width: auto;
     }
 
     .logo span {
       font-size: 1.8rem;
       font-weight: 800;
       color: var(--azul-profundo);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
     }
 
     nav a {
@@ -61,6 +76,10 @@
 
     nav a:hover {
       color: var(--azul-accion);
+    }
+
+    main {
+      flex: 1;
     }
 
     .hero {
@@ -126,24 +145,47 @@
       background-color: #eaeaea;
       text-align: center;
       padding: 20px;
-      margin-top: 60px;
+      margin-top: auto;
       font-size: 0.9rem;
       color: #555;
+      width: 100%;
     }
 
     @media (max-width: 768px) {
+      header {
+        padding: 12px 16px;
+      }
+
+      .logo span {
+        font-size: 1.4rem;
+      }
+
+      .logo img {
+        height: 36px;
+      }
+
+      nav {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      nav a {
+        margin-left: 0;
+        font-size: 0.9rem;
+      }
+
       .hero {
         flex-direction: column-reverse;
+        padding: 40px 20px;
       }
 
       .hero-text h1 {
         font-size: 2rem;
       }
 
-      nav {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
+      .hero-text p {
+        font-size: 1rem;
       }
     }
   </style>
@@ -151,34 +193,34 @@
 <body>
   <header>
     <div class="logo">
-
+      <img src="logo_logo_re_logo_sin_fondo_-removebg-preview.png" alt="Logo leyendAR" />
       <span>leyendAR</span>
     </div>
     <nav>
-      <a href="index.html">Inicio</a>
-      <a href="usuario.html">Mitos y leyendas</a>
-      <a href="sobre.html">Sobre el proyecto</a>
+      <a href="pantalla.html">Inicio</a>
     </nav>
   </header>
 
-  <section class="hero">
-    <div class="hero-text">
-      <h1>¿Qué es leyendAR?</h1>
-      <p>
-        <strong>leyendAR</strong> es una experiencia interactiva que rescata mitos y leyendas de todo el país, conectando cultura, geografía y tecnología en un solo lugar.
-      </p>
-      <p>
-        Nuestro objetivo es preservar el patrimonio oral de Argentina a través de un mapa que permite explorar cada provincia y sus historias típicas. Ideal para el ámbito educativo y el público general.
-      </p>
-      <p>
-        Desde la difunta Correa hasta el pombero, leyendAR pone en valor nuestras raíces, invitando a conocerlas de forma visual, atractiva y accesible.
-      </p>
-      <a class="btn" href="leyendas.html">Explorar leyendas</a>
-    </div>
-    <div class="hero-img">
-      <img src="mapa-ilustrado.png" alt="Ilustración del proyecto">
-    </div>
-  </section>
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <h1>¿Qué es leyendAR?</h1>
+        <p>
+          <strong>leyendAR</strong> es una experiencia interactiva que rescata mitos y leyendas de todo el país, conectando cultura, geografía y tecnología en un solo lugar.
+        </p>
+        <p>
+          Nuestro objetivo es preservar el patrimonio oral de Argentina a través de un mapa que permite explorar cada provincia y sus historias típicas. Ideal para el ámbito educativo y el público general.
+        </p>
+        <p>
+          Desde la difunta Correa hasta el pombero, leyendAR pone en valor nuestras raíces, invitando a conocerlas de forma visual, atractiva y accesible.
+        </p>
+        <a class="btn" href="leyendas.html">Explorar leyendas</a>
+      </div>
+      <div class="hero-img">
+        <img src="foto projecto.jpg" alt="Ilustración del proyecto">
+      </div>
+    </section>
+  </main>
 
   <footer>
     © 2025 leyendAR - Mitos y Leyendas Argentinas

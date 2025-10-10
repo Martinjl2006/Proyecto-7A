@@ -7,6 +7,105 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <style>
+    /* -------------------------
+   Ajustes generales
+------------------------- */
+html, body {
+  height: 100%;          /* que el body ocupe toda la pantalla */
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;      /* fuerza altura mínima completa */
+  align-items: center;
+}
+
+/* -------------------------
+   Contenedor principal y cards
+------------------------- */
+.main-container, .cards {
+  flex: 1 0 auto;         /* ocupan el espacio disponible antes del footer */
+  width: 97%;             /* mantiene tu layout actual */
+  margin: 1rem auto;
+}
+
+/* -------------------------
+   Footer
+------------------------- */
+footer {
+  flex-shrink: 0;          /* evita que se achique */
+  padding: 20px;
+  width: 97%;
+  background: #eceae4;
+  text-align: center;
+  font-size: clamp(0.8rem, 1vw, 1rem);
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  min-height: 60px;
+}
+
+/* -------------------------
+   Header
+------------------------- */
+header {
+  background: var(--fondo-textura);
+  padding: 20px 32px;
+  display: flex;
+  width: 97%;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #ddd;
+  box-shadow: 0 2px 10px var(--sombra);
+}
+
+/* -------------------------
+   Map y cards
+------------------------- */
+#map {
+  flex: 1;
+  height: 800px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  padding: 0 20px;
+  margin-bottom: 0; /* el footer ya tiene espacio */
+}
+
+/* -------------------------
+   Panel lateral
+------------------------- */
+#panel-mitos {
+  position: fixed;
+  top: 80px;
+  left: -380px;
+  width: 360px;
+  height: calc(100% - 120px);
+  background-color: #f9f9f9;
+  border-right: 2px solid #ddd;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.12);
+  overflow-y: auto;
+  transition: left 0.28s cubic-bezier(.2,.9,.2,1);
+  padding: 18px;
+  z-index: 1400;
+  border-radius: 0 8px 8px 0;
+}
+
+#panel-mitos.open { left: 16px; }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -16,6 +115,21 @@
       flex-direction: column;
       align-items: center;
     }
+    footer {
+  margin-top: 60px;
+  padding: 20px;
+  width: 97%;
+  background: #eceae4;
+  text-align: center;
+  font-size: clamp(0.8rem, 1vw, 1rem);
+  color: #555;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 
     /* --- Estilos del panel lateral emergente --- */
     /* tarjetas de mito */
@@ -66,8 +180,8 @@
     #panel-mitos.open { left: 16px; }
 
     .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-    #btn-toggle { background:#ef4444; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
-    #btn-toggle:hover { background:#dc2626; }
+    #btn-toggle { background:#1E3A8A; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
+    #btn-toggle:hover { background:#1E3A8A; }
 
     :root {
       --azul-profundo: #1d2e42;
@@ -207,13 +321,14 @@
       margin-right: 8px;
       opacity: 0.7;
     }
+     
 
   </style>
 </head>
 <body>
   <header>
     <div class="logo">
-      <img src="logo-removebg-preview-2.png" alt="logo"/>
+      <img src="logo_logo_re_logo_sin_fondo_-removebg-preview.png" alt="logo"/>
       <span>leyendAR</span>
     </div>
     <nav>
@@ -660,30 +775,71 @@
       return true;
     }
     window.agregarMito = agregarMito;
+      /* ========================
+       Cerrar panel con scroll
+       ======================== */
+    let panelAbierto = false;
+
+    // Detectar apertura/cierre del panel
+    function openPanel() {
+      if (!panel) return;
+      panel.classList.add('open');
+      panel.setAttribute('aria-hidden', 'false');
+      setTimeout(()=> map.invalidateSize(), 260);
+      panelAbierto = true;
+    }
+    function closePanel() {
+      if (!panel) return;
+      panel.classList.remove('open');
+      panel.setAttribute('aria-hidden', 'true');
+      setTimeout(()=> map.invalidateSize(), 200);
+      panelAbierto = false;
+    }
+
+    // Escuchar scroll con la ruedita y cerrar si está abierto
+    window.addEventListener("wheel", () => {
+      if (panelAbierto) {
+        closePanel();
+      }
+    }, { passive: true });
+    function openPanel() {
+  if (!panel) return;
+  window.scrollTo({ top: 0, behavior: "smooth" }); // 🔹 sube al inicio
+  panel.classList.add('open');
+  panel.setAttribute('aria-hidden', 'false');
+  setTimeout(() => map.invalidateSize(), 260);
+  panelAbierto = true;
+}
+window.addEventListener("scroll", () => {
+  if (panelAbierto) closePanel();
+});
+
+
+
 
   </script>
 
 <div class="cards" style="max-width:1200px; width:97%; margin: 1rem auto;">
   
-  <a href="inicio-de-sesion.html" class="card" style="text-decoration:none; color:inherit;">
+  <a href="inicio.html" class="card" style="text-decoration:none; color:inherit;">
     <div class="card-icon">📌</div>
     <div class="card-title">Inicio</div>
     <div class="card-text">Accedé al minimapa, descubrí un mito recomendado y navegá por las opciones principales.</div>
   </a>
 
-  <a href="inicio-de-sesion.html" class="card" style="text-decoration:none; color:inherit;">
+  <a href="inicio.html" class="card" style="text-decoration:none; color:inherit;">
     <div class="card-icon">📖</div>
     <div class="card-title">Información sobre el proyecto</div>
     <div class="card-text">Enterate de la finalidad, inspiración y cómo se construyó este mapa interactivo.</div>
   </a>
 
-  <a href="inicio-de-sesion.html" class="card" style="text-decoration:none; color:inherit;">
+  <a href="inicio.html" class="card" style="text-decoration:none; color:inherit;">
     <div class="card-icon">👻</div>
     <div class="card-title">Mitos</div>
     <div class="card-text">Explorá la colección completa de leyendas y relatos de cada región de Argentina.</div>
   </a>
 
-  <a href="inicio-de-sesion.html" class="card" style="text-decoration:none; color:inherit;">
+  <a href="inicio.html" class="card" style="text-decoration:none; color:inherit;">
     <div class="card-icon">🔍</div>
     <div class="card-title">Agregar mito</div>
     <div class="card-text">¿Conocés una historia o leyenda local? ¡Sumala al mapa para que otros la descubran!</div>

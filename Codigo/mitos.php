@@ -6,7 +6,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = intval($_GET['id']);
 
     // Consultar mito por ID (sin imagen porque tu tabla no la tiene)
-    $sql = "SELECT id_mitooleyenda, Titulo, Descripcion, imagen FROM MitoLeyenda WHERE id_mitooleyenda = ?";
+    $sql = "SELECT id_mitooleyenda, Titulo, Descripcion FROM MitoLeyenda WHERE id_mitooleyenda = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -236,7 +236,10 @@ $conn->close();
       <img src="#" alt="Foto usuario">
       <span>Aquí va el nombre de usuario</span>
     </div>
-    <button onclick="location.href='mapa.html'">Explorar mapa</button>
+    <div class="botones">
+      <a href="..\tcpdf.php".php?id=<?php echo $mito['id_mitooleyenda']; ?>" class="btn-pdf">Descargar PDF</a>
+      <button onclick="location.href='mapa.html'">Explorar mapa</button>
+    </div>
     <div class="back-btn">
         <a href="dashboard.php" class="btn btn-secondary">⬅ Volver</a>
     </div>
@@ -244,7 +247,7 @@ $conn->close();
 
   <div class="contenedor">
     <div class="imagen-principal">
-      <img src="<?php echo htmlspecialchars($mito['imagen']); ?>" width="200">
+      <img src="familiar.jpg" alt="El Familiar">
     </div>
 
     <h1><?php echo htmlspecialchars($mito['Titulo']); ?></h1>
