@@ -593,3 +593,5 @@ FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad)
 ON DELETE SET NULL
 ON UPDATE CASCADE;
 
+ALTER TABLE Mitoleyenda ADD COLUMN tipo VARCHAR(255) NULL AFTER Descripcion;
+UPDATE mitoleyenda SET imagen = "salamanca.jpg" WHERE Titulo = "La Salamanca"; UPDATE mitoleyenda SET imagen = "luzmala.jpg" WHERE Titulo = "La Luz Mala"; UPDATE mitoleyenda SET imagen = "lobizon.jpeg" WHERE Titulo = "El Lobiz?n";
