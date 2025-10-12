@@ -10,11 +10,68 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
+// Obtener el ID del usuario
+$username = $_SESSION['username'];
+$sql_usuario = "SELECT id_usuario FROM Usuarios WHERE username = ?";
+$stmt = $conn->prepare($sql_usuario);
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$resultado_usuario = $stmt->get_result();
+$usuario = $resultado_usuario->fetch_assoc();
+$id_usuario = $usuario['id_usuario'] ?? null;
+
+// Procesar agregar/quitar de favoritos
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mito_id'])) {
+    $mito_id = $_POST['mito_id'];
+    
+    if ($id_usuario) {
+        // Verificar si ya está en favoritos
+        $sql_check = "SELECT id_favorito FROM Favoritos WHERE id_usuario = ? AND id_mitooleyenda = ?";
+        $stmt_check = $conn->prepare($sql_check);
+        $stmt_check->bind_param("ii", $id_usuario, $mito_id);
+        $stmt_check->execute();
+        $resultado_check = $stmt_check->get_result();
+        
+        if ($resultado_check->num_rows > 0) {
+            // Eliminar de favoritos
+            $sql_delete = "DELETE FROM Favoritos WHERE id_usuario = ? AND id_mitooleyenda = ?";
+            $stmt_delete = $conn->prepare($sql_delete);
+            $stmt_delete->bind_param("ii", $id_usuario, $mito_id);
+            $stmt_delete->execute();
+        } else {
+            // Agregar a favoritos
+            $sql_insert = "INSERT INTO Favoritos (id_usuario, id_mitooleyenda) VALUES (?, ?)";
+            $stmt_insert = $conn->prepare($sql_insert);
+            $stmt_insert->bind_param("ii", $id_usuario, $mito_id);
+            $stmt_insert->execute();
+        }
+    }
+    
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
+
+// Obtener mitos favoritos del usuario
+$mitos_favoritos = [];
+if ($id_usuario) {
+    $sql_favoritos = "SELECT m.id_mitooleyenda, m.Titulo, m.textobreve, m.Descripcion, m.imagen, m.id_provincia 
+                      FROM MitoLeyenda m 
+                      INNER JOIN Favoritos f ON m.id_mitooleyenda = f.id_mitooleyenda 
+                      WHERE f.id_usuario = ? 
+                      ORDER BY m.Titulo";
+    $stmt_favoritos = $conn->prepare($sql_favoritos);
+    $stmt_favoritos->bind_param("i", $id_usuario);
+    $stmt_favoritos->execute();
+    $resultado_favoritos = $stmt_favoritos->get_result();
+    
+    while($mito = $resultado_favoritos->fetch_assoc()) {
+        $mitos_favoritos[] = $mito;
+    }
+}
+
 // Obtener mitos agrupados por provincia
-$sql = "SELECT id_mitooleyenda, Titulo, Descripcion, imagen, id_provincia FROM MitoLeyenda ORDER BY id_provincia, Titulo";
+$sql = "SELECT id_mitooleyenda, Titulo, textobreve, Descripcion, imagen, id_provincia FROM MitoLeyenda ORDER BY id_provincia, Titulo";
 $resultado = $conn->query($sql);
-
-
 
 // Agrupar los resultados por provincia
 $mitosPorProvincia = [];
@@ -29,6 +86,16 @@ while($mito = $resultado->fetch_assoc()) {
     }
     $mitosPorProvincia[$nombreprovincia][] = $mito;
 }
+
+// Función para verificar si un mito es favorito
+function esFavorito($mito_id, $favoritos) {
+    foreach ($favoritos as $fav) {
+        if ($fav['id_mitooleyenda'] == $mito_id) {
+            return true;
+        }
+    }
+    return false;
+}
 ?>
 
 <!DOCTYPE html>
@@ -38,6 +105,7 @@ while($mito = $resultado->fetch_assoc()) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mitos - LeyendAR</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -163,6 +231,29 @@ while($mito = $resultado->fetch_assoc()) {
             width: 100%;
         }
 
+        .favoritos-section {
+            margin-bottom: 3rem;
+            display: none;
+        }
+
+        .favoritos-section.active {
+            display: block;
+        }
+
+        .favoritos-title {
+            font-size: 1.8rem;
+            color: #1d2e42;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .favoritos-title i {
+            color: #ffc107;
+        }
+
         .provincia-section {
             margin-bottom: 3rem;
         }
@@ -208,6 +299,7 @@ while($mito = $resultado->fetch_assoc()) {
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            position: relative;
         }
 
         .mito-card:hover {
@@ -222,10 +314,32 @@ while($mito = $resultado->fetch_assoc()) {
             border: 2px solid #2b4ab8;
         }
 
+        .btn-favorito {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            color: #ccc;
+            z-index: 10;
+        }
+
+        .btn-favorito:hover {
+            transform: scale(1.2);
+        }
+
+        .btn-favorito.active {
+            color: #ffc107;
+        }
+
         .mito-header {
             display: flex;
             align-items: center;
             gap: 1rem;
+            padding-right: 40px;
         }
 
         .mito-image {
@@ -265,6 +379,9 @@ while($mito = $resultado->fetch_assoc()) {
             color: #444;
             line-height: 1.6;
             margin-top: 0.5rem;
+            max-height: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .mito-card.expanded .mito-extra {
@@ -361,6 +478,41 @@ while($mito = $resultado->fetch_assoc()) {
     <button class="explore-btn-fixed" onclick="location.href='mapa.php'">Explorar mapa</button>
 
     <main>
+        <!-- Sección de Favoritos -->
+        <?php if (count($mitos_favoritos) > 0): ?>
+            <section class="favoritos-section active">
+                <h2 class="favoritos-title">
+                    <i class="fas fa-star"></i> Mis Favoritos
+                </h2>
+                <div class="mitos-scroll">
+                    <?php foreach ($mitos_favoritos as $mito): ?>
+                        <div class="mito-card" onclick="toggleExpand(this)">
+                            <form method="POST" style="display: inline;">
+                                <input type="hidden" name="mito_id" value="<?= $mito['id_mitooleyenda'] ?>">
+                                <button type="submit" class="btn-favorito active" title="Quitar de favoritos">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                            </form>
+                            <div class="mito-header">
+                                <div class="mito-image">
+                                    <?php if (!empty($mito['imagen'])): ?>
+                                        <img src="mitos/<?= htmlspecialchars($mito['imagen']) ?>" alt="<?= htmlspecialchars($mito['Titulo']) ?>" onerror="this.parentElement.textContent='Imagen no disponible'">
+                                    <?php else: ?>
+                                        <span>Sin imagen</span>
+                                    <?php endif; ?>
+                                </div>
+                                <h3 class="mito-title"><?= htmlspecialchars($mito['Titulo']) ?></h3>
+                            </div>
+                            <p class="mito-text"><?= htmlspecialchars($mito['textobreve']) ?></p>
+                            <p class="mito-extra"><?= htmlspecialchars($mito['Descripcion']) ?></p>
+                            <button class="leer-mas-btn" onclick="event.stopPropagation(); location.href='mitos.php?id=<?= $mito['id_mitooleyenda'] ?>'">Leer más</button>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+        <?php endif; ?>
+
+        <!-- Secciones por Provincia -->
         <?php 
         if (empty($mitosPorProvincia)): 
         ?>
@@ -374,8 +526,15 @@ while($mito = $resultado->fetch_assoc()) {
                 <div class="mitos-scroll">
                     <?php 
                     foreach ($mitos as $mito): 
+                        $es_favorito = esFavorito($mito['id_mitooleyenda'], $mitos_favoritos);
                     ?>
                         <div class="mito-card" onclick="toggleExpand(this)">
+                            <form method="POST" style="display: inline;">
+                                <input type="hidden" name="mito_id" value="<?= $mito['id_mitooleyenda'] ?>">
+                                <button type="submit" class="btn-favorito <?= $es_favorito ? 'active' : '' ?>" title="<?= $es_favorito ? 'Quitar de favoritos' : 'Agregar a favoritos' ?>">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                            </form>
                             <div class="mito-header">
                                 <div class="mito-image">
                                     <?php if (!empty($mito['imagen'])): ?>
@@ -386,9 +545,9 @@ while($mito = $resultado->fetch_assoc()) {
                                 </div>
                                 <h3 class="mito-title"><?= htmlspecialchars($mito['Titulo']) ?></h3>
                             </div>
-                            <p class="mito-text"><?= htmlspecialchars($mito['Descripcion']) ?></p>
+                            <p class="mito-text"><?= htmlspecialchars($mito['textobreve']) ?></p>
                             <p class="mito-extra"><?= htmlspecialchars($mito['Descripcion']) ?></p>
-                            <button class="leer-mas-btn" onclick="event.stopPropagation(); location.href='mitos.php?id=<?= $mito['id_mitooleyenda'] ?>'">Leer mas</button>
+                            <button class="leer-mas-btn" onclick="event.stopPropagation(); location.href='mitos.php?id=<?= $mito['id_mitooleyenda'] ?>'">Leer más</button>
                         </div>
                     <?php 
                     endforeach; 
