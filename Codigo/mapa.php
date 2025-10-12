@@ -9,8 +9,63 @@ require_once "main.php"; // Asegurate que aquí se conecta a la base de datos
 $usuarioLogueado = isset($_SESSION["username"]) && isset($_SESSION["id_usuario"]);
 $nombreUsuario = $usuarioLogueado ? htmlspecialchars($_SESSION["username"]) : null;
 $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SESSION["foto"]) : null;
-?>
 
+// FUNCIÓN AUXILIAR: Obtener todos los mitos agrupados por provincia desde la BD
+function obtenerMitosPorProvincia() {
+    global $conn; // Variable de conexión desde main.php
+    
+    $mitosByProvince = [];
+    
+    try {
+        // Consulta que une Mitoleyenda con Provincias
+        $sql = "SELECT 
+                    m.id_mitooleyenda,
+                    m.Titulo,
+                    m.textobreve,
+                    m.Descripcion,
+                    m.imagen,
+                    m.tipo,
+                    p.nombre AS provincia_nombre
+                FROM Mitoleyenda m
+                INNER JOIN Provincias p ON m.id_provincia = p.id_provincia
+                ORDER BY p.nombre ASC, m.Titulo ASC";
+        
+        $result = $conn->query($sql);
+        
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $provincia = $row['provincia_nombre'];
+                
+                if (!isset($mitosByProvince[$provincia])) {
+                    $mitosByProvince[$provincia] = [];
+                }
+                
+                // Usar textobreve si existe, sino usar descripcion truncada
+                $descripcion = !empty($row['textobreve']) 
+                    ? $row['textobreve'] 
+                    : substr($row['Descripcion'], 0, 150) . '...';
+                
+                $mitosByProvince[$provincia][] = [
+                    'id' => $row['id_mitooleyenda'],
+                    'titulo' => htmlspecialchars($row['Titulo']),
+                    'descripcion' => htmlspecialchars($descripcion),
+                    'tipo' => htmlspecialchars($row['tipo'] ?? ''),
+                    'imagen' => htmlspecialchars($row['imagen'] ?? ''),
+                    'link' => 'mitos/detalle.php?id=' . $row['id_mitooleyenda']
+                ];
+            }
+        }
+    } catch (Exception $e) {
+        error_log("Error al obtener mitos: " . $e->getMessage());
+    }
+    
+    return $mitosByProvince;
+}
+
+// Obtener mitos desde BD
+$mitosPorProvincia = obtenerMitosPorProvincia();
+$mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
+?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -236,34 +291,26 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
     <?php
       $src = null;
       if (!empty($foto)) {
-          // Normalizar y separar
           $fotoNorm = str_replace('\\', '/', $foto);
           $dir  = dirname($fotoNorm);
           $file = basename($fotoNorm);
           $encFile = rawurlencode($file);
 
-          // Comprobar rutas en el sistema de ficheros (usamos el nombre sin codificar)
           $fsCandidates = [
-              // ruta relativa al DOCUMENT_ROOT (p. ej. /proyecto/.../usuarios/archivo.png)
               rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/' . ltrim($fotoNorm, '/'),
-              // ruta relativa al directorio del script (p. ej. __DIR__/usuarios/archivo.png)
               __DIR__ . '/' . $fotoNorm,
-              // ruta directa en la carpeta usuarios junto al script
               __DIR__ . '/usuarios/' . $file,
-              // ruta en DOCUMENT_ROOT/usuarios/
               rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/usuarios/' . $file
           ];
 
           foreach ($fsCandidates as $fs) {
               if (file_exists($fs)) {
-                  // Si la ruta está dentro del document root, construimos la URL desde ahí
                   $docroot = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
                   if (strpos($fs, $docroot) === 0) {
-                      $web = substr($fs, strlen($docroot));        // /proyecto/.../usuarios/archivo.png
-                      $web = str_replace($file, $encFile, $web);  // encodear solo el nombre de archivo
+                      $web = substr($fs, strlen($docroot));
+                      $web = str_replace($file, $encFile, $web);
                       $src = $web;
                   } else {
-                      // fallback: ruta relativa al script (usuarios/archivo%20con%20espacio.png)
                       if ($dir === '.' || $dir === '/') {
                           $src = $encFile;
                       } else {
@@ -274,7 +321,6 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
               }
           }
 
-          // Si no encontramos el fichero, usamos la ruta original pero con el nombre codificado
           if (!$src) {
               if ($dir === '.' || $dir === '/') {
                   $src = $encFile;
@@ -320,121 +366,22 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
     /* ========================
-       Datos: valores + mitos
+       DATOS DESDE LA BASE DE DATOS
        ======================== */
-       
-
-    const valuesByProvince = {
-      "Buenos Aires": 55,
-      "Ciudad Autónoma de Buenos Aires": 15000,
-      "Catamarca": 4,
-      "Chaco": 10,
-      "Chubut": 2,
-      "Córdoba": 30,
-      "Corrientes": 11,
-      "Entre Ríos": 16,
-      "Formosa": 8,
-      "Jujuy": 12,
-      "La Pampa": 2,
-      "La Rioja": 3,
-      "Mendoza": 23,
-      "Misiones": 16,
-      "Neuquén": 6,
-      "Río Negro": 6,
-      "Salta": 11,
-      "San Juan": 7,
-      "San Luis": 6,
-      "Santa Cruz": 1,
-      "Santa Fe": 26,
-      "Santiago del Estero": 8,
-      "Tierra del Fuego, Antártida e Islas del Atlántico Sur": 1,
-      "Tucumán": 60
-    };
-
-    // Mitos por provincia — cada mito tiene titulo, descripcion y link (puedes editar / agregar)
-    const mitosByProvince = {
-      "Buenos Aires": [
-        { titulo: "La Salamanca", descripcion: "Ritual y encuentro en cuevas y cavernas del pago chico.", link: "mitos/la-salamanca.html" },
-        { titulo: "El Lobizón", descripcion: "La leyenda del hombre-lobo en la provincia.", link: "mitos/pantallas-ellobizon.html"}
-      ],
-      "Ciudad Autónoma de Buenos Aires": [
-        { titulo: "El Fantasma de la Recoleta", descripcion: "Historias de apariciones entre mausoleos.", link: "mitos/fantasma-recoleta.html" }
-      ],
-      "Catamarca": [
-        { titulo: "La Madre del Cerro", descripcion: "Leyenda sobre espíritus protectores de la montaña.", link: "mitos/madre-cerro.html" }
-      ],
-      "Chaco": [
-        { titulo: "El Carcarañá", descripcion: "Mito sobre aves y brujas chaqueñas.", link: "mitos/carcarana.html" }
-      ],
-      "Chubut": [
-        { titulo: "La Luz del Golfo", descripcion: "Relatos marinos y luces en la costa.", link: "mitos/luz-golfo.html" }
-      ],
-      "Córdoba": [
-        { titulo: "El Familiar", descripcion: "Mito en los ingenios y parajes serranos.", link: "mitos/el-familiar.html" },
-        { titulo: "El Pombero", descripcion: "Ser del monte que protege la naturaleza.", link: "mitos/el-pombero.html" }
-      ],
-      "Corrientes": [
-        { titulo: "La Luz Mala", descripcion: "Fenómeno de luz errante en las islas y bañados.", link: "mitos/luz-mala.html" }
-      ],
-      "Entre Ríos": [
-        { titulo: "La Dama del Paraná", descripcion: "Leyenda ribereña de aparición nocturna.", link: "mitos/dama-parana.html" }
-      ],
-      "Formosa": [
-        { titulo: "El Yasy Yateré", descripcion: "Figura mítica guaraní que encanta a los viajeros.", link: "mitos/yasy-yatere.html" }
-      ],
-      "Jujuy": [
-        { titulo: "La Viuda del Valle", descripcion: "Relato de pena y protección en los valles.", link: "mitos/viuda-valle.html" }
-      ],
-      "La Pampa": [
-        { titulo: "El Caleuche Pampeano", descripcion: "Fábulas sobre viajes nocturnos en la pampa.", link: "mitos/caleuche-pampa.html" }
-      ],
-      "La Rioja": [
-        { titulo: "El Tunche", descripcion: "Cuentos de aparecidos y ritos serranos.", link: "mitos/el-tunche.html" }
-      ],
-      "Mendoza": [
-        { titulo: "El Lobizón Andino", descripcion: "Versión andina de la criatura nocturna.", link: "mitos/lobizon-andes.html" }
-      ],
-      "Misiones": [
-        { titulo: "El Pombero", descripcion: "Protector del monte, travieso y poderoso.", link: "mitos/pombero-misiones.html" },
-        { titulo: "Yasy Yateré", descripcion: "Personaje del folklore guaraní.", link: "mitos/yasy-misiones.html" }
-      ],
-      "Neuquén": [
-        { titulo: "La Luz de la Neuquén", descripcion: "Relatos de luces nocturnas en la estepa.", link: "mitos/luz-neuquen.html" }
-      ],
-      "Río Negro": [
-        { titulo: "La Doncella de la Cordillera", descripcion: "Mito ligado a lagunas y montañas.", link: "mitos/doncella-rn.html" }
-      ],
-      "Salta": [
-        { titulo: "El Diablo del Carnaval", descripcion: "Figura del carnaval y el rito andino.", link: "mitos/diablo-carnaval.html" }
-      ],
-      "San Juan": [
-        { titulo: "La Difunta Correa", descripcion: "Maravillas y devoción en rutas y parajes.", link: "mitos/difunta-correa.html" }
-      ],
-      "San Luis": [
-        { titulo: "El Encantador de Sierras", descripcion: "Leyendas de brujos y pactos serranos.", link: "mitos/encantador-sierras.html" }
-      ],
-      "Santa Cruz": [
-        { titulo: "La Bruja del Hielo", descripcion: "Relatos del viento y la soledad sureña.", link: "mitos/bruja-hielo.html" }
-      ],
-      "Santa Fe": [
-        { titulo: "La Dame Blanche", descripcion: "Aparición de mujer en la ribera.", link: "mitos/dame-blanche.html" }
-      ],
-      "Santiago del Estero": [
-        { titulo: "El Familiar Chaqueño", descripcion: "Mito adaptado al calor y monte norteño.", link: "mitos/familiar-sde.html" }
-      ],
-      "Tierra del Fuego, Antártida e Islas del Atlántico Sur": [
-        { titulo: "El Silbador del Fin del Mundo", descripcion: "Leyenda de marinos y faros australes.", link: "mitos/silbador-tdf.html" }
-      ],
-      "Tucumán": [
-        { titulo: "El Tunante del Azúcar", descripcion: "Historias de ingenio y misterio tucumano.", link: "mitos/tunante-tucuman.html" }
-      ]
-    };
+    
+    // Los mitos vienen desde PHP en JSON
+    const mitosByProvince = <?php echo $mitosPorProvinciaJSON; ?>;
+    
+    // Valores por provincia (pueden venir de BD también si lo necesitas)
+    const valuesByProvince = {};
+    Object.keys(mitosByProvince).forEach(provincia => {
+      valuesByProvince[provincia] = mitosByProvince[provincia].length;
+    });
 
     /* ========================
        Normalización y helpers
        ======================== */
 
-    // helper slug
     function slugify(str){
       return String(str || '')
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
@@ -442,12 +389,10 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
         .replace(/(^-|-$)/g,'');
     }
 
-    // crear mapa normalizado => canonical (con todas las claves disponibles)
-    const canonicalNames = Array.from(new Set([...Object.keys(valuesByProvince), ...Object.keys(mitosByProvince)]));
+    const canonicalNames = Array.from(new Set(Object.keys(mitosByProvince)));
     const normalizedToCanonical = {};
     canonicalNames.forEach(n => { normalizedToCanonical[n.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()] = n; });
 
-    // resolver nombre de la provincia desde propiedades del GeoJSON
     function normalizeKey(s) {
       if (!s && s !== 0) return '';
       return String(s)
@@ -470,7 +415,6 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
         const norm = normalizeKey(c);
         if (normalizedToCanonical[norm]) return normalizedToCanonical[norm];
       }
-      // fallback: buscar substring
       for (const c of candidates) {
         if (!c) continue;
         const normC = normalizeKey(c);
@@ -503,7 +447,6 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors'
     }).addTo(map);
 
-    // Coordenadas que cubren prácticamente todo el mundo
     var blackTiles = L.tileLayer('', {
       attribution: '',
       minZoom: 0,
@@ -518,8 +461,6 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
     };
     blackTiles.addTo(map);
 
-
-
     function getColor(d) {
       return d > 10 ? '#800026' :
              d > 5  ? '#BD0026' :
@@ -530,9 +471,7 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
 
     function style(feature) {
       const nombreCanonical = feature.properties._provName || feature.properties.name || feature.properties.provincia;
-      // preferimos color por cantidad de mitos; si no hay mitos, fallback al dataset valuesByProvince
-      const cantidadMitos = (mitosByProvince[nombreCanonical] && mitosByProvince[nombreCanonical].length) || 0;
-      const cantidad = cantidadMitos || (valuesByProvince[nombreCanonical] || 0);
+      const cantidad = (mitosByProvince[nombreCanonical] && mitosByProvince[nombreCanonical].length) || 0;
       return {
         weight: 1,
         opacity: 1,
@@ -542,9 +481,6 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
         fillColor: getColor(cantidad)
       };
     }
-
-
-
 
     /* ========================
        Control informativo
@@ -563,15 +499,15 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
         this._div.innerHTML = title + 'Pasá el mouse por una provincia';
       } else {
         const nombre = props._provName || props.name || props.provincia || 'Provincia';
-        const cantidad = (mitosByProvince[nombre] && mitosByProvince[nombre].length) || (valuesByProvince[nombre] || 0);
-        this._div.innerHTML = `${title}<b>${nombre}</b><br/>Mitos/Valor: <b>${cantidad}</b>`;
+        const cantidad = (mitosByProvince[nombre] && mitosByProvince[nombre].length) || 0;
+        this._div.innerHTML = `${title}<b>${nombre}</b><br/>Mitos: <b>${cantidad}</b>`;
       }
     };
 
     info.addTo(map);
 
     /* ========================
-       Panel lateral: DOM refs y funciones abiertas
+       Panel lateral: DOM refs y funciones
        ======================== */
     const panel = document.getElementById('panel-mitos');
     const contenidoMitos = document.getElementById('contenido-mitos');
@@ -581,7 +517,6 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
       if (!panel) return;
       panel.classList.add('open');
       panel.setAttribute('aria-hidden', 'false');
-      // forzar resize del mapa interior
       setTimeout(()=> map.invalidateSize(), 260);
     }
     function closePanel() {
@@ -593,28 +528,10 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
 
     if (btnToggle) btnToggle.addEventListener('click', closePanel);
 
-    // normalizar elementos
-    function aObjetos(lista){
-      return (lista || []).map(item=>{
-        if (typeof item === 'string'){
-          return {
-            titulo: item,
-            descripcion: "Leyenda popular de la región.",
-            slug: slugify(item)
-          };
-        }
-        return {
-          titulo: item.titulo,
-          descripcion: item.descripcion || "Leyenda popular de la región.",
-          slug: item.slug || slugify(item.titulo || item.titulo)
-        };
-      });
-    }
-
     function renderMitosDeProvincia(nombreProv){
-      const lista = aObjetos(mitosByProvince[nombreProv]);
+      const lista = mitosByProvince[nombreProv] || [];
       const html = (lista.length ? lista.map(m => `
-        <a class="mito-card" href="${m.link || ('mitos/' + m.slug + '.html')}" aria-label="${m.titulo}">
+        <a class="mito-card" href="${m.link}" aria-label="${m.titulo}">
           <h4>${m.titulo}</h4>
           <p>${m.descripcion}</p>
         </a>
@@ -656,9 +573,7 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
       try { map.fitBounds(e.target.getBounds(), { maxZoom: 8 }); } catch (err) { }
       const props = e.target.feature && e.target.feature.properties || {};
       const nombre = props._provName || resolveProvinceName(props) || props.name || props.provincia || 'Provincia';
-      // mostrar mitos de esa provincia (abre panel)
       renderMitosDeProvincia(nombre);
-      // actualizar info
       info.update(props);
     }
 
@@ -669,7 +584,7 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
         click: zoomToFeature
       });
       const nombre = feature.properties._provName || feature.properties.name || feature.properties.provincia || 'Provincia';
-      const cantidad = mitosByProvince[nombre] ? mitosByProvince[nombre].length : (valuesByProvince[nombre] || 0);
+      const cantidad = mitosByProvince[nombre] ? mitosByProvince[nombre].length : 0;
       layer.bindTooltip(`${nombre}: ${cantidad}`, { sticky: true });
     }
 
@@ -682,13 +597,12 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
         return r.json();
       })
       .then(data => {
-        // normalizar y guardar nombre canónico
         data.features.forEach(f => {
           const props = f.properties || {};
           const resolved = resolveProvinceName(props);
           props._provName = resolved || (props.name || props.provincia || props.NOMBRE || '');
-          const val = (mitosByProvince[props._provName] && mitosByProvince[props._provName].length) || valuesByProvince[props._provName] || valuesByProvince[props.name] || 0;
-          props._valueForChoro = (typeof val === 'number') ? val : 0;
+          const cantidad = (mitosByProvince[props._provName] && mitosByProvince[props._provName].length) || 0;
+          props._valueForChoro = cantidad;
           f.properties = props;
         });
 
@@ -699,7 +613,6 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
 
         try { map.fitBounds(geojsonLayer.getBounds(), { padding: [10, 10] }); } catch(e){}
 
-        // leyenda
         const legend = L.control({ position: 'bottomright' });
         legend.onAdd = function () {
           const div = L.DomUtil.create('div', 'legend');
@@ -726,12 +639,10 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
        ======================== */
     function agregarMito(provincia, mitoObj) {
       if (!provincia || !mitoObj) return false;
-      // intentar resolver canonical
       const canon = normalizeKey(provincia);
       const resolved = normalizedToCanonical[canon] || provincia;
       if (!mitosByProvince[resolved]) mitosByProvince[resolved] = [];
       mitosByProvince[resolved].push(mitoObj);
-      // actualizar estilo layer si existe
       if (geojsonLayer) geojsonLayer.eachLayer(l => {
         const p = l.feature && l.feature.properties;
         if (!p) return;
@@ -753,7 +664,7 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
     <div class="card-text">Accedé al minimapa, descubrí un mito recomendado y navegá por las opciones principales.</div>
   </a>
 
-  <a href="inicio-de-sesion.html" class="card" style="text-decoration:none; color:inherit;">
+  <a href="sobre.html" class="card" style="text-decoration:none; color:inherit;">
     <div class="card-icon">📖</div>
     <div class="card-title">Información sobre el proyecto</div>
     <div class="card-text">Enterate de la finalidad, inspiración y cómo se construyó este mapa interactivo.</div>
@@ -772,7 +683,6 @@ $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SES
   </a>
 
 </div>
-
 
   <footer>© 2025 Mitos y Leyendas de Argentina</footer>
 </body>

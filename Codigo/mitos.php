@@ -2,15 +2,49 @@
 session_start();
 include 'main.php';
 
+// Verificar si el usuario está logueado
+if (!isset($_SESSION['username'])) {
+    header("Location: registro.html");
+    exit();
+}
+
 // Inicializar variables
 $mito = null;
 $error = null;
+
+// Obtener el ID del usuario
+$username = $_SESSION['username'];
+$sql_usuario = "SELECT id_usuario, Username, Nombre, foto FROM Usuarios WHERE Username = ?";
+$stmt_usuario = $conn->prepare($sql_usuario);
+$stmt_usuario->bind_param("s", $username);
+$stmt_usuario->execute();
+$resultado_usuario = $stmt_usuario->get_result();
+$usuario = $resultado_usuario->fetch_assoc();
+$id_usuario = $usuario['id_usuario'] ?? null;
+$fotoperfil = $usuario['foto'] ?? null;
+$nombreusuario = $usuario['Nombre'] ?? null;
+
+// Procesar nuevo comentario
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevo_comentario'])) {
+    $comentario = trim($_POST['nuevo_comentario']);
+    $id_mito = intval($_POST['id_mito']);
+    
+    if (!empty($comentario) && $id_usuario && $id_mito) {
+        $sql_insert = "INSERT INTO Comentarios (Descripcion, Fecha, id_usuario, id_mitooleyenda) VALUES (?, NOW(), ?, ?)";
+        $stmt_insert = $conn->prepare($sql_insert);
+        $stmt_insert->bind_param("sii", $comentario, $id_usuario, $id_mito);
+        
+        if ($stmt_insert->execute()) {
+            header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id_mito);
+            exit();
+        }
+    }
+}
 
 // Verificar si se recibió un ID válido por GET
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = intval($_GET['id']);
 
-    // Consultar mito por ID con JOIN a Provincias
     $sql = "SELECT m.id_mitooleyenda, m.Titulo, m.textobreve, m.Descripcion, m.imagen, p.Nombre as Provincia 
             FROM MitoLeyenda m
             INNER JOIN Provincias p ON m.id_provincia = p.id_provincia
@@ -33,6 +67,25 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     }
 } else {
     $error = "No se especificó un ID de mito válido.";
+}
+
+// Obtener comentarios del mito
+$comentarios = [];
+if ($mito) {
+    $sql_comentarios = "SELECT c.id_comentario, c.Descripcion, c.Fecha, u.Username, u.Nombre, u.foto
+                        FROM Comentarios c
+                        INNER JOIN Usuarios u ON c.id_usuario = u.id_usuario
+                        WHERE c.id_mitooleyenda = ?
+                        ORDER BY c.Fecha DESC";
+    $stmt_com = $conn->prepare($sql_comentarios);
+    $stmt_com->bind_param("i", $id);
+    $stmt_com->execute();
+    $resultado_com = $stmt_com->get_result();
+    
+    while ($row = $resultado_com->fetch_assoc()) {
+        $comentarios[] = $row;
+    }
+    $stmt_com->close();
 }
 
 // Obtener mitos relacionados (3 aleatorios)
@@ -62,6 +115,19 @@ function calcularTiempoLectura($texto) {
     return $minutos;
 }
 
+// Función para obtener la foto de perfil del usuario
+function obtenerFotoPerfil($nombreUsuario, $fotoDb) {
+    // Si la foto está en la BD, usarla
+    if (!empty($fotoDb)) {
+        return htmlspecialchars($fotoDb);
+    }
+    // Si no, generar la ruta esperada: usuarios/[nombre].jpg
+    if (!empty($nombreUsuario)) {
+        return 'usuarios/' . htmlspecialchars($nombreUsuario) . '.jpg';
+    }
+    return null;
+}
+
 $conn->close();
 ?>
 
@@ -71,6 +137,7 @@ $conn->close();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo $mito ? htmlspecialchars($mito['Titulo']) : "Error"; ?> - Pantalla de Mito</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -86,6 +153,7 @@ $conn->close();
       padding: 10px 20px;
       background: white;
       border-bottom: 1px solid #ddd;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     header .usuario {
@@ -94,11 +162,27 @@ $conn->close();
       gap: 10px;
     }
 
-    header img {
+    header .profile-pic {
       width: 40px;
       height: 40px;
       border-radius: 50%;
       background: #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    header .profile-pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    header .usuario span {
+      font-weight: 600;
+      color: #1d2e42;
     }
 
     header .botones {
@@ -139,6 +223,7 @@ $conn->close();
       background: linear-gradient(135deg, #2c3e50 0%, #8b4513 100%);
       display: flex;
       justify-content: center;
+      align-items: center;
       border-radius: 10px;
       margin-bottom: 20px;
       overflow: hidden;
@@ -172,6 +257,7 @@ $conn->close();
     .card h2 {
       font-size: 18px;
       margin-bottom: 15px;
+      color: #1d2e42;
     }
 
     .card p {
@@ -183,7 +269,122 @@ $conn->close();
       line-height: 1.8;
     }
 
-    /* Estilos para la sección de relatos relacionados - diseño horizontal */
+    /* Estilos para comentarios */
+    .comentarios-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .formulario-comentario {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .formulario-comentario h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .formulario-comentario textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 80px;
+      box-sizing: border-box;
+    }
+
+    .formulario-comentario textarea:focus {
+      outline: none;
+      border-color: #ff7b00;
+      box-shadow: 0 0 5px rgba(255, 123, 0, 0.3);
+    }
+
+    .formulario-comentario button {
+      background: #ff7b00;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+      transition: background 0.3s ease;
+    }
+
+    .formulario-comentario button:hover {
+      background: #e66d00;
+    }
+
+    .comentario {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #ff7b00;
+      display: flex;
+      gap: 12px;
+    }
+
+    .comentario-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .comentario-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .comentario-content {
+      flex: 1;
+    }
+
+    .comentario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .comentario-usuario {
+      font-weight: bold;
+      color: #1d2e42;
+    }
+
+    .comentario-fecha {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .comentario-texto {
+      color: #555;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .sin-comentarios {
+      text-align: center;
+      color: #999;
+      padding: 20px;
+      font-style: italic;
+    }
+
+    /* Estilos para relatos relacionados */
     .relatos {
       display: flex;
       gap: 15px;
@@ -226,11 +427,6 @@ $conn->close();
       height: 100%;
       object-fit: contain;
     }
-
-    /* Placeholder para imágenes con gradientes únicos */
-    .relato-imagen.salamanca { background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); }
-    .relato-imagen.fantasma { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); }
-    .relato-imagen.familiar { background: linear-gradient(135deg, #c0392b 0%, #8e44ad 100%); }
 
     .relato-contenido {
       padding: 12px;
@@ -294,7 +490,6 @@ $conn->close();
       color: gray;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .relatos {
         flex-direction: column;
@@ -305,31 +500,45 @@ $conn->close();
         height: 100px;
       }
 
+      header {
+        flex-direction: column;
+        gap: 10px;
+      }
+
       header .botones {
         flex-direction: column;
         gap: 5px;
+        width: 100%;
       }
 
       header button,
       header a.btn-pdf {
         padding: 8px 12px;
         font-size: 12px;
+        width: 100%;
       }
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-
 </head>
 <body id="contenido">
 
   <header>
     <div class="usuario">
-      <img src="#" alt="Foto usuario">
-      <span>Aquí va el nombre de usuario</span>
+      <div class="profile-pic">
+        <?php 
+          $fotoPerfil = obtenerFotoPerfil($nombreusuario, $fotoperfil);
+          if ($fotoPerfil):
+        ?>
+          <img src="usuarios/<?= htmlspecialchars($fotoperfil) ?>" alt="Foto de perfil" class="foto_perfil">
+        <?php else: ?>
+          <i class="fas fa-user"></i>
+        <?php endif; ?>
+      </div>
+      <span><?php echo htmlspecialchars($username); ?></span>
     </div>
     <div class="botones">
-      <button  type="button" onclick="generarPDF()">Generar PDF</button>
+      <button type="button" onclick="generarPDF()">Generar PDF</button>
       <button onclick="location.href='mapa.php'">Explorar mapa</button>
     </div>
   </header>
@@ -347,8 +556,9 @@ $conn->close();
   <div class="contenedor">
     <div class="imagen-principal">
       <?php if (!empty($mito['imagen'])): ?>
-        <img src="<?php echo !empty($mito['imagen']) ? 'mitos/' . htmlspecialchars($mito['imagen']) : ''; ?>" 
-      alt="<?php echo htmlspecialchars($mito['Titulo']); ?>">
+        <img src="mitos/<?php echo htmlspecialchars($mito['imagen']); ?>" 
+        alt="<?php echo htmlspecialchars($mito['Titulo']); ?>" 
+        onerror="this.parentElement.innerHTML='<span style=\"font-size: 72px;\"></span>
       <?php else: ?>
         <span style="font-size: 72px;">📖</span>
       <?php endif; ?>
@@ -361,7 +571,6 @@ $conn->close();
 
     <div class="card">
       <?php 
-        // Dividir descripción en párrafos
         $parrafos = explode("\n\n", $mito['Descripcion']);
         foreach ($parrafos as $parrafo) {
           $parrafo = trim($parrafo);
@@ -374,16 +583,13 @@ $conn->close();
 
     <div id="pdf-content" style="display:none;">
       <h1><?php echo htmlspecialchars($mito['Titulo']); ?></h1>
-
       <?php if (!empty($mito['imagen'])): ?>
-        <img src="<?php echo htmlspecialchars($mito['imagen']); ?>" 
+        <img src="mitos/<?php echo htmlspecialchars($mito['imagen']); ?>" 
           alt="<?php echo htmlspecialchars($mito['Titulo']); ?>" 
           style="max-width: 100%; height: auto;">
       <?php endif; ?>
-
       <p><?php echo nl2br(htmlspecialchars($mito['Descripcion'])); ?></p>
     </div>
-
 
     <div class="card">
       <h2>Fuentes</h2>
@@ -394,11 +600,53 @@ $conn->close();
       </ul>
     </div>
 
+    <!-- Sección de Comentarios -->
     <div class="card">
-      <h2>Comentarios</h2>
-      <p style="color: #999; text-align: center; padding: 20px;">
-        Sistema de comentarios próximamente...
-      </p>
+      <h2><i class="fas fa-comments"></i> Comentarios</h2>
+      
+      <div class="comentarios-container">
+        <!-- Formulario para nuevo comentario -->
+        <form method="POST" class="formulario-comentario">
+          <h3>Dejar un comentario</h3>
+          <textarea name="nuevo_comentario" placeholder="Comparte tu opinión sobre este mito..." required></textarea>
+          <input type="hidden" name="id_mito" value="<?php echo $mito['id_mitooleyenda']; ?>">
+          <button type="submit">Publicar comentario</button>
+        </form>
+
+        <!-- Listado de comentarios -->
+        <?php if (count($comentarios) > 0): ?>
+          <?php foreach ($comentarios as $comentario): ?>
+            <div class="comentario">
+              <div class="comentario-avatar">
+                <?php 
+                  $fotoComentarista = obtenerFotoPerfil($comentario['Nombre'], $comentario['foto']);
+                  if ($fotoComentarista):
+                ?>
+                  <img src="usuarios/<?= htmlspecialchars($fotoComentarista) ?>" alt="Foto de perfil" class="foto_perfil">
+                <?php else: ?>
+                  <i class="fas fa-user"></i>
+                <?php endif; ?>
+              </div>
+              <div class="comentario-content">
+                <div class="comentario-header">
+                  <span class="comentario-usuario"><?php echo htmlspecialchars($comentario['Username']); ?></span>
+                  <span class="comentario-fecha">
+                    <?php 
+                      $fecha = new DateTime($comentario['Fecha']);
+                      echo $fecha->format('d/m/Y H:i');
+                    ?>
+                  </span>
+                </div>
+                <p class="comentario-texto"><?php echo nl2br(htmlspecialchars($comentario['Descripcion'])); ?></p>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <div class="sin-comentarios">
+            <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+          </div>
+        <?php endif; ?>
+      </div>
     </div>
 
     <?php if (count($mitosRelacionados) > 0): ?>
@@ -409,13 +657,16 @@ $conn->close();
         <?php foreach ($mitosRelacionados as $relacionado): ?>
           <a href="mitos.php?id=<?php echo $relacionado['id_mitooleyenda']; ?>" class="relato">
             <div class="relato-imagen">
-              <span style="font-size: 48px;">📖</span>
+              <?php if (!empty($relacionado['imagen'])): ?>
+                <img src="mitos/<?php echo htmlspecialchars($relacionado['imagen']); ?>" alt="<?php echo htmlspecialchars($relacionado['Titulo']); ?>" onerror="this.parentElement.innerHTML='<span style=\"font-size: 48px;\"></span>
+              <?php else: ?>
+                <span style="font-size: 48px;">📖</span>
+              <?php endif; ?>
             </div>
             <div class="relato-contenido">
               <div class="relato-titulo"><?php echo htmlspecialchars($relacionado['Titulo']); ?></div>
               <div class="relato-descripcion">
                 <?php 
-                  // Usar textobreve o primeros 100 caracteres
                   $desc = !empty($relacionado['textobreve']) 
                           ? $relacionado['textobreve'] 
                           : mb_substr(strip_tags($relacionado['Descripcion']), 0, 100) . '...';
@@ -439,92 +690,87 @@ $conn->close();
   <footer>
     © LeyendAR — Mitos y Leyendas de Argentina
   </footer>
+
   <script>
-  const pdfMito = {
-    title: <?php echo json_encode($mito ? $mito['Titulo'] : ''); ?>,
-    imagen: <?php echo json_encode($mito && !empty($mito['imagen']) ? 'mitos/' . $mito['imagen'] : ''); ?>,
-    descripcion: <?php echo json_encode($mito ? strip_tags($mito['Descripcion']) : ''); ?>
-  };
-</script>
-<script>
-  // helper: carga imagen y la convierte a dataURL usando canvas.
-  function loadImageAsDataURL(url) {
-    return new Promise((resolve, reject) => {
-      if (!url) return resolve(null);
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-          canvas.getContext('2d').drawImage(img, 0, 0);
-          const dataURL = canvas.toDataURL('image/jpeg', 0.92);
-          resolve({ dataURL, width: img.naturalWidth, height: img.naturalHeight, type: 'JPEG' });
-        } catch (e) {
-          reject(e); // probable CORS al intentar toDataURL
-        }
-      };
-      img.onerror = () => reject(new Error('No se pudo cargar la imagen: ' + url));
-      img.src = url + (url.indexOf('?') === -1 ? '?' : '&') + 'cb=' + Date.now(); // cache buster
-    });
-  }
+    const pdfMito = {
+      title: <?php echo json_encode($mito ? $mito['Titulo'] : ''); ?>,
+      imagen: <?php echo json_encode($mito && !empty($mito['imagen']) ? 'mitos/' . $mito['imagen'] : ''); ?>,
+      descripcion: <?php echo json_encode($mito ? strip_tags($mito['Descripcion']) : ''); ?>
+    };
 
-  async function generarPDF() {
-    try {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const margin = 20;
-      const maxWidth = pageWidth - margin * 2;
-      let y = 20;
-
-      // Título centrado
-      doc.setFontSize(18);
-      doc.text(pdfMito.title || 'Mito', pageWidth / 2, y, { align: 'center' });
-      y += 12;
-
-      // Imagen (si existe)
-      if (pdfMito.imagen) {
-        try {
-          const img = await loadImageAsDataURL(pdfMito.imagen);
-          if (img && img.dataURL) {
-            const pxToMm = 0.264583; // aproximación
-            let imgWidthMM = Math.min(maxWidth, img.width * pxToMm);
-            const imgHeightMM = (img.height / img.width) * imgWidthMM;
-            if (y + imgHeightMM > pageHeight - margin) { doc.addPage(); y = 20; }
-            doc.addImage(img.dataURL, img.type, margin, y, imgWidthMM, imgHeightMM);
-            y += imgHeightMM + 8;
+    function loadImageAsDataURL(url) {
+      return new Promise((resolve, reject) => {
+        if (!url) return resolve(null);
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            const dataURL = canvas.toDataURL('image/jpeg', 0.92);
+            resolve({ dataURL, width: img.naturalWidth, height: img.naturalHeight, type: 'JPEG' });
+          } catch (e) {
+            reject(e);
           }
-        } catch (err) {
-          console.warn('No se pudo incrustar la imagen (CORS o error):', err);
-          // seguimos sin imagen
-        }
-      }
-
-      // Descripción
-      doc.setFontSize(12);
-      const texto = pdfMito.descripcion || '';
-      const lines = doc.splitTextToSize(texto, maxWidth);
-      const lineHeight = 7; // mm aprox
-      for (let i = 0; i < lines.length; i++) {
-        if (y + lineHeight > pageHeight - margin) { doc.addPage(); y = 20; }
-        doc.text(lines[i], margin, y);
-        y += lineHeight;
-      }
-      // Reemplaza espacios y caracteres raros por guiones bajos para evitar problemas
-      const fileName = (pdfMito.title || 'mito')
-                    .replace(/[^a-z0-9áéíóúüñ\s]/gi, '')  // limpia caracteres raros
-                    .replace(/\s+/g, '_')                // espacios por guion bajo
-                    + '.pdf';
-      doc.save(fileName);
-    } catch (e) {
-      console.error(e);
-      alert('Error al generar PDF. Revisá la consola.');
+        };
+        img.onerror = () => reject(new Error('No se pudo cargar la imagen: ' + url));
+        img.src = url + (url.indexOf('?') === -1 ? '?' : '&') + 'cb=' + Date.now();
+      });
     }
-  }
-</script>
+
+    async function generarPDF() {
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 20;
+        const maxWidth = pageWidth - margin * 2;
+        let y = 20;
+
+        doc.setFontSize(18);
+        doc.text(pdfMito.title || 'Mito', pageWidth / 2, y, { align: 'center' });
+        y += 12;
+
+        if (pdfMito.imagen) {
+          try {
+            const img = await loadImageAsDataURL(pdfMito.imagen);
+            if (img && img.dataURL) {
+              const pxToMm = 0.264583;
+              let imgWidthMM = Math.min(maxWidth, img.width * pxToMm);
+              const imgHeightMM = (img.height / img.width) * imgWidthMM;
+              if (y + imgHeightMM > pageHeight - margin) { doc.addPage(); y = 20; }
+              doc.addImage(img.dataURL, img.type, margin, y, imgWidthMM, imgHeightMM);
+              y += imgHeightMM + 8;
+            }
+          } catch (err) {
+            console.warn('No se pudo incrustar la imagen:', err);
+          }
+        }
+
+        doc.setFontSize(12);
+        const texto = pdfMito.descripcion || '';
+        const lines = doc.splitTextToSize(texto, maxWidth);
+        const lineHeight = 7;
+        for (let i = 0; i < lines.length; i++) {
+          if (y + lineHeight > pageHeight - margin) { doc.addPage(); y = 20; }
+          doc.text(lines[i], margin, y);
+          y += lineHeight;
+        }
+
+        const fileName = (pdfMito.title || 'mito')
+                      .replace(/[^a-z0-9áéíóúüñ\s]/gi, '')
+                      .replace(/\s+/g, '_')
+                      + '.pdf';
+        doc.save(fileName);
+      } catch (e) {
+        console.error(e);
+        alert('Error al generar PDF. Revisá la consola.');
+      }
+    }
+  </script>
 
 </body>
 </html>
