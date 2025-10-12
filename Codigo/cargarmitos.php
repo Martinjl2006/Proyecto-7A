@@ -99,5 +99,6 @@ $stmt->close();
     <div><b>Ciudad ID:</b> <?php echo htmlspecialchars($id_ciudad); ?></div>
     <div><b>Provincia ID:</b> <?php echo htmlspecialchars($id_provincia); ?></div>
     <div><b>Usuario ID:</b> <?php echo htmlspecialchars($id_usuario); ?></div>
+    <div><button type="button" onclick="location.href='dashboard.php'">volver a inicio</button></div>
 </body>
 </html>

@@ -10,59 +10,74 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-$sql = "SELECT id_mitooleyenda, Titulo, Descripcion, imagen FROM MitoLeyenda";
+// Obtener mitos agrupados por provincia
+$sql = "SELECT id_mitooleyenda, Titulo, Descripcion, imagen, id_provincia FROM MitoLeyenda ORDER BY id_provincia, Titulo";
 $resultado = $conn->query($sql);
+
+
+
+// Agrupar los resultados por provincia
+$mitosPorProvincia = [];
+while($mito = $resultado->fetch_assoc()) {
+    $nombre_provincia = "SELECT Nombre FROM Provincias WHERE id_provincia = " . $mito['id_provincia'];
+    $resultado2 = $conn->query($nombre_provincia);
+    $provincia = $resultado2->fetch_assoc();
+
+    $nombreprovincia = $provincia['Nombre'];
+    if (!isset($mitosPorProvincia[$nombreprovincia])) {
+        $mitosPorProvincia[$nombreprovincia] = [];
+    }
+    $mitosPorProvincia[$nombreprovincia][] = $mito;
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mitos y Leyendas</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mitos - LeyendAR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <style>
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            padding: 20px;
+            font-family: 'Quicksand', sans-serif;
+            background: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 80px;
         }
 
-        .header {
+        header {
+            background: white;
+            padding: 1rem 2rem;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            padding: 0 20px;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .user-section {
+        .logo-section {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
-        .profile-pic {
-            width: 60px;
-            height: 60px;
-            background-color: #ccc;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85em;
-            text-align: center;
-            padding: 5px;
+        .logo-section img {
+            height: 42px;
         }
 
-        .user-name {
-            font-size: 1.1em;
-            color: #333;
+        .logo-section span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1d2e42;
         }
 
         .header-right {
@@ -71,204 +86,334 @@ $resultado = $conn->query($sql);
             gap: 20px;
         }
 
-        .btn-explorar {
-            background-color: #a0644e;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1em;
-            text-decoration: none;
-            display: inline-block;
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .btn-explorar:hover {
-            background-color: #8b5340;
+        .profile-pic {
+            width: 42px;
+            height: 42px;
+            background-color: #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            text-align: center;
+            padding: 5px;
+            overflow: hidden;
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 600;
         }
 
         .btn-logout {
             background-color: #dc3545;
             color: white;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 0.85rem;
             text-decoration: none;
             display: inline-block;
+            transition: background-color 0.2s;
         }
 
         .btn-logout:hover {
             background-color: #c82333;
         }
 
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2em;
+        .explore-btn-fixed {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #1d2e42, #3c506d);
+            color: white;
+            padding: 14px 36px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
         }
 
-        .mitos-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
+        .explore-btn-fixed:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
 
-        .mito {
-            background-color: #ddd;
-            border-radius: 15px;
-            padding: 25px;
-            position: relative;
-            min-height: 280px;
+        main {
+            flex: 1;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .provincia-section {
+            margin-bottom: 3rem;
+        }
+
+        .provincia-title {
+            font-size: 1.8rem;
+            color: #1d2e42;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .mitos-scroll {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scrollbar-width: thin;
+        }
+
+        .mitos-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .mitos-scroll::-webkit-scrollbar-track {
+            background: #e0e0e0;
+            border-radius: 10px;
+        }
+
+        .mitos-scroll::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .mito-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            min-width: 300px;
+            max-width: 300px;
             transition: all 0.3s ease;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .mito-imagen-circle {
-            position: absolute;
-            top: -20px;
-            left: -20px;
-            width: 80px;
-            height: 80px;
-            background-color: #bbb;
+        .mito-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .mito-card.expanded {
+            min-width: 450px;
+            max-width: 450px;
+            background: linear-gradient(135deg, #f0f4ff, #e8eeff);
+            border: 2px solid #2b4ab8;
+        }
+
+        .mito-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mito-image {
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
+            background: #ddd;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75em;
-            text-align: center;
-            padding: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 0.7rem;
+            color: #888;
+            flex-shrink: 0;
             overflow: hidden;
         }
 
-        .mito-imagen-circle img {
+        .mito-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .mito h2 {
-            color: #333;
-            font-size: 1.3em;
-            margin-top: 30px;
-            margin-bottom: 15px;
+        .mito-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1d2e42;
         }
 
-        .mito p {
+        .mito-text {
             color: #555;
-            font-size: 0.95em;
             line-height: 1.5;
+            font-size: 0.95rem;
         }
 
-        .btn-ver-mas {
+        .mito-extra {
             display: none;
-            margin-top: 20px;
-            padding: 10px 25px;
-            background-color: #0033cc;
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-size: 0.95em;
-            font-weight: bold;
-            text-align: center;
-            width: 100%;
-            cursor: pointer;
-            border: none;
+            color: #444;
+            line-height: 1.6;
+            margin-top: 0.5rem;
         }
 
-        .btn-ver-mas:hover {
-            background-color: #0027a3;
-        }
-
-        .mito:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            z-index: 10;
-        }
-
-        .mito:hover .btn-ver-mas {
+        .mito-card.expanded .mito-extra {
             display: block;
         }
 
-        footer {
-            text-align: center;
-            margin-top: 60px;
-            padding: 40px 20px;
-            color: #333;
-            font-size: 1.2em;
-            font-weight: bold;
+        .leer-mas-btn {
+            display: none;
+            background: linear-gradient(135deg, #2b4ab8, #4a6cd6);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 25px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            align-self: flex-start;
+            transition: transform 0.2s;
         }
 
-        @media (max-width: 1024px) {
-            .mitos-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .mito-card.expanded .leer-mas-btn {
+            display: block;
+        }
+
+        .leer-mas-btn:hover {
+            transform: scale(1.05);
+        }
+
+        footer {
+            background: #e0e0e0;
+            text-align: center;
+            padding: 1.5rem;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: auto;
         }
 
         @media (max-width: 768px) {
-            .mitos-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .header {
+            header {
+                padding: 1rem;
                 flex-direction: column;
-                gap: 20px;
+                gap: 15px;
             }
 
             .header-right {
-                flex-direction: column;
                 width: 100%;
+                justify-content: space-between;
             }
 
-            .btn-explorar, .btn-logout {
-                width: 100%;
+            .logo-section span {
+                font-size: 1.2rem;
+            }
+
+            .provincia-title {
+                font-size: 1.4rem;
+            }
+
+            .mito-card {
+                min-width: 250px;
+                max-width: 250px;
+            }
+
+            .mito-card.expanded {
+                min-width: 320px;
+                max-width: 320px;
+            }
+
+            .explore-btn-fixed {
+                bottom: 15px;
+                right: 15px;
+                padding: 12px 28px;
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="user-section">
-            <div class="profile-pic">foto de perfil</div>
-            <span class="user-name"><?= htmlspecialchars($_SESSION['username']) ?></span>
+    <header>
+        <div class="logo-section">
+            <img src="logo_logo_re_logo_sin_fondo_-removebg-preview.png" alt="Logo">
+            <span>leyendAR</span>
         </div>
         <div class="header-right">
-            <button class="btn-explorar">Explorar mapa</button>
-            <a href="logout.php" class="btn-logout">Cerrar sesión</a>
-        </div>
-    </div>
-
-    <h1>Mitos y Leyendas Argentinas</h1>
-
-    <div class="mitos-grid">
-        <?php 
-        while($mito = $resultado->fetch_assoc()): 
-        ?>
-            <div class="mito">
-                <div class="mito-imagen-circle">
-                    <img src="img/<?php echo htmlspecialchars($mito['imagen']); ?>" alt="<?= htmlspecialchars($mito['Titulo']) ?>">
+            <div class="user-section">
+                <div class="profile-pic">
+                    <img src="img/profile.jpg" alt="Perfil" onerror="this.style.display='none'">
                 </div>
-                <h2><?= htmlspecialchars($mito['Titulo']) ?></h2>
-                <p><?= htmlspecialchars($mito['Descripcion']) ?></p>
-                <a class="btn-ver-mas" href="mitos.php?id=<?= $mito['id_mitooleyenda'] ?>">Leer mas</a>
+                <span class="user-name"><?= htmlspecialchars($_SESSION['username']) ?></span>
             </div>
+            <a href="dashboard.php" class="btn-logout">volver a inicio</a>
+        </div>
+    </header>
+
+    <button class="explore-btn-fixed" onclick="location.href='mapa.php'">Explorar mapa</button>
+
+    <main>
         <?php 
-        endwhile; 
+        if (empty($mitosPorProvincia)): 
         ?>
-    </div>
+            <p style="text-align: center; color: #666; font-size: 1.1rem;">No hay mitos registrados en el sistema.</p>
+        <?php 
+        else:
+            foreach ($mitosPorProvincia as $provincia => $mitos): 
+        ?>
+            <section class="provincia-section">
+                <h2 class="provincia-title"><?= htmlspecialchars($provincia) ?></h2>
+                <div class="mitos-scroll">
+                    <?php 
+                    foreach ($mitos as $mito): 
+                    ?>
+                        <div class="mito-card" onclick="toggleExpand(this)">
+                            <div class="mito-header">
+                                <div class="mito-image">
+                                    <?php if (!empty($mito['imagen'])): ?>
+                                        <img src="mitos/<?= htmlspecialchars($mito['imagen']) ?>" alt="<?= htmlspecialchars($mito['Titulo']) ?>" onerror="this.parentElement.textContent='Imagen no disponible'">
+                                    <?php else: ?>
+                                        <span>Sin imagen</span>
+                                    <?php endif; ?>
+                                </div>
+                                <h3 class="mito-title"><?= htmlspecialchars($mito['Titulo']) ?></h3>
+                            </div>
+                            <p class="mito-text"><?= htmlspecialchars($mito['Descripcion']) ?></p>
+                            <p class="mito-extra"><?= htmlspecialchars($mito['Descripcion']) ?></p>
+                            <button class="leer-mas-btn" onclick="event.stopPropagation(); location.href='mitos.php?id=<?= $mito['id_mitooleyenda'] ?>'">Leer mas</button>
+                        </div>
+                    <?php 
+                    endforeach; 
+                    ?>
+                </div>
+            </section>
+        <?php 
+            endforeach;
+        endif; 
+        ?>
+    </main>
 
     <footer>
-        Footer
+        © 2025 leyendAR - Mitos y Leyendas Argentinas
     </footer>
 
+    <script>
+        function toggleExpand(card) {
+            // Cerrar todas las otras tarjetas
+            document.querySelectorAll('.mito-card').forEach(c => {
+                if (c !== card) c.classList.remove('expanded');
+            });
+            // Toggle la tarjeta clickeada
+            card.classList.toggle('expanded');
+        }
+    </script>
 </body>
 </html>

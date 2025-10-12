@@ -13,7 +13,11 @@ if (!isset($_SESSION["username"]) || !isset($_SESSION["id_usuario"])) {
 
 $id_usuario = $_SESSION["id_usuario"];
 $username = htmlspecialchars($_SESSION["username"]);
-$mensaje = "";
+
+$consultafoto = $conn->query("SELECT foto FROM Usuarios WHERE id_usuario = " .$id_usuario);
+$foto = $consultafoto->fetch_assoc();
+$fotoActual = $foto['foto'];
+
 
 // mito aleatorio
 $result = $conn->query("SELECT COUNT(*) AS total FROM MitoLeyenda");
@@ -152,6 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             font-size: 12px;
             color: white;
             font-weight: bold;
+            overflow: hidden;
         }
 
         .username {
@@ -580,6 +585,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                 padding: 30px 20px;
             }
         }
+
+        .foto_perfil{
+            width: 100px;
+            height: 100px;
+            border: 0px;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
@@ -587,7 +599,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
     <header class="header">
         <div class="user-info" onclick="openProfileModal()">
             <div class="profile-pic">
-                <?php echo strtoupper(substr($username, 0, 2)); ?>
+                <img src="usuarios/<?= htmlspecialchars($fotoActual) ?>" alt="Foto de perfil" class="foto_perfil">
             </div>
             <div class="username"><?php echo $username; ?></div>
         </div>
@@ -706,6 +718,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                 <input type="hidden" name="action" value="cambiar_clave">
                 <button type="submit" class="form-btn">Actualizar Contraseña</button>
             </form>
+
+            <div class="profile-form"> 
+                <button type="button" onclick="location.href='foto_perfil.php'" class="form-btn">cambiar foto de perfil</button>
+            </div>
 
             <!-- Borrar cuenta -->
             <form method="POST" class="profile-form" onsubmit="return confirmDelete()">
