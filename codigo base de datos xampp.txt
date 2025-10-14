@@ -598,6 +598,7 @@ UPDATE mitoleyenda SET imagen = "salamanca.jpg" WHERE Titulo = "La Salamanca"; U
 
 CREATE TABLE Favoritos( id_favorito INT(11) NOT NULL AUTO_INCREMENT, id_mitooleyenda INT(11) NOT NULL, id_usuario INT(11) NOT NULL, PRIMARY KEY (id_favorito), FOREIGN KEY (id_mitooleyenda) REFERENCES Mitoleyenda(id_mitooleyenda), FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) );
 
+CREATE TABLE Respuestas( id_respuesta INT(11) NOT NULL AUTO_INCREMENT, id_comentario INT(11) NOT NULL, id_usuario INT(11) NOT NULL, PRIMARY KEY (id_respuesta), FOREIGN KEY (id_comentario) REFERENCES Comentarios(id_comentario), FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) );
 
 -- Agregar columna Verificado a la tabla Mitoleyenda
 ALTER TABLE Mitoleyenda 
