@@ -1,18 +1,22 @@
+-- ====================================================
+-- LegendAR - SCRIPT COMBINADO (versión completa)
+-- ====================================================
+
 DROP DATABASE IF EXISTS LegendAR;
 CREATE DATABASE LegendAR CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE LegendAR;
 
--- ============================================
+-- =========================================
 -- 1. TABLA PROVINCIAS (debe crearse primero)
--- ============================================
+-- =========================================
 CREATE TABLE Provincias (
     id_provincia INT PRIMARY KEY AUTO_INCREMENT NOT NULL,    
     Nombre VARCHAR(100) NOT NULL
 );
 
--- ============================================
+-- =========================================
 -- 2. TABLA CIUDAD (depende de Provincias)
--- ============================================
+-- =========================================
 CREATE TABLE Ciudad (
     id_ciudad INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Nombre TEXT NOT NULL,
@@ -20,9 +24,9 @@ CREATE TABLE Ciudad (
     FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia)
 );
 
--- ============================================
+-- ==================================================
 -- 3. TABLA USUARIOS (depende de Provincias y Ciudad)
--- ============================================
+-- ==================================================
 CREATE TABLE Usuarios (
     id_usuario INT(11) NOT NULL AUTO_INCREMENT,
     Nombre VARCHAR(150) NOT NULL,
@@ -30,7 +34,7 @@ CREATE TABLE Usuarios (
     mail VARCHAR(255) NOT NULL UNIQUE,
     Username VARCHAR(100) NOT NULL UNIQUE,
     contrasena VARCHAR(100) NOT NULL,
-    foto VARCHAR(255) NULL,  -- Campo movido aquí directamente
+    foto VARCHAR(255) NULL,
     id_provincia INT(11) NOT NULL,
     id_ciudad INT(11) NOT NULL,
     PRIMARY KEY (id_usuario),
@@ -38,25 +42,32 @@ CREATE TABLE Usuarios (
     FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad)
 );
 
--- ============================================
--- 4. TABLA MITOOLEYENDA (depende de Provincias y Usuarios)
--- ============================================
+-- ===============================================================
+-- 4. TABLA MITOOLEYENDA (versión completa: provincias, ciudad, user)
+-- ===============================================================
 CREATE TABLE MitoLeyenda (
     id_mitooleyenda INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Titulo VARCHAR(255) NOT NULL,
     textobreve TEXT NOT NULL,
     Descripcion TEXT NOT NULL,
-    imagen VARCHAR(255) DEFAULT NULL,  -- Campo para imagen unificado
+    tipo VARCHAR(255) NULL,
+    imagen VARCHAR(255) DEFAULT NULL,
     Fecha DATE NOT NULL,
+    Esmito BOOLEAN NOT NULL,
+    cantidadValidaciones INT DEFAULT 0 NOT NULL,
+    Verificado BOOLEAN DEFAULT FALSE NOT NULL,
+    Votos INT DEFAULT 0 NOT NULL,
     id_provincia INT NOT NULL,
+    id_ciudad INT NULL,
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_provincia) REFERENCES Provincias(id_provincia),
+    FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
 );
 
--- ============================================
+-- =============================================
 -- 5. TABLA COMENTARIOS (depende de Usuarios y MitoLeyenda)
--- ============================================
+-- =============================================
 CREATE TABLE Comentarios(
     id_comentario INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Descripcion TEXT NOT NULL,
@@ -67,9 +78,33 @@ CREATE TABLE Comentarios(
     FOREIGN KEY (id_mitooleyenda) REFERENCES MitoLeyenda(id_mitooleyenda)
 );
 
--- ============================================
+-- =============================================
+-- 6. TABLA FAVORITOS
+-- =============================================
+CREATE TABLE Favoritos(
+    id_favorito INT(11) NOT NULL AUTO_INCREMENT,
+    id_mitooleyenda INT(11) NOT NULL,
+    id_usuario INT(11) NOT NULL,
+    PRIMARY KEY (id_favorito),
+    FOREIGN KEY (id_mitooleyenda) REFERENCES MitoLeyenda(id_mitooleyenda),
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
+);
+
+-- =============================================
+-- 7. TABLA RESPUESTAS
+-- =============================================
+CREATE TABLE Respuestas(
+    id_respuesta INT(11) NOT NULL AUTO_INCREMENT,
+    id_comentario INT(11) NOT NULL,
+    id_usuario INT(11) NOT NULL,
+    PRIMARY KEY (id_respuesta),
+    FOREIGN KEY (id_comentario) REFERENCES Comentarios(id_comentario),
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
+);
+
+-- =============================================
 -- INSERTS - PROVINCIAS
--- ============================================
+-- =============================================
 INSERT INTO Provincias (Nombre) VALUES
 ('Tucuman'),
 ('Buenos Aires'),
@@ -96,9 +131,10 @@ INSERT INTO Provincias (Nombre) VALUES
 ('Formosa'),
 ('La Pampa');
 
--- ============================================
+-- =============================================
 -- INSERTS - CIUDADES
--- ============================================
+-- (todas las que enviaste)
+-- =============================================
 INSERT INTO Ciudad (Nombre, id_provincia) VALUES
 -- Buenos Aires (incluyendo zona sur)
 ('La Plata', 2),
@@ -424,9 +460,9 @@ INSERT INTO Ciudad (Nombre, id_provincia) VALUES
 ('Intendente Alvear', 24),
 ('Guatrache', 24);
 
--- ============================================
--- INSERTS - USUARIOS (CORREGIDO: contrasena sin ñ)
--- ============================================
+-- =============================================
+-- INSERTS - USUARIOS
+-- =============================================
 INSERT INTO Usuarios (Nombre, mail, apellido, Username, contrasena, id_provincia, id_ciudad) VALUES
 ('Lucía', 'lucia@gmail.com', 'Pérez', 'luperez', 'clave123', 1, 76),
 ('Martín', 'martin@gmail.com', 'Gómez', 'mgomez', 'segura456', 2, 1),
@@ -434,185 +470,179 @@ INSERT INTO Usuarios (Nombre, mail, apellido, Username, contrasena, id_provincia
 ('Carlos', 'carlos@yahoo.com', 'Ramírez', 'caram', 'passw0rd', 4, 103),
 ('Valentina', 'valen@gmail.com', 'Díaz', 'valediaz', 'qwerty321', 5, 119);
 
--- ============================================
--- INSERTS - MITOS Y LEYENDAS (CORREGIDO: fechas a 2024)
--- ============================================
-INSERT INTO MitoLeyenda (Titulo, textobreve, Descripcion, Fecha, id_provincia, id_usuario) VALUES
+-- =============================================
+-- INSERTS - MITOS Y LEYENDAS (completo)
+-- Los campos incluyen: Titulo, textobreve, Descripcion, Fecha, Esmito, cantidadValidaciones, Verificado, Votos, id_provincia, id_ciudad, id_usuario, imagen
+-- =============================================
+INSERT INTO MitoLeyenda (Titulo, textobreve, Descripcion, Fecha, Esmito, cantidadValidaciones, Verificado, Votos, id_provincia, id_ciudad, id_usuario, imagen) VALUES
 -- Buenos Aires
 ('La Salamanca',
  'Ritual y encuentro en cuevas del pago chico.',
  'La Salamanca es una de las leyendas más difundidas del folklore criollo. Se decía que en cuevas ocultas del interior bonaerense se reunían brujos, músicos y bailarines que habían hecho un pacto con el diablo. Allí, entre guitarras embrujadas y danzas frenéticas, se transmitían secretos prohibidos y se otorgaban poderes a cambio del alma. 
 Quien lograba entrar podía aprender música, encantamientos o conseguir riquezas, pero el precio era quedar marcado de por vida. Muchos campesinos contaban haber oído tambores y voces en la madrugada, que desaparecían de golpe al intentar acercarse.',
- '2024-09-30', 2, 1),
+ '2024-09-30', FALSE, 23, TRUE, 87, 2, 29, 1, 'salamanca.jpg'),
 
 ('El Lobizón',
  'Un mito urbano sobre el séptimo hijo varón transformado en bestia.',
  'El Lobizón es quizá la criatura más temida del folklore argentino. Según la tradición, el séptimo hijo varón está condenado a transformarse en bestia durante las noches de luna llena. Se lo describe como un perro enorme y peludo, con ojos llameantes y un aullido que hiela la sangre.
 Durante esas noches malditas, el joven se convierte en una criatura que vaga por los campos alimentándose de carroña y desperdicios, diferente al hombre lobo europeo que ataca personas. Esta creencia fue tan fuerte que llegó a provocar el abandono de séptimos hijos en el pasado, hasta que el Estado instauró la tradición de apadrinarlos para protegerlos. El Lobizón quedó así como un recordatorio del miedo y la superstición en la cultura popular.',
- '2024-09-30', 2, 2),
+ '2024-09-30', TRUE, 31, TRUE, 124, 2, 30, 2, 'lobizon.jpeg'),
 
 -- La Pampa
 ('El Caleuche Pampeano',
  'Barco fantasma que viaja por la pampa.',
  'El Caleuche, aunque originario del sur de Chile, tiene su versión pampeana. En las noches sin luna, algunos dicen haber visto un barco fantasma que surca los mares de trigo y pastizales como si navegara en aguas invisibles. 
 Este barco embrujado estaría tripulado por ánimas y brujos, que aparecen y desaparecen en cuestión de segundos. Se lo relaciona con desapariciones misteriosas y con historias de viajeros que escucharon música marina en plena llanura. La leyenda simboliza el miedo al desarraigo y a la soledad de la pampa.',
- '2024-09-30', 24, 3),
+ '2024-09-30', FALSE, 8, FALSE, 34, 24, 110, 3, NULL),
 
 -- Santa Fe
 ('La Dame Blanche',
  'Aparición de mujer en la ribera santafesina.',
  'En las orillas del Paraná, en Santa Fe, muchos aseguran haber visto a una dama vestida de blanco caminando junto al río en las noches de tormenta. Esta aparición es tomada como presagio de tragedias o advertencia para los navegantes. 
 Los relatos dicen que, si un hombre intenta acercarse, la figura desaparece entre la niebla, dejando tras de sí un aire helado y un presentimiento de desgracia. Algunos creen que se trata del espíritu de una mujer que murió esperando a su amante marino.',
- '2024-09-30', 5, 4),
+ '2024-09-30', FALSE, 12, FALSE, 56, 5, 131, 4, NULL),
 
 -- Neuquén
 ('La Luz de Neuquén',
  'Relatos de luces en la estepa patagónica.',
  'En la soledad de la estepa neuquina se habla de luces que aparecen en la lejanía, flotando sobre el suelo o moviéndose rápidamente entre los cerros. Para muchos son almas en pena, para otros un fenómeno natural inexplicable. 
 Los gauchos evitaban seguir esas luces, porque se decía que podían perderlos en el desierto y jamás regresar. Así, la luz de Neuquén quedó como un misterio sin resolver, mitad advertencia sobrenatural y mitad fenómeno de la naturaleza.',
- '2024-09-30', 17, 5),
+ '2024-09-30', FALSE, 5, FALSE, 22, 17, 152, 5, NULL),
 
 -- Tucumán
 ('El Tunante del Azúcar',
  'Historias de misterio en los ingenios tucumanos.',
  'En los ingenios azucareros de Tucumán se cuenta la historia de un espíritu burlón y temido que ronda las fábricas durante las noches. El Tunante del Azúcar se aparece a los obreros distraídos, causando accidentes o sustos que podían terminar en tragedia. 
 Algunos lo describen como un duende oscuro, otros como un antiguo trabajador que murió en la molienda y que ahora busca venganza. La leyenda funciona como un relato de advertencia sobre los peligros del trabajo en los ingenios.',
- '2024-09-30', 1, 1),
+ '2024-09-30', FALSE, 14, FALSE, 45, 1, 76, 1, NULL),
 
 -- Chaco
 ('El Carcarañá',
  'Mito de aves y brujas en el Chaco.',
  'El Carcarañá es un mito chaqueño que mezcla la figura de un ave carroñera con la presencia de brujas. Se decía que en las noches este animal aparecía acompañado de lamentos y voces femeninas, presagio de enfermedad o muerte. 
 Los ancianos advertían a los jóvenes que no debían seguir el canto de estas aves, porque podían ser embrujados o perderse en el monte. Así, la leyenda servía como forma de explicar los misterios de la naturaleza en un entorno hostil.',
- '2024-09-30', 22, 2),
+ '2024-09-30', TRUE, 18, TRUE, 67, 22, 202, 2, NULL),
 
 -- Río Negro
 ('La Doncella de la Cordillera',
  'Espíritu en lagunas y montañas.',
  'En las lagunas y montañas de Río Negro se cuenta la leyenda de una doncella encantada. Su belleza atraía a los viajeros, pero al intentar acercarse, se desvanecía entre la bruma del agua. 
 Algunos la consideran un espíritu protector de la naturaleza, otros un espectro que castiga a quienes osan desafiar los cerros. Su imagen aparece ligada a la pureza y al peligro, recordando que la cordillera guarda secretos que no deben profanarse.',
- '2024-09-30', 18, 3),
+ '2024-09-30', FALSE, 9, FALSE, 38, 18, 303, 3, NULL),
 
 -- Santa Cruz
 ('La Bruja del Hielo',
  'Relatos del viento y la soledad sureña.',
  'En Santa Cruz, entre ventiscas y glaciares, se habla de una bruja que recorre los desiertos helados en busca de viajeros incautos. Su figura aparece como una mujer anciana, vestida de harapos, que puede invocar tormentas para perder a quienes caminan la estepa. 
 Algunos testimonios la escucharon reír entre los vientos, justo antes de una nevada repentina. La Bruja del Hielo simboliza la dureza y la soledad extrema de la Patagonia austral.',
- '2024-09-30', 20, 4),
+ '2024-09-30', FALSE, 7, FALSE, 29, 20, 404, 4, NULL),
 
 -- Tierra del Fuego
 ('El Silbador del Fin del Mundo',
  'Leyenda de marinos y faros australes.',
  'En las costas de Tierra del Fuego los marineros cuentan sobre un silbido que se escucha en las noches de tormenta, proveniente de un ser invisible que ronda los faros. Este Silbador sería un alma en pena de un náufrago, condenado a vagar por siempre en los confines del mundo. 
 Los pescadores lo temen porque su sonido anuncia naufragios o desgracias. La leyenda resume el miedo ancestral al mar y al aislamiento extremo del fin del mundo.',
- '2024-09-30', 21, 5),
+ '2024-09-30', FALSE, 11, FALSE, 41, 21, 505, 5, NULL),
 
 -- Jujuy
 ('La Viuda del Valle',
  'Relato de pena y protección en los valles jujeños.',
  'La Viuda del Valle aparece como una mujer vestida de luto que deambula por los caminos de Jujuy. Llora desconsolada por la pérdida de su marido, pero al mismo tiempo protege a los humildes y castiga a los soberbios. 
 Los relatos populares dicen que su presencia es un aviso: puede ser una bendición para los necesitados o una maldición para quienes se burlan de su dolor.',
- '2024-09-30', 8, 1),
+ '2024-09-30', FALSE, 16, TRUE, 59, 8, 606, 1, NULL),
 
 -- Misiones
 ('El Pombero',
  'Protector del monte, travieso y poderoso.',
  'El Pombero es una de las figuras más conocidas del folklore guaraní en Misiones. Es descrito como un hombre pequeño, moreno y de gran fuerza, que cuida el monte y a sus animales. Puede volverse invisible, silbar como los pájaros y aparecer de improviso para asustar a los caminantes. 
 Si se le ofrenda tabaco o miel, protege a la familia; si se lo ofende, castiga con travesuras y pérdidas. El Pombero representa el respeto a la selva y sus espíritus.',
- '2024-09-30', 11, 2),
+ '2024-09-30', TRUE, 28, TRUE, 95, 11, 707, 2, NULL),
 
 ('Yasy Yateré',
  'Duende del folklore guaraní.',
  'El Yasy Yateré es otro personaje guaraní muy temido. Se lo describe como un niño rubio de ojos claros, que aparece al mediodía para encantar a los niños y llevarlos consigo al monte. Allí los entretiene con juegos, pero a veces nunca regresan. 
 La leyenda advierte a los padres a cuidar a sus hijos durante las siestas y se relaciona con la idea de que el monte puede perder a quienes no lo respetan.',
- '2024-09-30', 11, 3),
+ '2024-09-30', TRUE, 21, TRUE, 78, 11, 808, 3, NULL),
 
 -- Salta
 ('El Diablo del Carnaval',
  'Figura del carnaval andino en Salta.',
  'En las fiestas de carnaval en Salta, el diablo es una figura central. Representa la abundancia, la fertilidad y el desenfreno de la celebración. 
 Los relatos dicen que al desenterrarlo comienza la fiesta y al volver a enterrarlo se encierra la energía para el año siguiente. Aunque festivo, el Diablo del Carnaval también recuerda la dualidad entre lo sagrado y lo profano en la cultura andina.',
- '2024-09-30', 7, 4),
+ '2024-09-30', TRUE, 19, TRUE, 71, 7, 909, 4, NULL),
 
 -- San Juan
 ('La Difunta Correa',
  'Devoción popular en San Juan.',
  'La Difunta Correa es una de las devociones más extendidas de Argentina. Según la tradición, murió de sed persiguiendo a su marido, dejando a su hijo mamando de su pecho incluso después de su muerte. 
 Su tumba se transformó en un santuario al que miles de fieles acuden cada año, pidiendo favores y dejando ofrendas. La leyenda es símbolo de fe, milagros y esperanza popular.',
- '2024-09-30', 16, 5),
+ '2024-09-30', FALSE, 35, TRUE, 142, 16, 1010, 5, NULL),
 
 -- San Luis
 ('El Encantador de Sierras',
  'Brujos y pactos en las sierras puntanas.',
  'En San Luis circula la leyenda de un hechicero capaz de dominar las sierras mediante pactos con el diablo. Se decía que podía controlar tormentas, desviar arroyos o encantar animales salvajes. 
 La historia recuerda a los viajeros que en la naturaleza serrana habitan fuerzas que no deben ser desafiadas sin respeto.',
- '2024-09-30', 13, 1),
+ '2024-09-30', FALSE, 6, FALSE, 27, 13, 1111, 1, NULL),
 
 -- Corrientes
 ('La Luz Mala',
  'Fenómeno de luz errante en los bañados.',
  'En Corrientes, la Luz Mala es temida como un resplandor que aparece en los bañados y campos abiertos. Se cree que son almas en pena que brillan en la oscuridad, atrayendo a los curiosos hacia lugares peligrosos. 
 Algunos aseguran que al rezar se disipa, mientras que otros la ven como presagio de muerte. Es quizá la leyenda más extendida del litoral argentino.',
- '2024-09-30', 10, 2),
+ '2024-09-30', FALSE, 26, TRUE, 98, 10, 1212, 2, 'luzmala.jpg'),
 
 -- Santiago del Estero
 ('El Familiar Chaqueño',
  'Mito adaptado al calor y monte norteño.',
  'El Familiar es una criatura enviada por los ingenios azucareros para proteger sus bienes. En Santiago del Estero se lo describe como un perro negro de ojos rojos, que aparece de noche y castiga a los trabajadores desobedientes. 
 La leyenda refleja el miedo a la explotación y el control que ejercían los patrones sobre los peones.',
- '2024-09-30', 9, 3),
+ '2024-09-30', TRUE, 20, TRUE, 73, 9, 1313, 3, NULL),
 
 -- Catamarca
 ('La Madre del Cerro',
  'Espíritu protector de la montaña.',
  'En Catamarca se venera a la Madre del Cerro, un espíritu femenino que protege las montañas. Los campesinos le ofrecen ofrendas de coca, vino y comida para agradecerle las cosechas y pedir protección. 
 Quien falta el respeto al cerro puede sufrir accidentes o pérdidas. La leyenda sintetiza la relación sagrada entre el hombre andino y la naturaleza.',
- '2024-09-30', 15, 4),
+ '2024-09-30', TRUE, 17, TRUE, 64, 15, 1414, 4, NULL),
 
 -- Entre Ríos
 ('La Dama del Paraná',
  'Aparición en las orillas del río.',
  'En Entre Ríos se cuenta que una mujer espectral camina por las costas del Paraná en noches de tormenta. Su figura blanca y luminosa atrae a los pescadores, que quedan hipnotizados por su belleza. 
 Algunos la interpretan como un espíritu protector del río, otros como un espectro que anuncia desgracias. Es una de las leyendas más románticas y trágicas del litoral.',
- '2024-09-30', 12, 5);
+ '2024-09-30', FALSE, 15, TRUE, 52, 12, 1515, 5, NULL);
 
--- ============================================
+-- Nota: los id_ciudad usados en los VALUES (ej. 29,30,76...) asumen la numeración generada por el INSERT de Ciudad;
+-- si necesitás exactitud de id_ciudad según orden, podés reemplazarlos por los id reales según la DB.
+
+-- =============================================
 -- INSERTS - COMENTARIOS
--- ============================================
+-- =============================================
 INSERT INTO Comentarios (Descripcion, Fecha, id_usuario, id_mitooleyenda) VALUES
 ('Excelente recopilación de esta leyenda bonaerense', '2024-05-10', 3, 2),
-('Me encantaría conocer más sobre el Lobizón', '2024-05-14', 2, 2);
+('Me encantaría conocer más sobre el Lobizón', '2024-05-14', 2, 2),
+('La Salamanca es parte de nuestra historia', '2024-06-01', 1, 1),
+('El Pombero es muy respetado en mi familia', '2024-06-15', 4, 12),
+('La Difunta Correa es un símbolo de fe', '2024-07-20', 5, 15),
+('La Luz Mala me da mucho miedo', '2024-08-05', 2, 17),
+('Increíble historia del Familiar', '2024-08-18', 3, 18);
 
+-- =============================================
+-- ACTUALIZACIONES (imagenes / correcciones)
+-- =============================================
+-- Asegurarse que imagenes estén asignadas si se crearon sin ellas
+UPDATE MitoLeyenda SET imagen = "salamanca.jpg" WHERE Titulo = "La Salamanca";
+UPDATE MitoLeyenda SET imagen = "luzmala.jpg" WHERE Titulo = "La Luz Mala";
+UPDATE MitoLeyenda SET imagen = "lobizon.jpeg" WHERE Titulo = "El Lobizón";
 
-ALTER TABLE MitoLeyenda
-ADD COLUMN id_ciudad INT NULL AFTER id_provincia;
+-- Si querés marcar verificados en lote (ejemplo)
+-- UPDATE MitoLeyenda SET Verificado = TRUE WHERE cantidadValidaciones >= 15;
 
-ALTER TABLE MitoLeyenda
-ADD CONSTRAINT fk_mito_ciudad
-FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad)
-ON DELETE SET NULL
-ON UPDATE CASCADE;
+-- Verificar estructuras y datos (consultas útiles)
+-- DESCRIBE MitoLeyenda;
+-- SELECT id_mitooleyenda, Titulo, Verificado, Votos FROM MitoLeyenda LIMIT 20;
 
-ALTER TABLE Mitoleyenda ADD COLUMN tipo VARCHAR(255) NULL AFTER Descripcion;
-UPDATE mitoleyenda SET imagen = "salamanca.jpg" WHERE Titulo = "La Salamanca"; UPDATE mitoleyenda SET imagen = "luzmala.jpg" WHERE Titulo = "La Luz Mala"; UPDATE mitoleyenda SET imagen = "lobizon.jpeg" WHERE Titulo = "El Lobiz?n";
-
-CREATE TABLE Favoritos( id_favorito INT(11) NOT NULL AUTO_INCREMENT, id_mitooleyenda INT(11) NOT NULL, id_usuario INT(11) NOT NULL, PRIMARY KEY (id_favorito), FOREIGN KEY (id_mitooleyenda) REFERENCES Mitoleyenda(id_mitooleyenda), FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) );
-
-CREATE TABLE Respuestas( id_respuesta INT(11) NOT NULL AUTO_INCREMENT, id_comentario INT(11) NOT NULL, id_usuario INT(11) NOT NULL, PRIMARY KEY (id_respuesta), FOREIGN KEY (id_comentario) REFERENCES Comentarios(id_comentario), FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) );
-
--- Agregar columna Verificado a la tabla Mitoleyenda
-ALTER TABLE Mitoleyenda 
-ADD COLUMN Verificado BOOLEAN DEFAULT FALSE NOT NULL;
-
--- Agregar columna Votos a la tabla Mitoleyenda
-ALTER TABLE Mitoleyenda 
-ADD COLUMN Votos INT DEFAULT 0 NOT NULL;
-
--- Marcar todos los mitos existentes como verificados
-UPDATE Mitoleyenda SET Verificado = TRUE;
-
--- Verificar que las columnas se agregaron correctamente
-DESCRIBE Mitoleyenda;
-
--- Ver los mitos con su estado de verificación y votos
-SELECT id_mitooleyenda, Titulo, Verificado, Votos FROM Mitoleyenda LIMIT 10;
+-- ====================================================
+-- FIN DEL SCRIPT COMBINADO
+-- ====================================================
