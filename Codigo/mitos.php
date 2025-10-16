@@ -41,6 +41,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevo_comentario'])) 
     }
 }
 
+// Procesar nueva respuesta
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_respuesta'])) {
+    $respuesta = trim($_POST['nueva_respuesta']);
+    $id_comentario = intval($_POST['id_comentario']);
+    $id_mito = intval($_POST['id_mito']);
+    
+    if (!empty($respuesta) && $id_usuario && $id_comentario) {
+        $sql_insert = "INSERT INTO Respuestas (Descripcion, Fecha, id_comentario, id_usuario) VALUES (?, NOW(), ?, ?)";
+        $stmt_insert = $conn->prepare($sql_insert);
+        $stmt_insert->bind_param("sii", $respuesta, $id_comentario, $id_usuario);
+        
+        if ($stmt_insert->execute()) {
+            header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $id_mito);
+            exit();
+        }
+    }
+}
+
 // Verificar si se recibió un ID válido por GET
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = intval($_GET['id']);
@@ -69,7 +87,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $error = "No se especificó un ID de mito válido.";
 }
 
-// Obtener comentarios del mito
+// Obtener comentarios del mito con sus respuestas
 $comentarios = [];
 if ($mito) {
     $sql_comentarios = "SELECT c.id_comentario, c.Descripcion, c.Fecha, u.Username, u.Nombre, u.foto
@@ -83,6 +101,23 @@ if ($mito) {
     $resultado_com = $stmt_com->get_result();
     
     while ($row = $resultado_com->fetch_assoc()) {
+        // Obtener respuestas para cada comentario
+        $sql_respuestas = "SELECT r.id_respuesta, r.Descripcion, r.Fecha, u.Username, u.Nombre, u.foto
+                          FROM Respuestas r
+                          INNER JOIN Usuarios u ON r.id_usuario = u.id_usuario
+                          WHERE r.id_comentario = ?
+                          ORDER BY r.Fecha ASC";
+        $stmt_resp = $conn->prepare($sql_respuestas);
+        $stmt_resp->bind_param("i", $row['id_comentario']);
+        $stmt_resp->execute();
+        $resultado_resp = $stmt_resp->get_result();
+        
+        $row['respuestas'] = [];
+        while ($resp = $resultado_resp->fetch_assoc()) {
+            $row['respuestas'][] = $resp;
+        }
+        $stmt_resp->close();
+        
         $comentarios[] = $row;
     }
     $stmt_com->close();
@@ -328,8 +363,12 @@ $conn->close();
       padding: 15px;
       border-radius: 8px;
       border-left: 4px solid #ff7b00;
+    }
+
+    .comentario-principal {
       display: flex;
       gap: 12px;
+      margin-bottom: 10px;
     }
 
     .comentario-avatar {
@@ -375,6 +414,158 @@ $conn->close();
       color: #555;
       line-height: 1.5;
       font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .comentario-acciones {
+      display: flex;
+      gap: 15px;
+      margin-top: 8px;
+    }
+
+    .btn-responder {
+      background: none;
+      border: none;
+      color: #ff7b00;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.2s;
+    }
+
+    .btn-responder:hover {
+      color: #e66d00;
+      text-decoration: underline;
+    }
+
+    .formulario-respuesta {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .formulario-respuesta.activo {
+      display: block;
+    }
+
+    .formulario-respuesta textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      resize: vertical;
+      min-height: 60px;
+      box-sizing: border-box;
+    }
+
+    .formulario-respuesta textarea:focus {
+      outline: none;
+      border-color: #ff7b00;
+      box-shadow: 0 0 5px rgba(255, 123, 0, 0.3);
+    }
+
+    .formulario-respuesta .botones-respuesta {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .formulario-respuesta button {
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+      border: none;
+      transition: background 0.3s ease;
+    }
+
+    .formulario-respuesta button[type="submit"] {
+      background: #ff7b00;
+      color: white;
+    }
+
+    .formulario-respuesta button[type="submit"]:hover {
+      background: #e66d00;
+    }
+
+    .formulario-respuesta button[type="button"] {
+      background: #e0e0e0;
+      color: #555;
+    }
+
+    .formulario-respuesta button[type="button"]:hover {
+      background: #d0d0d0;
+    }
+
+    .respuestas-container {
+      margin-top: 15px;
+      padding-left: 25px;
+      border-left: 2px solid #e0e0e0;
+    }
+
+    .respuesta {
+      display: flex;
+      gap: 10px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .respuesta-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .respuesta-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .respuesta-content {
+      flex: 1;
+    }
+
+    .respuesta-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .respuesta-usuario {
+      font-weight: bold;
+      color: #1d2e42;
+      font-size: 13px;
+    }
+
+    .respuesta-fecha {
+      font-size: 11px;
+      color: #999;
+    }
+
+    .respuesta-texto {
+      color: #555;
+      line-height: 1.5;
+      font-size: 13px;
     }
 
     .sin-comentarios {
@@ -517,6 +708,10 @@ $conn->close();
         font-size: 12px;
         width: 100%;
       }
+
+      .respuestas-container {
+        padding-left: 15px;
+      }
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -558,7 +753,7 @@ $conn->close();
       <?php if (!empty($mito['imagen'])): ?>
         <img src="mitos/<?php echo htmlspecialchars($mito['imagen']); ?>" 
         alt="<?php echo htmlspecialchars($mito['Titulo']); ?>" 
-        onerror="this.parentElement.innerHTML='<span style=\"font-size: 72px;\"></span>
+        onerror="this.parentElement.innerHTML='<span style=\"font-size: 72px;\">📖</span>'">
       <?php else: ?>
         <span style="font-size: 72px;">📖</span>
       <?php endif; ?>
@@ -617,28 +812,85 @@ $conn->close();
         <?php if (count($comentarios) > 0): ?>
           <?php foreach ($comentarios as $comentario): ?>
             <div class="comentario">
-              <div class="comentario-avatar">
-                <?php 
-                  $fotoComentarista = obtenerFotoPerfil($comentario['Nombre'], $comentario['foto']);
-                  if ($fotoComentarista):
-                ?>
-                  <img src="usuarios/<?= htmlspecialchars($fotoComentarista) ?>" alt="Foto de perfil" class="foto_perfil">
-                <?php else: ?>
-                  <i class="fas fa-user"></i>
-                <?php endif; ?>
-              </div>
-              <div class="comentario-content">
-                <div class="comentario-header">
-                  <span class="comentario-usuario"><?php echo htmlspecialchars($comentario['Username']); ?></span>
-                  <span class="comentario-fecha">
-                    <?php 
-                      $fecha = new DateTime($comentario['Fecha']);
-                      echo $fecha->format('d/m/Y H:i');
-                    ?>
-                  </span>
+              <div class="comentario-principal">
+                <div class="comentario-avatar">
+                  <?php 
+                    $fotoComentarista = obtenerFotoPerfil($comentario['Nombre'], $comentario['foto']);
+                    if ($fotoComentarista):
+                  ?>
+                    <img src="usuarios/<?= htmlspecialchars($fotoComentarista) ?>" alt="Foto de perfil">
+                  <?php else: ?>
+                    <i class="fas fa-user"></i>
+                  <?php endif; ?>
                 </div>
-                <p class="comentario-texto"><?php echo nl2br(htmlspecialchars($comentario['Descripcion'])); ?></p>
+                <div class="comentario-content">
+                  <div class="comentario-header">
+                    <span class="comentario-usuario"><?php echo htmlspecialchars($comentario['Username']); ?></span>
+                    <span class="comentario-fecha">
+                      <?php 
+                        $fecha = new DateTime($comentario['Fecha']);
+                        echo $fecha->format('d/m/Y H:i');
+                      ?>
+                    </span>
+                  </div>
+                  <p class="comentario-texto"><?php echo nl2br(htmlspecialchars($comentario['Descripcion'])); ?></p>
+                  
+                  <div class="comentario-acciones">
+                    <button class="btn-responder" onclick="toggleFormularioRespuesta(<?php echo $comentario['id_comentario']; ?>)">
+                      <i class="fas fa-reply"></i> Responder
+                    </button>
+                    <?php if (count($comentario['respuestas']) > 0): ?>
+                      <span style="font-size: 13px; color: #999;">
+                        <?php echo count($comentario['respuestas']); ?> 
+                        <?php echo count($comentario['respuestas']) === 1 ? 'respuesta' : 'respuestas'; ?>
+                      </span>
+                    <?php endif; ?>
+                  </div>
+                </div>
               </div>
+
+              <!-- Formulario para responder -->
+              <form method="POST" class="formulario-respuesta" id="form-respuesta-<?php echo $comentario['id_comentario']; ?>">
+                <textarea name="nueva_respuesta" placeholder="Escribe tu respuesta..." required></textarea>
+                <input type="hidden" name="id_comentario" value="<?php echo $comentario['id_comentario']; ?>">
+                <input type="hidden" name="id_mito" value="<?php echo $mito['id_mitooleyenda']; ?>">
+                <div class="botones-respuesta">
+                  <button type="submit">Publicar respuesta</button>
+                  <button type="button" onclick="toggleFormularioRespuesta(<?php echo $comentario['id_comentario']; ?>)">Cancelar</button>
+                </div>
+              </form>
+
+              <!-- Respuestas al comentario -->
+              <?php if (count($comentario['respuestas']) > 0): ?>
+                <div class="respuestas-container">
+                  <?php foreach ($comentario['respuestas'] as $respuesta): ?>
+                    <div class="respuesta">
+                      <div class="respuesta-avatar">
+                        <?php 
+                          $fotoRespuesta = obtenerFotoPerfil($respuesta['Nombre'], $respuesta['foto']);
+                          if ($fotoRespuesta):
+                        ?>
+                          <img src="usuarios/<?= htmlspecialchars($fotoRespuesta) ?>" alt="Foto de perfil">
+                        <?php else: ?>
+                          <i class="fas fa-user" style="font-size: 14px;"></i>
+                        <?php endif; ?>
+                      </div>
+                      <div class="respuesta-content">
+                        <div class="respuesta-header">
+                          <span class="respuesta-usuario"><?php echo htmlspecialchars($respuesta['Username']); ?></span>
+                          <span class="respuesta-fecha">
+                            <?php 
+                              $fechaResp = new DateTime($respuesta['Fecha']);
+                              echo $fechaResp->format('d/m/Y H:i');
+                            ?>
+                          </span>
+                        </div>
+                        <p class="respuesta-texto"><?php echo nl2br(htmlspecialchars($respuesta['Descripcion'])); ?></p>
+                      </div>
+                    </div>
+                  <?php endforeach; ?>
+                </div>
+              <?php endif; ?>
             </div>
           <?php endforeach; ?>
         <?php else: ?>
@@ -658,7 +910,7 @@ $conn->close();
           <a href="mitos.php?id=<?php echo $relacionado['id_mitooleyenda']; ?>" class="relato">
             <div class="relato-imagen">
               <?php if (!empty($relacionado['imagen'])): ?>
-                <img src="mitos/<?php echo htmlspecialchars($relacionado['imagen']); ?>" alt="<?php echo htmlspecialchars($relacionado['Titulo']); ?>" onerror="this.parentElement.innerHTML='<span style=\"font-size: 48px;\"></span>
+                <img src="mitos/<?php echo htmlspecialchars($relacionado['imagen']); ?>" alt="<?php echo htmlspecialchars($relacionado['Titulo']); ?>" onerror="this.parentElement.innerHTML='<span style=\"font-size: 48px;\">📖</span>'">
               <?php else: ?>
                 <span style="font-size: 48px;">📖</span>
               <?php endif; ?>
@@ -688,10 +940,26 @@ $conn->close();
   <?php endif; ?>
 
   <footer>
-    © LeyendAR — Mitos y Leyendas de Argentina
+    © LeyendAR – Mitos y Leyendas de Argentina
   </footer>
 
   <script>
+    function toggleFormularioRespuesta(idComentario) {
+      const form = document.getElementById('form-respuesta-' + idComentario);
+      if (form.classList.contains('activo')) {
+        form.classList.remove('activo');
+        form.querySelector('textarea').value = '';
+      } else {
+        // Cerrar otros formularios abiertos
+        document.querySelectorAll('.formulario-respuesta.activo').forEach(f => {
+          f.classList.remove('activo');
+          f.querySelector('textarea').value = '';
+        });
+        form.classList.add('activo');
+        form.querySelector('textarea').focus();
+      }
+    }
+
     const pdfMito = {
       title: <?php echo json_encode($mito ? $mito['Titulo'] : ''); ?>,
       imagen: <?php echo json_encode($mito && !empty($mito['imagen']) ? 'mitos/' . $mito['imagen'] : ''); ?>,

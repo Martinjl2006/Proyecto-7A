@@ -51,7 +51,7 @@ function obtenerMitosPorProvincia() {
                     'descripcion' => htmlspecialchars($descripcion),
                     'tipo' => htmlspecialchars($row['tipo'] ?? ''),
                     'imagen' => htmlspecialchars($row['imagen'] ?? ''),
-                    'link' => 'mitos/detalle.php?id=' . $row['id_mitooleyenda']
+                    'link' => 'mitos.php?id=' . $row['id_mitooleyenda']
                 ];
             }
         }
