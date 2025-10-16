@@ -46,13 +46,14 @@ function obtenerMitosPorProvincia() {
                     : substr($row['Descripcion'], 0, 150) . '...';
                 
                 $mitosByProvince[$provincia][] = [
-                    'id' => $row['id_mitooleyenda'],
-                    'titulo' => htmlspecialchars($row['Titulo']),
-                    'descripcion' => htmlspecialchars($descripcion),
-                    'tipo' => htmlspecialchars($row['tipo'] ?? ''),
-                    'imagen' => htmlspecialchars($row['imagen'] ?? ''),
-                    'link' => 'mitos/mitos.php?id=' . $row['id_mitooleyenda']
+                'id' => $row['id_mitooleyenda'],
+                'titulo' => htmlspecialchars($row['Titulo']),
+                'descripcion' => htmlspecialchars($descripcion),
+                'tipo' => htmlspecialchars($row['tipo'] ?? ''),
+                'imagen' => htmlspecialchars($row['imagen'] ?? ''),
+                'link' => 'mitos.php?id=' . $row['id_mitooleyenda'] // 👈 cambio hecho
                 ];
+
             }
         }
     } catch (Exception $e) {

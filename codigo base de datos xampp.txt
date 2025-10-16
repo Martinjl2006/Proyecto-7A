@@ -93,12 +93,18 @@ CREATE TABLE Favoritos(
 -- =============================================
 -- 7. TABLA RESPUESTAS
 -- =============================================
+-- Eliminar la tabla actual (ten cuidado con esto en producción)
+DROP TABLE IF EXISTS Respuestas;
+
+-- Crear la tabla Respuestas con la estructura correcta
 CREATE TABLE Respuestas(
     id_respuesta INT(11) NOT NULL AUTO_INCREMENT,
+    Descripcion TEXT NOT NULL,
+    Fecha DATETIME NOT NULL,
     id_comentario INT(11) NOT NULL,
     id_usuario INT(11) NOT NULL,
     PRIMARY KEY (id_respuesta),
-    FOREIGN KEY (id_comentario) REFERENCES Comentarios(id_comentario),
+    FOREIGN KEY (id_comentario) REFERENCES Comentarios(id_comentario) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
 );
 
