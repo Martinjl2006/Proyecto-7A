@@ -597,3 +597,22 @@ ALTER TABLE Mitoleyenda ADD COLUMN tipo VARCHAR(255) NULL AFTER Descripcion;
 UPDATE mitoleyenda SET imagen = "salamanca.jpg" WHERE Titulo = "La Salamanca"; UPDATE mitoleyenda SET imagen = "luzmala.jpg" WHERE Titulo = "La Luz Mala"; UPDATE mitoleyenda SET imagen = "lobizon.jpeg" WHERE Titulo = "El Lobiz?n";
 
 CREATE TABLE Favoritos( id_favorito INT(11) NOT NULL AUTO_INCREMENT, id_mitooleyenda INT(11) NOT NULL, id_usuario INT(11) NOT NULL, PRIMARY KEY (id_favorito), FOREIGN KEY (id_mitooleyenda) REFERENCES Mitoleyenda(id_mitooleyenda), FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) );
+
+CREATE TABLE Respuestas( id_respuesta INT(11) NOT NULL AUTO_INCREMENT, id_comentario INT(11) NOT NULL, id_usuario INT(11) NOT NULL, PRIMARY KEY (id_respuesta), FOREIGN KEY (id_comentario) REFERENCES Comentarios(id_comentario), FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) );
+
+-- Agregar columna Verificado a la tabla Mitoleyenda
+ALTER TABLE Mitoleyenda 
+ADD COLUMN Verificado BOOLEAN DEFAULT FALSE NOT NULL;
+
+-- Agregar columna Votos a la tabla Mitoleyenda
+ALTER TABLE Mitoleyenda 
+ADD COLUMN Votos INT DEFAULT 0 NOT NULL;
+
+-- Marcar todos los mitos existentes como verificados
+UPDATE Mitoleyenda SET Verificado = TRUE;
+
+-- Verificar que las columnas se agregaron correctamente
+DESCRIBE Mitoleyenda;
+
+-- Ver los mitos con su estado de verificación y votos
+SELECT id_mitooleyenda, Titulo, Verificado, Votos FROM Mitoleyenda LIMIT 10;
