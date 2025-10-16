@@ -3,60 +3,535 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Nuevo Mito</title>
-    <link rel="stylesheet" href="crearmito.css">
+    <title>Crear Nuevo Mito - LeyendAR</title>
+    <style>
+        :root {
+            --azul-logo: #1f2f40;
+            --azul-profundo: #1d2e42;
+            --fondo-claro: #f4f1ed;
+            --fondo-textura: #f2efe9;
+            --acento-1: #b04c3e;
+            --acento-2: #c7a76c;
+            --texto-gris: #555555;
+            --sombra: rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--fondo-claro);
+            color: var(--texto-gris);
+            overflow-x: hidden;
+        }
+
+        header {
+            background: var(--fondo-textura);
+            padding: 20px 32px;
+            display: flex;
+            width: 97%;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+            box-shadow: 0 2px 10px var(--sombra);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 42px;
+            margin-right: 12px;
+        }
+
+        .logo span {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: var(--azul-profundo);
+        }
+
+        nav a {
+            color: var(--azul-profundo);
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #000;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 60px auto;
+            background: white;
+            border-radius: 18px;
+            padding: 50px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--azul-profundo);
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #1d2e42, #3c506d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container > p {
+            text-align: center;
+            color: var(--texto-gris);
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        label {
+            color: var(--azul-profundo);
+            font-weight: 600;
+            font-size: 1em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: inherit;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--azul-profundo);
+            box-shadow: 0 0 0 3px rgba(29, 46, 66, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        textarea#descripcion {
+            min-height: 180px;
+        }
+
+        input[type="file"] {
+            padding: 12px;
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        input[type="file"]:hover {
+            border-color: var(--azul-profundo);
+            background: white;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(90deg, var(--acento-1), var(--acento-2));
+            background-size: 150% 150%;
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+        }
+
+        button[type="submit"]:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Estilos del carrusel */
+        .carousel-section {
+            max-width: 1200px;
+            margin: 80px auto 60px;
+            padding: 0 20px;
+        }
+
+        .carousel-section h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--azul-profundo);
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(90deg, #1d2e42, #3c506d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .carousel-wrapper {
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--acento-2) #f0f0f0;
+            padding: 20px 0;
+        }
+
+        .carousel-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .carousel-wrapper::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+
+        .carousel-wrapper::-webkit-scrollbar-thumb {
+            background: var(--acento-2);
+            border-radius: 10px;
+        }
+
+        .carousel-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--acento-1);
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 25px;
+            padding: 10px 5px;
+        }
+
+        .carousel-card {
+            min-width: 320px;
+            max-width: 320px;
+            background: white;
+            border-radius: 18px;
+            padding: 0;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+
+        .carousel-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+        }
+
+        .carousel-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .carousel-card-content {
+            padding: 20px;
+        }
+
+        .carousel-card h3 {
+            color: var(--azul-profundo);
+            font-size: 1.4em;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .carousel-card .meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .carousel-card .badges {
+            margin-bottom: 12px;
+        }
+
+        .carousel-card .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: linear-gradient(90deg, var(--acento-1), var(--acento-2));
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-right: 6px;
+            font-weight: 600;
+        }
+
+        .carousel-card p {
+            color: var(--texto-gris);
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .no-mitos {
+            text-align: center;
+            color: var(--texto-gris);
+            padding: 60px 20px;
+            font-size: 1.2em;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        footer {
+            margin-top: 80px;
+            padding: 25px;
+            width: 100%;
+            background: #eceae4;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+                margin: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .carousel-card {
+                min-width: 280px;
+                max-width: 280px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="LeyendAR Logo">
+            <span>LeyendAR</span>
+        </div>
+        <nav>
+            <a href="pantalla.html">Inicio</a>
+            <a href="#">Mapa</a>
+            <a href="#">Perfil</a>
+        </nav>
+    </header>
 
     <div class="container">
         <h1>Crear Nuevo Mito</h1>
         <p>Subí tu mito o leyenda para que otros puedan descubrirlo en el mapa interactivo de LeyendAR.</p>
-
-        <!-- IMPORTANTE: enctype para permitir subida de archivos -->
+        
         <form action="cargarmitos.php" method="POST" enctype="multipart/form-data">
-            <label for="titulo">Título del mito</label>
-            <input type="text" id="titulo" name="titulo" placeholder="Ej: El Lobizón" required>
-
-            <label for="provincia">Provincia relacionada</label>
-            <select id="provincia" name="provincia" required>
-                <option value="">Seleccioná una provincia</option>
-                <option>Buenos Aires</option>
-                <option>Catamarca</option>
-                <option>Chaco</option>
-                <option>Chubut</option>
-                <option>Córdoba</option>
-                <option>Corrientes</option>
-                <option>Entre Ríos</option>
-                <option>Formosa</option>
-                <option>Jujuy</option>
-                <option>La Pampa</option>
-                <option>La Rioja</option>
-                <option>Mendoza</option>
-                <option>Misiones</option>
-                <option>Neuquén</option>
-                <option>Río Negro</option>
-                <option>Salta</option>
-                <option>San Juan</option>
-                <option>San Luis</option>
-                <option>Santa Cruz</option>
-                <option>Santa Fe</option>
-                <option>Santiago del Estero</option>
-                <option>Tierra del Fuego</option>
-                <option>Tucumán</option>
-            </select>
-
-            <label for="textobreve">Descripción breve del mito</label>
-            <textarea id="textobreve" name="textobreve" placeholder="Resuminos tu mito" required></textarea>
-
-            <label for="descripcion">Descripción completa del mito</label>
-            <textarea id="descripcion" name="descripcion" placeholder="Contanos la historia del mito..." required></textarea>
-
-            <label for="imagen">Imagen del mito (opcional)</label>
-            <input type="file" id="imagen" name="imagen" accept="image/*">
-
+            
+            <div>
+                <label for="titulo">Título del mito</label>
+                <input type="text" id="titulo" name="titulo" placeholder="Ej: El Lobizón" required>
+            </div>
+            
+            <div>
+                <label for="tipo">Tipo</label>
+                <select id="tipo" name="tipo">
+                    <option value="">Seleccioná un tipo (opcional)</option>
+                    <option value="Criatura">Criatura</option>
+                    <option value="Espíritu">Espíritu</option>
+                    <option value="Leyenda urbana">Leyenda urbana</option>
+                    <option value="Tradición">Tradición</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="esmito">¿Es un mito o una leyenda?</label>
+                <select id="esmito" name="esmito" required>
+                    <option value="">Seleccioná una opción</option>
+                    <option value="1">Mito</option>
+                    <option value="0">Leyenda</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="provincia">Provincia relacionada</label>
+                <select id="provincia" name="provincia" required>
+                    <option value="">Seleccioná una provincia</option>
+                    <option value="Buenos Aires">Buenos Aires</option>
+                    <option value="Catamarca">Catamarca</option>
+                    <option value="Chaco">Chaco</option>
+                    <option value="Chubut">Chubut</option>
+                    <option value="Córdoba">Córdoba</option>
+                    <option value="Corrientes">Corrientes</option>
+                    <option value="Entre Ríos">Entre Ríos</option>
+                    <option value="Formosa">Formosa</option>
+                    <option value="Jujuy">Jujuy</option>
+                    <option value="La Pampa">La Pampa</option>
+                    <option value="La Rioja">La Rioja</option>
+                    <option value="Mendoza">Mendoza</option>
+                    <option value="Misiones">Misiones</option>
+                    <option value="Neuquén">Neuquén</option>
+                    <option value="Río Negro">Río Negro</option>
+                    <option value="Salta">Salta</option>
+                    <option value="San Juan">San Juan</option>
+                    <option value="San Luis">San Luis</option>
+                    <option value="Santa Cruz">Santa Cruz</option>
+                    <option value="Santa Fe">Santa Fe</option>
+                    <option value="Santiago del Estero">Santiago del Estero</option>
+                    <option value="Tierra del Fuego">Tierra del Fuego</option>
+                    <option value="Tucumán">Tucumán</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="ciudad">Ciudad relacionada (opcional)</label>
+                <select id="ciudad" name="ciudad">
+                    <option value="">Seleccioná una ciudad (opcional)</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="textobreve">Descripción breve del mito</label>
+                <textarea id="textobreve" name="textobreve" placeholder="Resuminos tu mito en pocas líneas" required></textarea>
+            </div>
+            
+            <div>
+                <label for="descripcion">Descripción completa del mito</label>
+                <textarea id="descripcion" name="descripcion" placeholder="Contanos la historia completa del mito..." required></textarea>
+            </div>
+            
+            <div>
+                <label for="imagen">Imagen del mito (opcional)</label>
+                <input type="file" id="imagen" name="imagen" accept="image/*">
+            </div>
+            
             <button type="submit">Subir mito</button>
         </form>
     </div>
 
+    <!-- Sección del carrusel -->
+    <div class="carousel-section">
+        <h2>Mitos Recientes</h2>
+        <div class="carousel-wrapper" id="carouselWrapper">
+            <div class="carousel-track" id="carouselTrack">
+                <!-- Los mitos se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 LeyendAR - Descubrí las leyendas de Argentina</p>
+    </footer>
+
+    <script>
+        // Datos de ejemplo de ciudades por provincia
+        const ciudadesPorProvincia = {
+            'Buenos Aires': ['La Plata', 'Mar del Plata', 'Bahía Blanca', 'Tandil'],
+            'Córdoba': ['Córdoba', 'Villa Carlos Paz', 'Río Cuarto', 'Alta Gracia'],
+            'Santa Fe': ['Rosario', 'Santa Fe', 'Rafaela', 'Venado Tuerto'],
+            'Mendoza': ['Mendoza', 'San Rafael', 'Godoy Cruz', 'Maipú'],
+            'Tucumán': ['San Miguel de Tucumán', 'Yerba Buena', 'Tafí Viejo']
+        };
+
+        document.getElementById('provincia').addEventListener('change', function() {
+            const provincia = this.value;
+            const ciudadSelect = document.getElementById('ciudad');
+            
+            ciudadSelect.innerHTML = '<option value="">Seleccioná una ciudad (opcional)</option>';
+            
+            if (provincia && ciudadesPorProvincia[provincia]) {
+                ciudadesPorProvincia[provincia].forEach(ciudad => {
+                    const option = document.createElement('option');
+                    option.value = ciudad;
+                    option.textContent = ciudad;
+                    ciudadSelect.appendChild(option);
+                });
+            }
+        });
+
+        // Carrusel de mitos recientes
+        let mitos = [];
+
+        // Función para cargar mitos desde el servidor
+        async function cargarMitosRecientes() {
+            try {
+                const response = await fetch('obtener_mitos_recientes.php');
+                mitos = await response.json();
+                
+                if (mitos.length === 0) {
+                    document.getElementById('carouselTrack').innerHTML = 
+                        '<div class="no-mitos">Todavía no hay mitos cargados. ¡Sé el primero en compartir uno!</div>';
+                    return;
+                }
+                
+                renderizarMitos();
+            } catch (error) {
+                console.error('Error al cargar mitos:', error);
+                document.getElementById('carouselTrack').innerHTML = 
+                    '<div class="no-mitos">Error al cargar los mitos recientes.</div>';
+            }
+        }
+
+        function renderizarMitos() {
+            const track = document.getElementById('carouselTrack');
+            track.innerHTML = '';
+            
+            mitos.forEach(mito => {
+                const card = document.createElement('div');
+                card.className = 'carousel-card';
+                
+                const imagenSrc = mito.imagen ? `mitos/${mito.imagen}` : 'https://via.placeholder.com/320x200?text=Sin+Imagen';
+                const tipo = mito.tipo ? `<span class="badge">${mito.tipo}</span>` : '';
+                const esMitoTexto = mito.Esmito == 1 ? 'Mito' : 'Leyenda';
+                
+                card.innerHTML = `
+                    <img src="${imagenSrc}" alt="${mito.Titulo}">
+                    <div class="carousel-card-content">
+                        <h3>${mito.Titulo}</h3>
+                        <div class="meta">
+                            <span>📍 ${mito.provincia}</span>
+                            <span>📅 ${mito.Fecha}</span>
+                        </div>
+                        <div class="badges">
+                            ${tipo}
+                            <span class="badge">${esMitoTexto}</span>
+                        </div>
+                        <p>${mito.textobreve}</p>
+                    </div>
+                `;
+                
+                track.appendChild(card);
+            });
+        }
+
+        // Scroll automático suave con la rueda del mouse
+        const carouselWrapper = document.getElementById('carouselWrapper');
+        carouselWrapper.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            carouselWrapper.scrollLeft += e.deltaY;
+        });
+
+        // Cargar mitos al iniciar la página
+        cargarMitosRecientes();
+    </script>
 </body>
 </html>
