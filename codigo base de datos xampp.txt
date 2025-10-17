@@ -37,8 +37,6 @@ CREATE TABLE MitoLeyenda (
     tipo VARCHAR(255) NULL,
     imagen VARCHAR(255) DEFAULT NULL,
     Fecha DATE NOT NULL,
-    Esmito BOOLEAN NOT NULL,
-    cantidadValidaciones INT DEFAULT 0 NOT NULL,
     Verificado BOOLEAN DEFAULT FALSE NOT NULL,
     Votos INT DEFAULT 0 NOT NULL,
     id_provincia INT NOT NULL,
