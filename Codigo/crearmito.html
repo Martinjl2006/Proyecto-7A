@@ -428,15 +428,7 @@
         </form>
     </div>
 
-    <!-- Sección del carrusel -->
-    <div class="carousel-section">
-        <h2>Mitos Recientes</h2>
-        <div class="carousel-wrapper" id="carouselWrapper">
-            <div class="carousel-track" id="carouselTrack">
-                <!-- Los mitos se cargarán aquí dinámicamente -->
-            </div>
-        </div>
-    </div>
+    
 
     <footer>
         <p>&copy; 2025 LeyendAR - Descubrí las leyendas de Argentina</p>
@@ -468,70 +460,7 @@
             }
         });
 
-        // Carrusel de mitos recientes
-        let mitos = [];
-
-        // Función para cargar mitos desde el servidor
-        async function cargarMitosRecientes() {
-            try {
-                const response = await fetch('obtener_mitos_recientes.php');
-                mitos = await response.json();
-                
-                if (mitos.length === 0) {
-                    document.getElementById('carouselTrack').innerHTML = 
-                        '<div class="no-mitos">Todavía no hay mitos cargados. ¡Sé el primero en compartir uno!</div>';
-                    return;
-                }
-                
-                renderizarMitos();
-            } catch (error) {
-                console.error('Error al cargar mitos:', error);
-                document.getElementById('carouselTrack').innerHTML = 
-                    '<div class="no-mitos">Error al cargar los mitos recientes.</div>';
-            }
-        }
-
-        function renderizarMitos() {
-            const track = document.getElementById('carouselTrack');
-            track.innerHTML = '';
-            
-            mitos.forEach(mito => {
-                const card = document.createElement('div');
-                card.className = 'carousel-card';
-                
-                const imagenSrc = mito.imagen ? `mitos/${mito.imagen}` : 'https://via.placeholder.com/320x200?text=Sin+Imagen';
-                const tipo = mito.tipo ? `<span class="badge">${mito.tipo}</span>` : '';
-                const esMitoTexto = mito.Esmito == 1 ? 'Mito' : 'Leyenda';
-                
-                card.innerHTML = `
-                    <img src="${imagenSrc}" alt="${mito.Titulo}">
-                    <div class="carousel-card-content">
-                        <h3>${mito.Titulo}</h3>
-                        <div class="meta">
-                            <span>📍 ${mito.provincia}</span>
-                            <span>📅 ${mito.Fecha}</span>
-                        </div>
-                        <div class="badges">
-                            ${tipo}
-                            <span class="badge">${esMitoTexto}</span>
-                        </div>
-                        <p>${mito.textobreve}</p>
-                    </div>
-                `;
-                
-                track.appendChild(card);
-            });
-        }
-
-        // Scroll automático suave con la rueda del mouse
-        const carouselWrapper = document.getElementById('carouselWrapper');
-        carouselWrapper.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            carouselWrapper.scrollLeft += e.deltaY;
-        });
-
-        // Cargar mitos al iniciar la página
-        cargarMitosRecientes();
+    
     </script>
 </body>
 </html>

@@ -521,8 +521,7 @@ function esFavorito($mito_id, $favoritos) {
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             min-width: 300px;
             max-width: 300px;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            transition: all 0.5s ease;
             display: flex;
             flex-direction: column;
             gap: 1rem;
@@ -532,6 +531,10 @@ function esFavorito($mito_id, $favoritos) {
         .mito-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .mito-card.expandido {
+            max-width: 100%;
         }
 
         .mito-badge {
@@ -629,6 +632,45 @@ function esFavorito($mito_id, $favoritos) {
             color: #555;
             line-height: 1.5;
             font-size: 0.95rem;
+            max-height: 48px;
+            overflow: hidden;
+            transition: max-height 0.6s ease;
+        }
+
+        .mito-text.expandido {
+            max-height: 500px;
+        }
+
+        .btn-ver-mas {
+            padding: 10px 24px;
+            background: #ff7b00;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(255, 123, 0, 0.3);
+            opacity: 0;
+            transform: translateY(-10px);
+            margin-top: 10px;
+        }
+
+        .btn-ver-mas.visible {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .btn-ver-mas:hover {
+            background: #e66d00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 123, 0, 0.5);
         }
 
         @media (max-width: 768px) {
@@ -656,6 +698,10 @@ function esFavorito($mito_id, $favoritos) {
             .mito-card {
                 min-width: 250px;
                 max-width: 250px;
+            }
+
+            .mito-card.expandido {
+                max-width: 100%;
             }
         }
     </style>
@@ -783,7 +829,7 @@ function esFavorito($mito_id, $favoritos) {
                 </h2>
                 <div class="mitos-scroll">
                     <?php foreach ($mitos_favoritos as $mito): ?>
-                        <div class="mito-card">
+                        <div class="mito-card" onmouseenter="expandirMito(<?= $mito['id_mitooleyenda'] ?>)" onmouseleave="cerrarMito(<?= $mito['id_mitooleyenda'] ?>)">
                             <span class="mito-badge <?= $mito['Esmito'] ? 'es-mito' : 'es-leyenda' ?>">
                                 <?= $mito['Esmito'] ? 'MITO' : 'LEYENDA' ?>
                             </span>
@@ -792,7 +838,7 @@ function esFavorito($mito_id, $favoritos) {
                                 <i class="fas fa-thumbs-up"></i> <?= $mito['Votos'] ?>
                             </span>
                             <?php endif; ?>
-                            <form method="POST" style="display: inline;">
+                            <form method="POST" style="display: inline;" onclick="event.stopPropagation()">
                                 <input type="hidden" name="mito_id" value="<?= $mito['id_mitooleyenda'] ?>">
                                 <button type="submit" class="btn-favorito active" title="Quitar de favoritos">
                                     <i class="fas fa-star"></i>
@@ -808,7 +854,10 @@ function esFavorito($mito_id, $favoritos) {
                                 </div>
                                 <h3 class="mito-title"><?= htmlspecialchars($mito['Titulo']) ?></h3>
                             </div>
-                            <p class="mito-text"><?= htmlspecialchars($mito['textobreve']) ?></p>
+                            <p class="mito-text" id="texto-<?= $mito['id_mitooleyenda'] ?>"><?= htmlspecialchars($mito['textobreve']) ?></p>
+                            <a href="mitos.php?id=<?= $mito['id_mitooleyenda'] ?>" class="btn-ver-mas" id="btn-<?= $mito['id_mitooleyenda'] ?>" onclick="event.stopPropagation()">
+                                Ver más
+                            </a>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -830,14 +879,14 @@ function esFavorito($mito_id, $favoritos) {
                             foreach ($mitos as $mito): 
                                 $es_favorito = esFavorito($mito['id_mitooleyenda'], $mitos_favoritos);
                         ?>
-                            <div class="mito-card">
+                            <div class="mito-card" onmouseenter="expandirMito(<?= $mito['id_mitooleyenda'] ?>)" onmouseleave="cerrarMito(<?= $mito['id_mitooleyenda'] ?>)">
                                 <span class="mito-badge <?= $mito['Esmito'] ? 'es-mito' : 'es-leyenda' ?>">
                                     <?= $mito['Esmito'] ? 'MITO' : 'LEYENDA' ?>
                                 </span>
                                 <span class="votos-badge">
                                     <i class="fas fa-award"></i> #<?= $posicion ?> - <?= $mito['Votos'] ?> votos
                                 </span>
-                                <form method="POST" style="display: inline;">
+                                <form method="POST" style="display: inline;" onclick="event.stopPropagation()">
                                     <input type="hidden" name="mito_id" value="<?= $mito['id_mitooleyenda'] ?>">
                                     <button type="submit" class="btn-favorito <?= $es_favorito ? 'active' : '' ?>" title="<?= $es_favorito ? 'Quitar de favoritos' : 'Agregar a favoritos' ?>">
                                         <i class="fas fa-star"></i>
@@ -853,7 +902,10 @@ function esFavorito($mito_id, $favoritos) {
                                     </div>
                                     <h3 class="mito-title"><?= htmlspecialchars($mito['Titulo']) ?></h3>
                                 </div>
-                                <p class="mito-text"><?= htmlspecialchars($mito['textobreve']) ?></p>
+                                <p class="mito-text" id="texto-<?= $mito['id_mitooleyenda'] ?>"><?= htmlspecialchars($mito['textobreve']) ?></p>
+                                <a href="mitos.php?id=<?= $mito['id_mitooleyenda'] ?>" class="btn-ver-mas" id="btn-<?= $mito['id_mitooleyenda'] ?>" onclick="event.stopPropagation()">
+                                    Ver más
+                                </a>
                             </div>
                         <?php 
                                 $posicion++;
@@ -870,7 +922,7 @@ function esFavorito($mito_id, $favoritos) {
                         <?php foreach ($mitos as $mito): 
                             $es_favorito = esFavorito($mito['id_mitooleyenda'], $mitos_favoritos);
                         ?>
-                            <div class="mito-card">
+                            <div class="mito-card" onmouseenter="expandirMito(<?= $mito['id_mitooleyenda'] ?>)" onmouseleave="cerrarMito(<?= $mito['id_mitooleyenda'] ?>)">
                                 <span class="mito-badge <?= $mito['Esmito'] ? 'es-mito' : 'es-leyenda' ?>">
                                     <?= $mito['Esmito'] ? 'MITO' : 'LEYENDA' ?>
                                 </span>
@@ -879,7 +931,7 @@ function esFavorito($mito_id, $favoritos) {
                                     <i class="fas fa-thumbs-up"></i> <?= $mito['Votos'] ?>
                                 </span>
                                 <?php endif; ?>
-                                <form method="POST" style="display: inline;">
+                                <form method="POST" style="display: inline;" onclick="event.stopPropagation()">
                                     <input type="hidden" name="mito_id" value="<?= $mito['id_mitooleyenda'] ?>">
                                     <button type="submit" class="btn-favorito <?= $es_favorito ? 'active' : '' ?>" title="<?= $es_favorito ? 'Quitar de favoritos' : 'Agregar a favoritos' ?>">
                                         <i class="fas fa-star"></i>
@@ -895,7 +947,10 @@ function esFavorito($mito_id, $favoritos) {
                                     </div>
                                     <h3 class="mito-title"><?= htmlspecialchars($mito['Titulo']) ?></h3>
                                 </div>
-                                <p class="mito-text"><?= htmlspecialchars($mito['textobreve']) ?></p>
+                                <p class="mito-text" id="texto-<?= $mito['id_mitooleyenda'] ?>"><?= htmlspecialchars($mito['textobreve']) ?></p>
+                                <a href="mitos.php?id=<?= $mito['id_mitooleyenda'] ?>" class="btn-ver-mas" id="btn-<?= $mito['id_mitooleyenda'] ?>" onclick="event.stopPropagation()">
+                                    Ver más
+                                </a>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -919,6 +974,26 @@ function esFavorito($mito_id, $favoritos) {
             if (searchBar.classList.contains('active')) {
                 searchBar.querySelector('input').focus();
             }
+        }
+
+        function expandirMito(id) {
+            const card = event.currentTarget;
+            const texto = document.getElementById('texto-' + id);
+            const btn = document.getElementById('btn-' + id);
+            
+            card.classList.add('expandido');
+            texto.classList.add('expandido');
+            btn.classList.add('visible');
+        }
+
+        function cerrarMito(id) {
+            const card = event.currentTarget;
+            const texto = document.getElementById('texto-' + id);
+            const btn = document.getElementById('btn-' + id);
+            
+            card.classList.remove('expandido');
+            texto.classList.remove('expandido');
+            btn.classList.remove('visible');
         }
 
         // Cerrar sidebar al hacer clic en un enlace
