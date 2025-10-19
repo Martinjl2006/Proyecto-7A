@@ -4,13 +4,35 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+include 'Codigo/main.php';
+
 // Verificar si el usuario está logueado
+
 $usuario_logueado = isset($_SESSION["username"]) && isset($_SESSION["id_usuario"]);
-$username = $usuario_logueado ? htmlspecialchars($_SESSION["username"]) : "";
-$nombre = $usuario_logueado ? htmlspecialchars($_SESSION["nombre"] ?? $_SESSION["username"]) : "";
+
+if ($usuario_logueado) {
+    // Obtenemos los datos directamente desde la sesión
+    $id_usuario    = $_SESSION["id_usuario"];
+    $username      = htmlspecialchars($_SESSION["username"]);
+    $nombre        = htmlspecialchars($_SESSION["nombre"] ?? $_SESSION["username"]);
+    
+
+    $stmt_foto = $conn->prepare("SELECT foto FROM Usuarios WHERE id_usuario = ?");
+    $stmt_foto->bind_param("i", $id_usuario);
+    $stmt_foto->execute();
+    $resultado_foto = $stmt_foto->get_result();
+    $fila_foto = $resultado_foto->fetch_assoc();
+    $fotoperfil = $fila_foto['foto'] ?? null;
+} else {
+    $id_usuario  = null;
+    $username    = "";
+    $nombre      = "";
+    $fotoperfil  = null;
+}
+
 
 // Debug: agregar información al HTML como comentarios (solo en desarrollo)
-$debug_mode = true; // Cambiar a false en producción
+$debug_mode = false; // Cambiar a false en producción
 $debug_info = "";
 if ($debug_mode) {
     $debug_info = "<!--\nDEBUG INFO:\n";
@@ -22,7 +44,13 @@ if ($debug_mode) {
     $debug_info .= "SESSION data: " . print_r($_SESSION, true) . "\n";
     $debug_info .= "-->\n";
 }
+
+
+
+
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -126,6 +154,9 @@ if ($debug_mode) {
       color: #667eea;
       font-weight: 600;
     }
+
+
+    
   </style>
 </head>
 <body>
@@ -157,23 +188,19 @@ if ($debug_mode) {
       <img src="Codigo/logo.jpg" alt="Logo LeyendAR" />
       <span>LeyendAR</span>
     </div>
-   
     <nav>
-      <?php if ($usuario_logueado): ?>
-        <!-- Usuario logueado: mostrar perfil -->
-        <a href="Codigo/dashboard.php" class="user-profile" title="Ir al Dashboard">
-          <div class="profile-pic-small">
-            <?php echo strtoupper(substr($username, 0, 2)); ?>
-          </div>
-          <span class="user-name"><?php echo $username; ?></span>
-        </a>
-      <?php else: ?>
-        <!-- Usuario no logueado: mostrar botón de login -->
-        <a href="Codigo/inicio.html" class="login-btn">Iniciar sesión</a>
-      <?php endif; ?>
+    <?php if ($usuario_logueado): ?>
+      <a href="Codigo/dashboard.php" class="user-profile" title="Ir al Dashboard">
+        <div class="profile-pic-small">
+          <img src="usuarios/<?= htmlspecialchars($fotoperfil) ?>" class="foto_perfil">
+        </div>
+        <span class="user-name"><?php echo $username; ?></span>
+      </a>
+    <?php else: ?>
+      <a href="Codigo/inicio.html" class="login-btn">Iniciar sesión</a>
+    <?php endif; ?>
     </nav>
   </header>
-
   <section class="hero">
     <h1>
       <?php if ($usuario_logueado): ?>

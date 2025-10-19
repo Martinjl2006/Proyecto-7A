@@ -627,10 +627,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                     <div class="feature-description">Recorré cada provincia y conocé sus leyendas más populares.</div>
                 </div>
 
-                <div class="feature-card" onclick="openCulturalEducation()">
+                <div class="feature-card" onclick="location.href='mis_mitos.php'">
                     <div class="feature-icon">📚</div>
-                    <div class="feature-title">Educación Cultural</div>
-                    <div class="feature-description">Ideal para enseñar identidad, historia oral y cultura local en escuelas.</div>
+                    <div class="feature-title">Mis mitos</div>
+                    <div class="feature-description">Edita y gestiona tus mitos</div>
                 </div>
 
                 <div class="feature-card" onclick="location.href='lista_mitos.php'">
@@ -639,10 +639,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                     <div class="feature-description">Historias del Pombero, la Llorona, el Lobizón y muchos más</div>
                 </div>
 
-                <div class="feature-card" onclick="openResearch()">
+                <div class="feature-card" onclick="location.href='validar_mitos.php'">
                     <div class="feature-icon">🔍</div>
-                    <div class="feature-title">Investigación</div>
-                    <div class="feature-description">Compará versiones de leyendas según cada región o cultura originaria</div>
+                    <div class="feature-title">Validacion</div>
+                    <div class="feature-description">Ayudanos a validar mitos publicados por usuarios como tu</div>
                 </div>
             </div>
         </section>

@@ -254,12 +254,12 @@
   <div class="aura-bg"></div>
   <div class="register-box">
     <h2>Crear cuenta</h2>
-    <form action="registro.php" method="POST" id="registerForm">
+    <form action="registro.php" method="POST">
       <input type="text" name="nombre" placeholder="Nombre" required>
       <input type="text" name="apellido" placeholder="Apellido" required>
       <input type="email" name="email" placeholder="Correo electrónico" required>
       <input type="text" name="usuario" placeholder="Nombre de usuario" required>
-      <input type="password" name="clave" id="clave" placeholder="Contraseña" required>
+      <input type="password" name="clave" placeholder="Contraseña" required>
       <input type="date" name="fecha_nacimiento" required>
 
       <select id="provincia" name="provincia" required>
@@ -311,31 +311,6 @@
         option.textContent = ciudad;
         ciudadSelect.appendChild(option);
       });
-    });
-
-    // Validación de contraseña segura
-    document.getElementById("registerForm").addEventListener("submit", function(e) {
-      const password = document.getElementById("clave").value;
-      
-      const hasMinLength = password.length >= 8;
-      const hasUppercase = /[A-Z]/.test(password);
-      const hasLowercase = /[a-z]/.test(password);
-      const hasNumber = /[0-9]/.test(password);
-      const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-      
-      if (!hasMinLength || !hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
-        e.preventDefault();
-        
-        let mensaje = "La contraseña debe cumplir con los siguientes requisitos:\n\n";
-        if (!hasMinLength) mensaje += "• Mínimo 8 caracteres\n";
-        if (!hasUppercase) mensaje += "• Al menos una letra mayúscula\n";
-        if (!hasLowercase) mensaje += "• Al menos una letra minúscula\n";
-        if (!hasNumber) mensaje += "• Al menos un número\n";
-        if (!hasSpecial) mensaje += "• Al menos un carácter especial (!@#$%^&*)\n";
-        
-        alert(mensaje);
-        return false;
-      }
     });
   </script>
 </body>

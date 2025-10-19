@@ -46,14 +46,13 @@ function obtenerMitosPorProvincia() {
                     : substr($row['Descripcion'], 0, 150) . '...';
                 
                 $mitosByProvince[$provincia][] = [
-                'id' => $row['id_mitooleyenda'],
-                'titulo' => htmlspecialchars($row['Titulo']),
-                'descripcion' => htmlspecialchars($descripcion),
-                'tipo' => htmlspecialchars($row['tipo'] ?? ''),
-                'imagen' => htmlspecialchars($row['imagen'] ?? ''),
-                'link' => 'mitos.php?id=' . $row['id_mitooleyenda'] // 👈 cambio hecho
+                    'id' => $row['id_mitooleyenda'],
+                    'titulo' => htmlspecialchars($row['Titulo']),
+                    'descripcion' => htmlspecialchars($descripcion),
+                    'tipo' => htmlspecialchars($row['tipo'] ?? ''),
+                    'imagen' => htmlspecialchars($row['imagen'] ?? ''),
+                    'link' => 'mitos.php?id=' . $row['id_mitooleyenda']
                 ];
-
             }
         }
     } catch (Exception $e) {
@@ -217,9 +216,6 @@ $mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
       max-width: 1200px;
       padding: 0 20px;
     }
-    .nav-item.logout {
-            color: #d32f2f;
-    }
 
     .card {
       background: white;
@@ -286,7 +282,7 @@ $mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
 <body>
   <header>
     <div class="logo">
-      <img src="logo_logo_re_logo_sin_fondo_-removebg-preview.png" alt="logo"/>
+      <img src="logo-removebg-preview-2.png" alt="logo"/>
       <span>leyendAR</span>
     </div>
     <nav>
@@ -344,7 +340,7 @@ $mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
     <?php endif; ?>
 
     <span style="font-weight: 600;"><?= $nombreUsuario ?></span>
-    <span class="nav-item logout" onclick="logout()">Salir</span>
+    <a href="logout.php" style="margin-left: 10px; color: #1E3A8A; text-decoration: underline;">Cerrar sesión</a>
   </div>
 <?php else: ?>
   <a href="inicio.html" class="login-button">Iniciar sesión</a>
@@ -486,12 +482,6 @@ $mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
       };
     }
 
-    function logout() {
-            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                window.location.href = 'logout.php';
-            }
-        }
-
     /* ========================
        Control informativo
        ======================== */
@@ -537,28 +527,6 @@ $mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
     }
 
     if (btnToggle) btnToggle.addEventListener('click', closePanel);
-
-    // Cerrar el panel cuando se hace scroll en la página
-    let scrollTimeout;
-    window.addEventListener('scroll', function() {
-      // Limpiar el timeout anterior si existe
-      clearTimeout(scrollTimeout);
-      
-      // Establecer un pequeño delay para evitar cerrar el panel en scrolls muy pequeños
-      scrollTimeout = setTimeout(function() {
-        // Si el panel está abierto, cerrarlo
-        if (panel && panel.classList.contains('open')) {
-          closePanel();
-        }
-      }, 15); // 150ms de delay para suavizar la experiencia
-    });
-
-    // También cerrar al hacer scroll dentro del mapa
-    map.on('movestart', function() {
-      if (panel && panel.classList.contains('open')) {
-        closePanel();
-      }
-    });
 
     function renderMitosDeProvincia(nombreProv){
       const lista = mitosByProvince[nombreProv] || [];

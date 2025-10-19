@@ -13,6 +13,8 @@ if ($conn->connect_error) {
     die("❌ Error de conexión: " . $conn->connect_error);
 }
 
+require_once 'VerifyEmail.class.php'; 
+
 // Datos del formulario (sanitizar/normalizar)
 $nombre     = trim($_POST['nombre'] ?? '');
 $apellido   = trim($_POST['apellido'] ?? '');
@@ -22,6 +24,25 @@ $contraseña = $_POST['clave'] ?? '';
 $nombre_provincia= $_POST['provincia'];
 $nombre_ciudad= $_POST['ciudad'];
 
+
+// Initialize library class
+$mailtest = new VerifyEmail();
+
+// Set the timeout value on stream
+$mailtest->setStreamTimeoutWait(20);
+
+// Set debug output mode
+$mailtest->Debug= TRUE; 
+$mail->Debugoutput= 'html'; 
+
+// Set email address for SMTP request
+$mailtest->setEmailFrom('from@email.com');
+
+// Email to check
+$email = $mail; 
+
+// Verificar si el correo es valido y existe
+if($mail->check($email)){
 $stmt = $conn->prepare("SELECT id_provincia FROM Provincias WHERE Nombre = ?");
 $stmt->bind_param("s", $nombre_provincia);
 $stmt->execute();
@@ -96,6 +117,12 @@ if ($stmt->execute()) {
     // Falló el INSERT
     echo "<script>alert('⚠️ Error al registrar usuario: " . addslashes($stmt->error) . "');</script>";
 }
+
+}elseif(verifyEmail::validate($email)){ 
+    echo 'Email <'.$email.'> El correo es valido pero no existe!'; 
+}else{ 
+    echo 'Email <'.$email.'> El correo no es valido!'; 
+} 
 
 $stmt->close();
 $conn->close();
