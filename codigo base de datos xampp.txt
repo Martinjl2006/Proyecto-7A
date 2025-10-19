@@ -29,6 +29,13 @@ CREATE TABLE Usuarios (
     FOREIGN KEY (id_ciudad) REFERENCES Ciudad(id_ciudad)
 );
 
+
+ALTER TABLE Usuarios
+ADD COLUMN verificado TINYINT(1) DEFAULT 0,
+ADD COLUMN token_verificacion VARCHAR(255) DEFAULT NULL;
+
+
+
 CREATE TABLE MitoLeyenda (
     id_mitooleyenda INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Titulo VARCHAR(255) NOT NULL,
