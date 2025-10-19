@@ -75,7 +75,7 @@ try {
     ";
 
     $mailObj->send();
-    echo "<script>alert('✅ Registro exitoso. Revisá tu correo para verificar tu cuenta.'); window.location='login.html';</script>";
+    echo "<script>alert('✅ Registro exitoso. Revisá tu correo para verificar tu cuenta.'); window.location='inicio.html';</script>";
 
 } catch (Exception $e) {
     echo "❌ No se pudo enviar el correo: {$mailObj->ErrorInfo}";
