@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["email"]) && isset($_P
     $pass = trim($_POST["password"]);
 
     // Login sin hash
-    $stmt = $conn->prepare("SELECT * FROM Usuarios WHERE mail=? AND contrasena=?");
+    $stmt = $conn->prepare("SELECT * FROM Usuarios WHERE mail=? AND contrasena=? AND verificado = 1");
     $stmt->bind_param("ss", $email, $pass);
     $stmt->execute();
     $resultado = $stmt->get_result();

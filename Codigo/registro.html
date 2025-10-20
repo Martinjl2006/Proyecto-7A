@@ -144,6 +144,45 @@
       box-shadow: 0 0 8px rgba(29, 46, 66, 0.3);
     }
 
+    .password-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .password-strength {
+      width: 100%;
+      height: 4px;
+      background: #ddd;
+      border-radius: 2px;
+      margin-top: 5px;
+      overflow: hidden;
+    }
+
+    .password-strength-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    .password-strength-text {
+      font-size: 0.75rem;
+      margin-top: 3px;
+      text-align: left;
+      color: #666;
+    }
+
+    .weak { background: #e74c3c; }
+    .medium { background: #f39c12; }
+    .strong { background: #27ae60; }
+
+    .error-message {
+      color: #e74c3c;
+      font-size: 0.8rem;
+      text-align: left;
+      margin-top: 3px;
+      display: none;
+    }
+
     button[type="submit"] {
       width: 100%;
       padding: 14px;
@@ -254,26 +293,26 @@
   <div class="aura-bg"></div>
   <div class="register-box">
     <h2>Crear cuenta</h2>
-    <form action="registro.php" method="POST">
+    <form action="registro.php" method="POST" id="registerForm">
       <input type="text" name="nombre" placeholder="Nombre" required>
       <input type="text" name="apellido" placeholder="Apellido" required>
       <input type="email" name="email" placeholder="Correo electrónico" required>
       <input type="text" name="usuario" placeholder="Nombre de usuario" required>
-      <input type="password" name="clave" placeholder="Contraseña" required>
-      <input type="date" name="fecha_nacimiento" required>
+      
+      <div class="password-container">
+        <input type="password" name="clave" id="password" placeholder="Contraseña" required>
+        <div class="password-strength">
+          <div class="password-strength-bar" id="strengthBar"></div>
+        </div>
+        <div class="password-strength-text" id="strengthText"></div>
+        <div class="error-message" id="passwordError"></div>
+      </div>
+
+      <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" required>
+      <div class="error-message" id="ageError"></div>
 
       <select id="provincia" name="provincia" required>
         <option value="">Seleccionar provincia</option>
-        <option value="Buenos Aires">Buenos Aires</option>
-        <option value="Córdoba">Córdoba</option>
-        <option value="Santa Fe">Santa Fe</option>
-        <option value="Mendoza">Mendoza</option>
-        <option value="Tucumán">Tucumán</option>
-        <option value="Salta">Salta</option>
-        <option value="Jujuy">Jujuy</option>
-        <option value="Neuquén">Neuquén</option>
-        <option value="Chaco">Chaco</option>
-        <option value="Misiones">Misiones</option>
       </select>
 
       <select id="ciudad" name="ciudad" required>
@@ -286,31 +325,131 @@
   </div>
 
   <script>
-    const provinciasYciudades = {
-      "Buenos Aires": ["La Plata", "Mar del Plata", "Bahía Blanca", "Quilmes"],
-      "Córdoba": ["Córdoba Capital", "Villa Carlos Paz", "Río Cuarto"],
-      "Santa Fe": ["Rosario", "Santa Fe Capital", "Rafaela"],
-      "Mendoza": ["Godoy Cruz", "Guaymallén", "Mendoza Capital"],
-      "Tucumán": ["San Miguel de Tucumán", "Yerba Buena"],
-      "Salta": ["Salta Capital", "Cafayate"],
-      "Jujuy": ["San Salvador de Jujuy", "Palpalá"],
-      "Neuquén": ["Neuquén Capital", "Centenario"],
-      "Chaco": ["Resistencia", "Barranqueras"],
-      "Misiones": ["Posadas", "Oberá"]
-    };
+    // Cargar provincias desde la base de datos
+    window.addEventListener('DOMContentLoaded', function() {
+      fetch('get_provincias.php')
+        .then(response => response.json())
+        .then(data => {
+          const provinciaSelect = document.getElementById('provincia');
+          data.forEach(provincia => {
+            const option = document.createElement('option');
+            option.value = provincia.id_provincia;
+            option.textContent = provincia.nombre;
+            provinciaSelect.appendChild(option);
+          });
+        })
+        .catch(error => console.error('Error al cargar provincias:', error));
+    });
 
-    const provinciaSelect = document.getElementById("provincia");
-    const ciudadSelect = document.getElementById("ciudad");
-
-    provinciaSelect.addEventListener("change", function () {
-      const ciudades = provinciasYciudades[this.value] || [];
+    // Cargar ciudades según la provincia seleccionada
+    document.getElementById('provincia').addEventListener('change', function() {
+      const idProvincia = this.value;
+      const ciudadSelect = document.getElementById('ciudad');
+      
       ciudadSelect.innerHTML = '<option value="">Seleccionar ciudad</option>';
-      ciudades.forEach(ciudad => {
-        const option = document.createElement("option");
-        option.value = ciudad;
-        option.textContent = ciudad;
-        ciudadSelect.appendChild(option);
-      });
+      
+      if (idProvincia) {
+        fetch(`get_ciudades.php?id_provincia=${idProvincia}`)
+          .then(response => response.json())
+          .then(data => {
+            data.forEach(ciudad => {
+              const option = document.createElement('option');
+              option.value = ciudad.id_ciudad;
+              option.textContent = ciudad.nombre;
+              ciudadSelect.appendChild(option);
+            });
+          })
+          .catch(error => console.error('Error al cargar ciudades:', error));
+      }
+    });
+
+    // Validar edad (mínimo 6 años)
+    document.getElementById('fecha_nacimiento').addEventListener('change', function() {
+      const fechaNac = new Date(this.value);
+      const hoy = new Date();
+      let edad = hoy.getFullYear() - fechaNac.getFullYear();
+      const mes = hoy.getMonth() - fechaNac.getMonth();
+      
+      if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+        edad--;
+      }
+      
+      const errorDiv = document.getElementById('ageError');
+      if (edad < 6) {
+        errorDiv.textContent = 'Debes tener al menos 6 años para registrarte';
+        errorDiv.style.display = 'block';
+        this.setCustomValidity('Edad insuficiente');
+      } else {
+        errorDiv.style.display = 'none';
+        this.setCustomValidity('');
+      }
+    });
+
+    // Validar fortaleza de contraseña
+    document.getElementById('password').addEventListener('input', function() {
+      const password = this.value;
+      const strengthBar = document.getElementById('strengthBar');
+      const strengthText = document.getElementById('strengthText');
+      const errorDiv = document.getElementById('passwordError');
+      
+      let strength = 0;
+      let feedback = [];
+      
+      // Verificar longitud
+      if (password.length >= 8) strength += 25;
+      else feedback.push('mínimo 8 caracteres');
+      
+      // Verificar mayúscula
+      if (/[A-Z]/.test(password)) strength += 25;
+      else feedback.push('una mayúscula');
+      
+      // Verificar minúscula
+      if (/[a-z]/.test(password)) strength += 25;
+      else feedback.push('una minúscula');
+      
+      // Verificar número
+      if (/[0-9]/.test(password)) strength += 25;
+      else feedback.push('un número');
+      
+      // Actualizar barra
+      strengthBar.style.width = strength + '%';
+      
+      if (strength < 50) {
+        strengthBar.className = 'password-strength-bar weak';
+        strengthText.textContent = 'Débil';
+        strengthText.style.color = '#e74c3c';
+      } else if (strength < 100) {
+        strengthBar.className = 'password-strength-bar medium';
+        strengthText.textContent = 'Media';
+        strengthText.style.color = '#f39c12';
+      } else {
+        strengthBar.className = 'password-strength-bar strong';
+        strengthText.textContent = 'Fuerte';
+        strengthText.style.color = '#27ae60';
+      }
+      
+      // Mostrar errores
+      if (feedback.length > 0 && password.length > 0) {
+        errorDiv.textContent = 'Falta: ' + feedback.join(', ');
+        errorDiv.style.display = 'block';
+        this.setCustomValidity('Contraseña insegura');
+      } else {
+        errorDiv.style.display = 'none';
+        this.setCustomValidity('');
+      }
+    });
+
+    // Validación final antes de enviar
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      const password = document.getElementById('password').value;
+      
+      if (password.length < 8 || 
+          !/[A-Z]/.test(password) || 
+          !/[a-z]/.test(password) || 
+          !/[0-9]/.test(password)) {
+        e.preventDefault();
+        alert('La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número');
+      }
     });
   </script>
 </body>

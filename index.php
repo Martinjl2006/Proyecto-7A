@@ -50,8 +50,6 @@ if ($debug_mode) {
 
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -66,14 +64,22 @@ if ($debug_mode) {
       align-items: center;
       gap: 10px;
       text-decoration: none;
-      color: inherit;
+      color: black;
       transition: all 0.3s ease;
       background: rgba(255,255,255,0.1);
       padding: 8px 15px;
       border-radius: 25px;
-      border: 2px solid rgba(255,255,255,0.2);
+      border: 2px solid rgba(15, 14, 14, 0.56);
+      overflow: hidden;
     }
     
+
+    .foto_perfil{
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+
     .user-profile:hover {
       background: rgba(255,255,255,0.2);
       transform: translateY(-1px);
@@ -94,7 +100,7 @@ if ($debug_mode) {
     
     .user-name {
       font-weight: 600;
-      color: white;
+      color: black;
     }
     
     .login-btn {
@@ -192,7 +198,7 @@ if ($debug_mode) {
     <?php if ($usuario_logueado): ?>
       <a href="Codigo/dashboard.php" class="user-profile" title="Ir al Dashboard">
         <div class="profile-pic-small">
-          <img src="usuarios/<?= htmlspecialchars($fotoperfil) ?>" class="foto_perfil">
+          <img src="Codigo/usuarios/<?= htmlspecialchars($fotoperfil) ?>" class="foto_perfil">
         </div>
         <span class="user-name"><?php echo $username; ?></span>
       </a>

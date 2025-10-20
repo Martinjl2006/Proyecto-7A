@@ -29,7 +29,7 @@ $mito_id = rand(1, $total);
 
 // Consulta del mito (incluyendo el id para poder usarlo en el enlace)
 $nombre = $conn->query("SELECT id_mitooleyenda, Titulo, Descripcion,textobreve,imagen 
-                        FROM MitoLeyenda 
+                        FROM MitoLeyenda WHERE Verificado = 1
                         ORDER BY RAND() 
                         LIMIT 1");
 $mito_actual = $nombre->fetch_assoc();
@@ -90,16 +90,64 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
 
     // Borrar cuenta
     elseif ($action === "borrar_cuenta") {
-        $stmt = $conn->prepare("DELETE FROM Usuarios WHERE id_Usuario=?");
-        $stmt->bind_param("i", $id_usuario);
-        if ($stmt->execute()) {
+        // Iniciar transacción para asegurar que todo se borre correctamente
+        $conn->begin_transaction();
+        
+        try {
+            // 1. Obtener todas las imágenes de los mitos del usuario para borrarlas del servidor
+            $stmt_imagenes = $conn->prepare("SELECT imagen FROM MitoLeyenda WHERE id_usuario = ? AND imagen IS NOT NULL");
+            $stmt_imagenes->bind_param("i", $id_usuario);
+            $stmt_imagenes->execute();
+            $resultado_imagenes = $stmt_imagenes->get_result();
+            
+            $imagenes_a_borrar = [];
+            while ($row_img = $resultado_imagenes->fetch_assoc()) {
+                if (!empty($row_img['imagen'])) {
+                    $imagenes_a_borrar[] = $row_img['imagen'];
+                }
+            }
+            $stmt_imagenes->close();
+            
+            // 2. Eliminar favoritos relacionados con los mitos del usuario
+            $stmt_fav = $conn->prepare("DELETE FROM Favoritos WHERE id_mitooleyenda IN (SELECT id_mitooleyenda FROM MitoLeyenda WHERE id_usuario = ?)");
+            $stmt_fav->bind_param("i", $id_usuario);
+            $stmt_fav->execute();
+            $stmt_fav->close();
+            
+            // 3. Eliminar todos los mitos del usuario
+            $stmt_mitos = $conn->prepare("DELETE FROM MitoLeyenda WHERE id_usuario = ?");
+            $stmt_mitos->bind_param("i", $id_usuario);
+            $stmt_mitos->execute();
+            $stmt_mitos->close();
+            
+            
+            // 5. Eliminar el usuario
+            $stmt_usuario = $conn->prepare("DELETE FROM Usuarios WHERE id_Usuario = ?");
+            $stmt_usuario->bind_param("i", $id_usuario);
+            $stmt_usuario->execute();
+            $stmt_usuario->close();
+            
+            // Confirmar transacción
+            $conn->commit();
+            
+            // 6. Borrar las imágenes de los mitos del servidor
+            foreach ($imagenes_a_borrar as $imagen) {
+                $ruta_imagen = "mitos/" . $imagen;
+                if (file_exists($ruta_imagen) && $imagen != "default.png") {
+                    unlink($ruta_imagen);
+                }
+            }
+            
+            // Destruir sesión y redirigir
             session_destroy();
             header("Location: registro_eliminado.php");
             exit();
-        } else {
-            $mensaje = "Error al borrar la cuenta.";
+            
+        } catch (Exception $e) {
+            // Si hay algún error, revertir todos los cambios
+            $conn->rollback();
+            $mensaje = "Error al borrar la cuenta: " . $e->getMessage();
         }
-        $stmt->close();
     }
 }
 ?>
@@ -554,6 +602,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             background: #f44336;
         }
 
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            color: #856404;
+        }
+
+        .warning-box strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .warning-box ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+
+        .warning-box li {
+            margin-bottom: 5px;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .main-content {
@@ -599,7 +671,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
     <header class="header">
         <div class="user-info" onclick="openProfileModal()">
             <div class="profile-pic">
-                <img src="usuarios/<?= htmlspecialchars($fotoActual) ?>" alt="Foto de perfil" class="foto_perfil">
+                <img src="usuarios/<?= htmlspecialchars($fotoActual) ?>" class="foto_perfil">
             </div>
             <div class="username"><?php echo $username; ?></div>
         </div>
@@ -621,10 +693,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
 
             <!-- Features Grid -->
             <div class="features-grid">
-                <div class="feature-card" onclick="location.href='lista_mitos.php'">
-                    <div class="feature-icon">🗺️</div>
-                    <div class="feature-title">Exploración Regional</div>
-                    <div class="feature-description">Recorré cada provincia y conocé sus leyendas más populares.</div>
+                <div class="feature-card" onclick="location.href='ranking.php'">
+                    <div class="feature-icon">🏆</div>
+                    <div class="feature-title">Ranking</div>
+                    <div class="feature-description">Explora los mistos mas populares ordenados por nuestros usuarios</div>
                 </div>
 
                 <div class="feature-card" onclick="location.href='mis_mitos.php'">
@@ -670,7 +742,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             <!-- Create Section -->
             <div class="create-section">
                 <h2 class="create-title">¡Cuéntanos alguna historia popular de tu provincia!</h2>
-                <button class="create-btn" onclick="location.href='crearmito.html'">Crear</button>
+                <button class="create-btn" onclick="location.href='crearmito.php'">Crear</button>
             </div>
         </section>
     </main>
@@ -726,7 +798,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             <!-- Borrar cuenta -->
             <form method="POST" class="profile-form" onsubmit="return confirmDelete()">
                 <h3>Zona de peligro</h3>
-                <p style="color: #666; margin-bottom: 20px;">Esta acción no se puede deshacer.</p>
+                <div class="warning-box">
+                    <strong>⚠️ Al eliminar tu cuenta se borrará:</strong>
+                    <ul>
+                        <li>Tu perfil y datos personales</li>
+                        <li>Todos tus mitos publicados</li>
+                        <li>Todas las imágenes asociadas</li>
+                        <li>Tus favoritos y validaciones</li>
+                    </ul>
+                    <strong style="margin-top: 10px;">Esta acción no se puede deshacer.</strong>
+                </div>
                 <input type="hidden" name="action" value="borrar_cuenta">
                 <button type="submit" class="form-btn danger">Eliminar cuenta permanentemente</button>
             </form>
@@ -791,53 +872,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
         }
 
         function confirmDelete() {
-            return confirm('⚠️ ¿Estás absolutamente seguro de que quieres eliminar tu cuenta?\n\nEsta acción no se puede deshacer y perderás todos tus datos.');
-        }
-
-        // Funciones de navegación
-        function exploreMap() {
-            alert('Redirigiendo al mapa interactivo...');
-            // window.location.href = 'mapa.php';
-        }
-
-        function createStory() {
-            alert('Redirigiendo al formulario de creación...');
-            // window.location.href = 'crear_historia.php';
-        }
-
-        function readMore() {
-            alert('Mostrando historia completa...');
-            // window.location.href = 'historia.php?id=123';
-        }
-
-        function openRegionalExploration() {
-            alert('Accediendo a Exploración Regional...');
-            // window.location.href = 'exploracion.php';
-        }
-
-        function openCulturalEducation() {
-            alert('Accediendo a Educación Cultural...');
-            // window.location.href = 'educacion.php';
-        }
-
-        function openCreaturesMyths() {
-            alert('Accediendo a Criaturas y Mitos...');
-            // window.location.href = 'criaturas.php';
-        }
-
-        function openResearch() {
-            alert('Accediendo a Investigación...');
-            // window.location.href = 'investigacion.php';
-        }
-
-        function openSettings() {
-            alert('Accediendo a Ajustes...');
-            // window.location.href = 'ajustes.php';
-        }
-
-        function openPreferences() {
-            alert('Accediendo a Preferencias...');
-            // window.location.href = 'preferencias.php';
+            const mensaje = '⚠️ ¿ESTÁS ABSOLUTAMENTE SEGURO?\n\n' +
+                          'Al eliminar tu cuenta se borrará permanentemente:\n' +
+                          '• Tu perfil completo\n' +
+                          '• Todos tus mitos publicados\n' +
+                          '• Todas las imágenes\n' +
+                          '• Tus favoritos y validaciones\n\n' +
+                          'ESTA ACCIÓN NO SE PUEDE DESHACER.\n\n' +
+                          '¿Confirmas que deseas eliminar tu cuenta?';
+            
+            return confirm(mensaje);
         }
 
         function logout() {

@@ -530,7 +530,7 @@ $stmt->close();
             <h1 class="page-title">
                 <i class="fas fa-book"></i> Mis Mitos y Leyendas
             </h1>
-            <a class="btn-crear" href="crearmito.html">
+            <a class="btn-crear" href="crearmito.php">
                 <i class="fas fa-plus"></i> Crear nuevo mito
             </a>
         </div>
@@ -632,7 +632,7 @@ $stmt->close();
                 <i class="fas fa-book-open"></i>
                 <h3>No has creado ningún mito todavía</h3>
                 <p>Comienza a compartir tus historias con la comunidad</p>
-                <a class="btn-crear" href="crearmito.html">
+                <a class="btn-crear" href="crearmito.php">
                     <i class="fas fa-plus"></i> Crear mi primer mito
                 </a>
             </div>

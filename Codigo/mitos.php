@@ -804,7 +804,11 @@ $conn->close();
           $fotoPerfil = obtenerFotoPerfil($nombreusuario, $fotoperfil);
           if ($fotoPerfil):
         ?>
-          <img src="usuarios/<?= htmlspecialchars($fotoperfil) ?>" alt="Foto de perfil" class="foto_perfil">
+          <div class="user-info" onclick="location.href='perfil.php'">
+            <div class="profile-pic">
+                <img src="usuarios/<?= htmlspecialchars($fotoPerfil) ?>" class="foto_perfil">
+            </div>
+        </div>
         <?php else: ?>
           <i class="fas fa-user"></i>
         <?php endif; ?>
