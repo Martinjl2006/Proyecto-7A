@@ -34,6 +34,12 @@ ALTER TABLE Usuarios
 ADD COLUMN verificado TINYINT(1) DEFAULT 0,
 ADD COLUMN token_verificacion VARCHAR(255) DEFAULT NULL;
 
+ALTER TABLE Usuarios ADD COLUMN fecha_nacimiento DATE;
+
+ALTER TABLE Usuarios
+ADD COLUMN token_reset_expira DATETIME NULL DEFAULT NULL
+AFTER token_verificacion;
+
 
 
 CREATE TABLE MitoLeyenda (
