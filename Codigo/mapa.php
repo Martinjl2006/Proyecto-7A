@@ -9,6 +9,7 @@ require_once "main.php"; // Asegurate que aquí se conecta a la base de datos
 $usuarioLogueado = isset($_SESSION["username"]) && isset($_SESSION["id_usuario"]);
 $nombreUsuario = $usuarioLogueado ? htmlspecialchars($_SESSION["username"]) : null;
 $foto = ($usuarioLogueado && !empty($_SESSION["foto"])) ? htmlspecialchars($_SESSION["foto"]) : null;
+$id_usuario = $usuarioLogueado ? $_SESSION["id_usuario"] : null;
 
 // FUNCIÓN AUXILIAR: Obtener todos los mitos agrupados por provincia desde la BD
 function obtenerMitosPorProvincia() {
@@ -65,6 +66,18 @@ function obtenerMitosPorProvincia() {
 // Obtener mitos desde BD
 $mitosPorProvincia = obtenerMitosPorProvincia();
 $mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
+
+// Obtener foto de perfil del usuario logueado
+$foto_perfil = null;
+if ($usuarioLogueado && $id_usuario) {
+    $sql_usuario = "SELECT foto FROM Usuarios WHERE id_usuario = ?";
+    $stmt = $conn->prepare($sql_usuario);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+    $resultado_usuario = $stmt->get_result();
+    $usuario = $resultado_usuario->fetch_assoc();
+    $foto_perfil = $usuario['foto'] ?? null;
+}
 ?>
 
 <!DOCTYPE html>
@@ -75,15 +88,133 @@ $mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      font-family: Arial, sans-serif;
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: #f0f0f0;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
+    }
+
+    header {
+      background: white;
+      padding: 1rem 2rem;
+      display: flex;
       align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-section img {
+      height: 42px;
+      cursor: pointer;
+    }
+
+    .logo-section span {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1d2e42;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .user-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .profile-pic {
+      width: 42px;
+      height: 42px;
+      background-color: #ccc;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      text-align: center;
+      padding: 5px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .profile-pic:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .profile-pic img {
+      width: 150%;
+      height: 150%;
+      object-fit: cover;
+    }
+
+    .profile-pic i {
+      font-size: 1.2rem;
+      color: #666;
+    }
+
+    .user-name {
+      font-size: 0.95rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .btn-logout {
+      background-color: #dc3545;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.2s;
+    }
+
+    .btn-logout:hover {
+      background-color: #c82333;
+    }
+
+    .login-button {
+      background-color: #1E3A8A;
+      color: #FFFFFF;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .login-button:hover {
+      background-color: #2563EB;
     }
 
     /* --- Estilos del panel lateral emergente --- */
@@ -135,7 +266,16 @@ $mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
     #panel-mitos.open { left: 16px; }
 
     .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-    #btn-toggle { background:#ef4444; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
+    #btn-toggle { 
+      background:#ef4444; 
+      color:white; 
+      border:none; 
+      padding:6px 10px; 
+      border-radius:6px; 
+      cursor:pointer; 
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 600;
+    }
     #btn-toggle:hover { background:#dc2626; }
 
     :root {
@@ -145,55 +285,7 @@ $mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
       --sombra: rgba(0, 0, 0, 0.05);
     }
 
-    header {
-      background: var(--fondo-textura);
-      padding: 20px 32px;
-      display: flex;
-      width: 97%;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid #ddd;
-      box-shadow: 0 2px 10px var(--sombra);
-    }
-
     html { overflow-x: hidden; }
-
-    .logo { display: flex; align-items: center; }
-
-    .logo img { height: 42px; margin-right: 12px; }
-
-    .logo span {
-      font-size: 1.9rem;
-      font-weight: 800;
-      color: var(--azul-profundo);
-    }
-
-    nav a {
-      color: var(--azul-profundo);
-      margin-left: 20px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-
-    nav a:hover { color: #000; }
-
-    .login-button {
-      background-color: #1E3A8A;
-      color: #FFFFFF;
-      font-size: 1rem;
-      font-weight: 500;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 9999px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      margin-left: 20px;
-    }
-
-    .login-button:hover {
-      background-color: #2563EB;
-    }
 
     .main-container {
       display: flex;
@@ -277,76 +369,48 @@ $mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
       opacity: 0.7;
     }
 
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .logo-section span {
+        font-size: 1.2rem;
+      }
+    }
+
   </style>
 </head>
 <body>
   <header>
-    <div class="logo">
-      <img src="logo-removebg-preview-2.png" alt="logo"/>
+    <div class="logo-section">
+      <img src="logo_logo_re_logo_sin_fondo_-removebg-preview.png" alt="logo" onclick="location.href='mapa.php'"/>
       <span>leyendAR</span>
     </div>
-    <nav>
-<?php if ($usuarioLogueado): ?>
-  <div style="display: flex; align-items: center; gap: 12px;">
-    <?php
-      $src = null;
-      if (!empty($foto)) {
-          $fotoNorm = str_replace('\\', '/', $foto);
-          $dir  = dirname($fotoNorm);
-          $file = basename($fotoNorm);
-          $encFile = rawurlencode($file);
-
-          $fsCandidates = [
-              rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/' . ltrim($fotoNorm, '/'),
-              __DIR__ . '/' . $fotoNorm,
-              __DIR__ . '/usuarios/' . $file,
-              rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/usuarios/' . $file
-          ];
-
-          foreach ($fsCandidates as $fs) {
-              if (file_exists($fs)) {
-                  $docroot = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
-                  if (strpos($fs, $docroot) === 0) {
-                      $web = substr($fs, strlen($docroot));
-                      $web = str_replace($file, $encFile, $web);
-                      $src = $web;
-                  } else {
-                      if ($dir === '.' || $dir === '/') {
-                          $src = $encFile;
-                      } else {
-                          $src = $dir . '/' . $encFile;
-                      }
-                  }
-                  break;
-              }
-          }
-
-          if (!$src) {
-              if ($dir === '.' || $dir === '/') {
-                  $src = $encFile;
-              } else {
-                  $src = $dir . '/' . $encFile;
-              }
-          }
-      }
-    ?>
-
-    <?php if (!empty($src)): ?>
-      <img src="<?php echo htmlspecialchars($src); ?>" width="50" alt="Foto de perfil" style="object-fit:cover;border-radius:50%">
-    <?php else: ?>
-      <div style="height: 40px; width: 40px; border-radius: 50%; background-color: #ccc; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-        <?= strtoupper(substr($nombreUsuario, 0, 1)) ?>
-      </div>
-    <?php endif; ?>
-
-    <span style="font-weight: 600;"><?= $nombreUsuario ?></span>
-    <a href="logout.php" style="margin-left: 10px; color: #1E3A8A; text-decoration: underline;">Cerrar sesión</a>
-  </div>
-<?php else: ?>
-  <a href="inicio.html" class="login-button">Iniciar sesión</a>
-<?php endif; ?>
-</nav>
-
+    <div class="header-right">
+      <?php if ($usuarioLogueado): ?>
+        <div class="user-section">
+          <div class="profile-pic" onclick="location.href='perfil.php'" title="Ver perfil">
+            <?php if (!empty($foto_perfil)): ?>
+              <img src="usuarios/<?= htmlspecialchars($foto_perfil) ?>" alt="Perfil" onerror="this.parentElement.innerHTML='<i class=\'fas fa-user\'></i>'">
+            <?php else: ?>
+              <i class="fas fa-user"></i>
+            <?php endif; ?>
+          </div>
+          <span class="user-name"><?= $nombreUsuario ?></span>
+        </div>
+        <a href="logout.php" class="btn-logout">Cerrar sesión</a>
+      <?php else: ?>
+        <a href="inicio.html" class="login-button">Iniciar sesión</a>
+      <?php endif; ?>
+    </div>
   </header>
 
   <div class="main-container">
@@ -676,7 +740,7 @@ $mitosPorProvinciaJSON = json_encode($mitosPorProvincia);
     <div class="card-text">Explorá la colección completa de leyendas y relatos de cada región de Argentina.</div>
   </a>
 
-  <a href="crearmito.html" class="card" style="text-decoration:none; color:inherit;">
+  <a href="crearmito.php" class="card" style="text-decoration:none; color:inherit;">
     <div class="card-icon">🔍</div>
     <div class="card-title">Agregar mito</div>
     <div class="card-text">¿Conocés una historia o leyenda local? ¡Sumala al mapa para que otros la descubran!</div>

@@ -43,6 +43,7 @@
       padding: 80px 1rem 40px;
     }
 
+    /* --- Botón volver --- */
     .back-button {
       position: fixed;
       top: 20px;
@@ -68,12 +69,7 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: linear-gradient(
-        45deg,
-        transparent,
-        rgba(255, 255, 255, 0.3),
-        transparent
-      );
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
       transform: rotate(45deg);
       animation: shine 3s infinite;
     }
@@ -89,6 +85,7 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
 
+    /* --- Fondo animado --- */
     .aura-bg {
       position: fixed;
       top: -50%;
@@ -108,6 +105,7 @@
       100% { transform: scale(1) translate(0%, 0%); }
     }
 
+    /* --- Caja central --- */
     .register-box {
       background: rgba(244, 241, 237, 0.95);
       padding: 40px 35px;
@@ -118,6 +116,12 @@
       text-align: center;
       z-index: 1;
       position: relative;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h2 {
@@ -133,6 +137,7 @@
       line-height: 1.5;
     }
 
+    /* --- Inputs y selects --- */
     input, select {
       width: 100%;
       padding: 12px 14px;
@@ -151,6 +156,7 @@
       box-shadow: 0 0 8px rgba(29, 46, 66, 0.3);
     }
 
+    /* --- Botón enviar --- */
     button[type="submit"] {
       width: 100%;
       padding: 14px;
@@ -176,12 +182,7 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: linear-gradient(
-        45deg,
-        transparent,
-        rgba(255, 255, 255, 0.3),
-        transparent
-      );
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
       transform: rotate(45deg);
       animation: shine 3s infinite;
     }
@@ -195,17 +196,20 @@
     p {
       margin-top: 20px;
       font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+      color: #333;
     }
 
     a {
       color: var(--azul-claro);
       text-decoration: none;
+      font-weight: 600;
     }
 
     a:hover {
       text-decoration: underline;
     }
 
+    /* --- Responsive --- */
     @media (max-width: 480px) {
       body {
         padding: 70px 0.8rem 20px;
@@ -259,13 +263,14 @@
   <button class="back-button" onclick="window.history.back();">Volver</button>
 
   <div class="aura-bg"></div>
+
   <div class="register-box">
     <h2>Recuperar Contraseña</h2>
     <p class="info-text">Ingresá tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
     
     <form action="recuperar.php" method="POST" id="recoverForm">
       <input type="email" name="email" placeholder="Correo electrónico" required>
-      <button type"submit">Enviar enlace</button>
+      <button type="submit">Enviar enlace</button>
     </form>
     
     <p>¿Recordaste tu contraseña? <a href="inicio.html">Iniciá sesión</a></p>

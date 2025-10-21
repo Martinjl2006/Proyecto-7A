@@ -507,7 +507,7 @@ $stmt->close();
 <body>
     <header>
         <div class="logo-section">
-            <img src="logo_logo_re_logo_sin_fondo_-removebg-preview.png" alt="Logo">
+            <a href="mapa.php"><img src="logo_logo_re_logo_sin_fondo_-removebg-preview.png" alt="Logo"></a>
             <span>leyendAR</span>
         </div>
         <div class="header-right">

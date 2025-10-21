@@ -18,20 +18,40 @@ if (!isset($_GET['token'])) {
     $mensaje = "Token de verificación faltante.";
 } else {
     $token = $_GET['token'];
+    
+    // DEBUG: Ver qué token estás usando (BORRAR ESTO EN PRODUCCIÓN)
+    error_log("Token recibido: " . $token);
 
-    $stmt = $conn->prepare("SELECT id_usuario FROM Usuarios WHERE token_verificacion = ?");
+    // Buscar el usuario con el token
+    $stmt = $conn->prepare("SELECT id_usuario, verificado FROM Usuarios WHERE token_verificacion = ?");
     $stmt->bind_param("s", $token);
     $stmt->execute();
     $result = $stmt->get_result();
+    
+    // DEBUG: Ver cuántos resultados encontró (BORRAR ESTO EN PRODUCCIÓN)
+    error_log("Resultados encontrados: " . $result->num_rows);
 
     if ($fila = $result->fetch_assoc()) {
         $id = $fila['id_usuario'];
-        $update = $conn->prepare("UPDATE Usuarios SET verificado = 1, token_verificacion = NULL WHERE id_usuario = ?");
-        $update->bind_param("i", $id);
-        $update->execute();
-
-        $verificado = true;
-        $mensaje = "Tu cuenta ha sido verificada correctamente. Ya podés iniciar sesión.";
+        
+        // Verificar si ya estaba verificado antes
+        if ($fila['verificado'] == 1) {
+            $error = true;
+            $mensaje = "Esta cuenta ya fue verificada anteriormente.";
+        } else {
+            // Actualizar el usuario
+            $update = $conn->prepare("UPDATE Usuarios SET verificado = 1, token_verificacion = NULL WHERE id_usuario = ?");
+            $update->bind_param("i", $id);
+            
+            if ($update->execute()) {
+                $verificado = true;
+                $mensaje = "Tu cuenta ha sido verificada correctamente. Ya podés iniciar sesión.";
+            } else {
+                $error = true;
+                $mensaje = "Hubo un error al verificar tu cuenta. Por favor, intentá nuevamente.";
+            }
+            $update->close();
+        }
     } else {
         $error = true;
         $mensaje = "Token inválido o cuenta ya verificada.";

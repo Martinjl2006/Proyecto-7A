@@ -836,9 +836,9 @@ $conn->close();
       <?php if (!empty($mito['imagen'])): ?>
         <img src="mitos/<?php echo htmlspecialchars($mito['imagen']); ?>" 
         alt="<?php echo htmlspecialchars($mito['Titulo']); ?>" 
-        onerror="this.parentElement.innerHTML='<span style=\"font-size: 72px;\">📖</span>'">
+        onerror="this.parentElement.innerHTML='<span style=\"font-size: 72px;></span>'">
       <?php else: ?>
-        <span style="font-size: 72px;">📖</span>
+        <span style="font-size: 72px;"></span>
       <?php endif; ?>
     </div>
 
@@ -886,7 +886,43 @@ $conn->close();
       </ul>
     </div>
 
-    <!-- Sección de Comentarios -->
+    <!-- Mitos Relacionados (ahora primero) -->
+    <?php if (count($mitosRelacionados) > 0): ?>
+    <div class="card">
+      <h2>Relatos relacionados</h2>
+      
+      <div class="relatos">
+        <?php foreach ($mitosRelacionados as $relacionado): ?>
+          <a href="mitos.php?id=<?php echo $relacionado['id_mitooleyenda']; ?>" class="relato">
+            <div class="relato-imagen">
+              <?php if (!empty($relacionado['imagen'])): ?>
+                <img src="mitos/<?php echo htmlspecialchars($relacionado['imagen']); ?>" alt="<?php echo htmlspecialchars($relacionado['Titulo']); ?>" onerror="this.parentElement.innerHTML='<span style=\"font-size: 48px;></span>'">
+              <?php else: ?>
+                <span style="font-size: 48px;"></span>
+              <?php endif; ?>
+            </div>
+            <div class="relato-contenido">
+              <div class="relato-titulo"><?php echo htmlspecialchars($relacionado['Titulo']); ?></div>
+              <div class="relato-descripcion">
+                <?php 
+                  $desc = !empty($relacionado['textobreve']) 
+                          ? $relacionado['textobreve'] 
+                          : mb_substr(strip_tags($relacionado['Descripcion']), 0, 100) . '...';
+                  echo htmlspecialchars($desc);
+                ?>
+              </div>
+              <div class="relato-meta">
+                <span><?php echo calcularTiempoLectura($relacionado['Descripcion']); ?> min lectura</span>
+                <span class="relato-region"><?php echo htmlspecialchars($relacionado['Provincia']); ?></span>
+              </div>
+            </div>
+          </a>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- Sección de Comentarios (ahora después) -->
     <div class="card">
       <h2><i class="fas fa-comments"></i> Comentarios</h2>
       
@@ -902,137 +938,105 @@ $conn->close();
         <!-- Listado de comentarios -->
         <?php if (count($comentarios) > 0): ?>
           <?php foreach ($comentarios as $comentario): ?>
-<div class="comentario">
-<div class="comentario-principal">
-<div class="comentario-avatar">
-<?php 
-                 $fotoComentarista = obtenerFotoPerfil($comentario['Nombre'], $comentario['foto']);
-                 if ($fotoComentarista):
-               ?>
-<img src="usuarios/<?= htmlspecialchars($fotoComentarista) ?>" alt="Foto de perfil">
-<?php else: ?>
-<i class="fas fa-user"></i>
-<?php endif; ?>
-</div>
-<div class="comentario-content">
-<div class="comentario-header">
-<span class="comentario-usuario"><?php echo htmlspecialchars($comentario['Username']); ?></span>
-<span class="comentario-fecha">
-<?php 
-                     $fecha = new DateTime($comentario['Fecha']);
-                     echo $fecha->format('d/m/Y H:i');
-                   ?>
-</span>
-</div>
-<p class="comentario-texto"><?php echo nl2br(htmlspecialchars($comentario['Descripcion'])); ?></p>
-<div class="comentario-acciones">
-                <button class="btn-responder" onclick="toggleFormularioRespuesta('comentario-<?php echo $comentario['id_comentario']; ?>')">
-                  <i class="fas fa-reply"></i> Responder
-                </button>
-                <?php 
-                  $total_respuestas = count($comentario['respuestas']);
-                  if ($total_respuestas > 0): 
-                ?>
-                  <span style="font-size: 13px; color: #999;">
-                    <?php echo $total_respuestas; ?> 
-                    <?php echo $total_respuestas === 1 ? 'respuesta' : 'respuestas'; ?>
-                  </span>
-                <?php endif; ?>
-              </div>
-            </div>
-          </div>
-
-          <!-- Formulario para responder al comentario -->
-          <form method="POST" class="formulario-respuesta" id="form-comentario-<?php echo $comentario['id_comentario']; ?>">
-            <textarea name="nueva_respuesta" placeholder="Escribe tu respuesta..." required></textarea>
-            <input type="hidden" name="id_comentario" value="<?php echo $comentario['id_comentario']; ?>">
-            <input type="hidden" name="id_mito" value="<?php echo $mito['id_mitooleyenda']; ?>">
-            <div class="botones-respuesta">
-              <button type="submit">Publicar respuesta</button>
-              <button type="button" onclick="toggleFormularioRespuesta('comentario-<?php echo $comentario['id_comentario']; ?>')">Cancelar</button>
-            </div>
-          </form>
-
-          <!-- Respuestas al comentario -->
-          <?php if (count($comentario['respuestas']) > 0): ?>
-            <div class="respuestas-container">
-              <?php foreach ($comentario['respuestas'] as $respuesta): ?>
-                <div class="respuesta">
-                  <div class="respuesta-avatar">
+            <div class="comentario">
+              <div class="comentario-principal">
+                <div class="comentario-avatar">
+                  <?php 
+                    $fotoComentarista = obtenerFotoPerfil($comentario['Nombre'], $comentario['foto']);
+                    if ($fotoComentarista):
+                  ?>
+                    <img src="usuarios/<?= htmlspecialchars($fotoComentarista) ?>" alt="Foto de perfil">
+                  <?php else: ?>
+                    <i class="fas fa-user"></i>
+                  <?php endif; ?>
+                </div>
+                <div class="comentario-content">
+                  <div class="comentario-header">
+                    <span class="comentario-usuario"><?php echo htmlspecialchars($comentario['Username']); ?></span>
+                    <span class="comentario-fecha">
+                      <?php 
+                        $fecha = new DateTime($comentario['Fecha']);
+                        echo $fecha->format('d/m/Y H:i');
+                      ?>
+                    </span>
+                  </div>
+                  <p class="comentario-texto"><?php echo nl2br(htmlspecialchars($comentario['Descripcion'])); ?></p>
+                  <div class="comentario-acciones">
+                    <button class="btn-responder" onclick="toggleFormularioRespuesta('comentario-<?php echo $comentario['id_comentario']; ?>')">
+                      <i class="fas fa-reply"></i> Responder
+                    </button>
                     <?php 
-                      $fotoRespuesta = obtenerFotoPerfil($respuesta['Nombre'], $respuesta['foto']);
-                      if ($fotoRespuesta):
+                      $total_respuestas = count($comentario['respuestas']);
+                      if ($total_respuestas > 0): 
                     ?>
-                      <img src="usuarios/<?= htmlspecialchars($fotoRespuesta) ?>" alt="Foto de perfil">
-                    <?php else: ?>
-                      <i class="fas fa-user" style="font-size: 14px;"></i>
+                      <span style="font-size: 13px; color: #999;">
+                        <?php echo $total_respuestas; ?> 
+                        <?php echo $total_respuestas === 1 ? 'respuesta' : 'respuestas'; ?>
+                      </span>
                     <?php endif; ?>
                   </div>
-                  <div class="respuesta-content">
-                    <div class="respuesta-header">
-                      <span class="respuesta-usuario"><?php echo htmlspecialchars($respuesta['Username']); ?></span>
-                      <span class="respuesta-fecha">
-                        <?php 
-                          $fechaResp = new DateTime($respuesta['Fecha']);
-                          echo $fechaResp->format('d/m/Y H:i');
-                        ?>
-                      </span>
-                    </div>
-                    <p class="respuesta-texto"><?php echo nl2br(htmlspecialchars($respuesta['Descripcion'])); ?></p>
-                  </div>
                 </div>
-              <?php endforeach; ?>
-            </div>
-          <?php endif; ?>
-        </div>
-      <?php endforeach; ?>
-    <?php else: ?>
-      <div class="sin-comentarios">
-        <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
-      </div>
-    <?php endif; ?>
-  </div>
-</div>
+              </div>
 
-<?php if (count($mitosRelacionados) > 0): ?>
-<div class="card">
-  <h2>Relatos relacionados</h2>
-  
-  <div class="relatos">
-    <?php foreach ($mitosRelacionados as $relacionado): ?>
-      <a href="mitos.php?id=<?php echo $relacionado['id_mitooleyenda']; ?>" class="relato">
-        <div class="relato-imagen">
-          <?php if (!empty($relacionado['imagen'])): ?>
-            <img src="mitos/<?php echo htmlspecialchars($relacionado['imagen']); ?>" alt="<?php echo htmlspecialchars($relacionado['Titulo']); ?>" onerror="this.parentElement.innerHTML='<span style=\"font-size: 48px;\">📖</span>'">
-          <?php else: ?>
-            <span style="font-size: 48px;">📖</span>
-          <?php endif; ?>
-        </div>
-        <div class="relato-contenido">
-          <div class="relato-titulo"><?php echo htmlspecialchars($relacionado['Titulo']); ?></div>
-          <div class="relato-descripcion">
-            <?php 
-              $desc = !empty($relacionado['textobreve']) 
-                      ? $relacionado['textobreve'] 
-                      : mb_substr(strip_tags($relacionado['Descripcion']), 0, 100) . '...';
-              echo htmlspecialchars($desc);
-            ?>
+              <!-- Formulario para responder al comentario -->
+              <form method="POST" class="formulario-respuesta" id="form-comentario-<?php echo $comentario['id_comentario']; ?>">
+                <textarea name="nueva_respuesta" placeholder="Escribe tu respuesta..." required></textarea>
+                <input type="hidden" name="id_comentario" value="<?php echo $comentario['id_comentario']; ?>">
+                <input type="hidden" name="id_mito" value="<?php echo $mito['id_mitooleyenda']; ?>">
+                <div class="botones-respuesta">
+                  <button type="submit">Publicar respuesta</button>
+                  <button type="button" onclick="toggleFormularioRespuesta('comentario-<?php echo $comentario['id_comentario']; ?>')">Cancelar</button>
+                </div>
+              </form>
+
+              <!-- Respuestas al comentario -->
+              <?php if (count($comentario['respuestas']) > 0): ?>
+                <div class="respuestas-container">
+                  <?php foreach ($comentario['respuestas'] as $respuesta): ?>
+                    <div class="respuesta">
+                      <div class="respuesta-avatar">
+                        <?php 
+                          $fotoRespuesta = obtenerFotoPerfil($respuesta['Nombre'], $respuesta['foto']);
+                          if ($fotoRespuesta):
+                        ?>
+                          <img src="usuarios/<?= htmlspecialchars($fotoRespuesta) ?>" alt="Foto de perfil">
+                        <?php else: ?>
+                          <i class="fas fa-user" style="font-size: 14px;"></i>
+                        <?php endif; ?>
+                      </div>
+                      <div class="respuesta-content">
+                        <div class="respuesta-header">
+                          <span class="respuesta-usuario"><?php echo htmlspecialchars($respuesta['Username']); ?></span>
+                          <span class="respuesta-fecha">
+                            <?php 
+                              $fechaResp = new DateTime($respuesta['Fecha']);
+                              echo $fechaResp->format('d/m/Y H:i');
+                            ?>
+                          </span>
+                        </div>
+                        <p class="respuesta-texto"><?php echo nl2br(htmlspecialchars($respuesta['Descripcion'])); ?></p>
+                      </div>
+                    </div>
+                  <?php endforeach; ?>
+                </div>
+              <?php endif; ?>
+            </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <div class="sin-comentarios">
+            <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
           </div>
-          <div class="relato-meta">
-            <span><?php echo calcularTiempoLectura($relacionado['Descripcion']); ?> min lectura</span>
-            <span class="relato-region"><?php echo htmlspecialchars($relacionado['Provincia']); ?></span>
-          </div>
-        </div>
-      </a>
-    <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+    </div>
+
   </div>
-</div>
-<?php endif; ?>
-</div>
   <?php endif; ?>
+
   <footer>
     © LeyendAR – Mitos y Leyendas de Argentina
   </footer>
+
   <script>
     function toggleFormularioRespuesta(idForm) {
       const form = document.getElementById('form-' + idForm);

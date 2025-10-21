@@ -41,7 +41,6 @@ $sql .= " ORDER BY m.Votos DESC";
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 $resultado = $stmt->get_result();
-
 $ranking = [];
 while($mito = $resultado->fetch_assoc()) {
     $ranking[] = $mito;
@@ -620,7 +619,7 @@ $resto = array_slice($ranking, 3);
 <body>
     <header>
         <div class="logo-section">
-            <img src="logo_logo_re_logo_sin_fondo_-removebg-preview.png" alt="Logo">
+            <a href="mapa.php"><img src="logo_logo_re_logo_sin_fondo_-removebg-preview.png" alt="Logo"></a>
             <span>leyendAR</span>
         </div>
         <div class="header-right">
