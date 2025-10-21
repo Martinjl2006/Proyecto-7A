@@ -27,8 +27,9 @@ function obtenerMitosPorProvincia() {
                     m.imagen,
                     m.tipo,
                     p.nombre AS provincia_nombre
-                FROM Mitoleyenda m
+                FROM Mitoleyenda m 
                 INNER JOIN Provincias p ON m.id_provincia = p.id_provincia
+                WHERE m.Verificado = 1
                 ORDER BY p.nombre ASC, m.Titulo ASC";
         
         $result = $conn->query($sql);

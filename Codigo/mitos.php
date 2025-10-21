@@ -354,6 +354,36 @@ $conn->close();
       font-size: 16px;
     }
 
+    .btn-tts {
+      background: none;
+      border: 2px solid #4CAF50;
+      color: #4CAF50;
+      padding: 8px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .btn-tts:hover {
+      background: #4CAF50;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .btn-tts.playing {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-tts i {
+      font-size: 16px;
+    }
+
     .card {
       background: white;
       padding: 15px;
@@ -836,7 +866,7 @@ $conn->close();
       <?php if (!empty($mito['imagen'])): ?>
         <img src="mitos/<?php echo htmlspecialchars($mito['imagen']); ?>" 
         alt="<?php echo htmlspecialchars($mito['Titulo']); ?>" 
-        onerror="this.parentElement.innerHTML='<span style=\"font-size: 72px;></span>'">
+        onerror="this.parentElement.innerHTML='<span style=\"font-size: 72px;></span>
       <?php else: ?>
         <span style="font-size: 72px;"></span>
       <?php endif; ?>
@@ -853,9 +883,14 @@ $conn->close();
           <span><?php echo $mito['Votos']; ?> Me gusta</span>
         </button>
       </form>
+
+      <button type="button" class="btn-tts" id="btnTextoVoz" onclick="toggleTextoVoz()">
+        <i class="fas fa-volume-up" id="iconoTTS"></i>
+        <span id="textoTTS">Escuchar mito</span>
+      </button>
     </div>
 
-    <div class="card">
+    <div class="card" id="contenido-mito">
       <?php 
         $parrafos = explode("\n\n", $mito['Descripcion']);
         foreach ($parrafos as $parrafo) {
@@ -896,7 +931,7 @@ $conn->close();
           <a href="mitos.php?id=<?php echo $relacionado['id_mitooleyenda']; ?>" class="relato">
             <div class="relato-imagen">
               <?php if (!empty($relacionado['imagen'])): ?>
-                <img src="mitos/<?php echo htmlspecialchars($relacionado['imagen']); ?>" alt="<?php echo htmlspecialchars($relacionado['Titulo']); ?>" onerror="this.parentElement.innerHTML='<span style=\"font-size: 48px;></span>'">
+                <img src="mitos/<?php echo htmlspecialchars($relacionado['imagen']); ?>" alt="<?php echo htmlspecialchars($relacionado['Titulo']); ?>" onerror="this.parentElement.innerHTML='<span style=\"font-size: 48px;></span>
               <?php else: ?>
                 <span style="font-size: 48px;"></span>
               <?php endif; ?>
@@ -1038,6 +1073,98 @@ $conn->close();
   </footer>
 
   <script>
+    // Variables globales para Text-to-Speech
+    let utterance = null;
+    let isPlaying = false;
+
+    function toggleTextoVoz() {
+      if (!isPlaying) {
+        // Iniciar lectura
+        iniciarLectura();
+      } else {
+        // Detener lectura
+        detenerLectura();
+      }
+    }
+
+    function iniciarLectura() {
+      // Verificar si el navegador soporta Web Speech API
+      if (!('speechSynthesis' in window)) {
+        alert('Tu navegador no soporta la función de texto a voz. Intenta con Chrome, Edge o Safari.');
+        return;
+      }
+
+      const btnTTS = document.getElementById('btnTextoVoz');
+      const iconoTTS = document.getElementById('iconoTTS');
+      const textoTTS = document.getElementById('textoTTS');
+
+      // Detener cualquier reproducción previa
+      window.speechSynthesis.cancel();
+
+      // Obtener el título y el contenido del mito
+      const titulo = <?php echo json_encode($mito ? $mito['Titulo'] : ''); ?>;
+      const descripcion = <?php echo json_encode($mito ? strip_tags($mito['Descripcion']) : ''); ?>;
+      const textoCompleto = titulo + ". " + descripcion;
+
+      // Crear una nueva instancia de SpeechSynthesisUtterance
+      utterance = new SpeechSynthesisUtterance(textoCompleto);
+      
+      // Configurar el idioma a español
+      utterance.lang = 'es-ES';
+      utterance.rate = 1.0; // Velocidad normal
+      utterance.pitch = 1.0; // Tono normal
+      utterance.volume = 1.0; // Volumen máximo
+
+      // Eventos del utterance
+      utterance.onstart = function() {
+        isPlaying = true;
+        btnTTS.classList.add('playing');
+        iconoTTS.className = 'fas fa-pause';
+        textoTTS.textContent = 'Pausar lectura';
+      };
+
+      utterance.onend = function() {
+        resetearBoton();
+      };
+
+      utterance.onerror = function(event) {
+        // Solo mostrar error si no fue causado por cancel
+        if (event.error !== 'canceled' && event.error !== 'interrupted') {
+          console.error('Error en la síntesis de voz:', event);
+          alert('Ocurrió un error al reproducir el audio. Intenta nuevamente.');
+        }
+        resetearBoton();
+      };
+
+      // Iniciar la síntesis de voz
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function detenerLectura() {
+      if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+        window.speechSynthesis.cancel();
+      }
+      resetearBoton();
+    }
+
+    function resetearBoton() {
+      const btnTTS = document.getElementById('btnTextoVoz');
+      const iconoTTS = document.getElementById('iconoTTS');
+      const textoTTS = document.getElementById('textoTTS');
+
+      isPlaying = false;
+      btnTTS.classList.remove('playing');
+      iconoTTS.className = 'fas fa-volume-up';
+      textoTTS.textContent = 'Escuchar mito';
+    }
+
+    // Detener la lectura si el usuario sale de la página
+    window.addEventListener('beforeunload', function() {
+      if (isPlaying) {
+        window.speechSynthesis.cancel();
+      }
+    });
+
     function toggleFormularioRespuesta(idForm) {
       const form = document.getElementById('form-' + idForm);
       if (form.classList.contains('activo')) {
