@@ -467,6 +467,72 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
 
+        /* Botón de Ayuda Flotante */
+        .help-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            transition: all 0.3s ease;
+            z-index: 999;
+            text-decoration: none;
+        }
+
+        .help-button:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .help-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Tooltip para el botón de ayuda */
+        .help-button::before {
+            content: 'Manual de Usuario';
+            position: absolute;
+            right: 70px;
+            background: #333;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .help-button::after {
+            content: '';
+            position: absolute;
+            right: 60px;
+            border: 8px solid transparent;
+            border-left-color: #333;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .help-button:hover::before,
+        .help-button:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
         /* Modal de Perfil */
         .modal-overlay {
             display: none;
@@ -656,6 +722,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             .modal-content {
                 padding: 30px 20px;
             }
+
+            .help-button {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .help-button::before {
+                display: none;
+            }
+
+            .help-button::after {
+                display: none;
+            }
         }
 
         .foto_perfil{
@@ -746,6 +828,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             </div>
         </section>
     </main>
+
+    <!-- Botón de Ayuda Flotante -->
+    <a href="MANUAL_DE_USUARIO_LeyendAR.pdf" download="MANUAL_DE_USUARIO_LeyendAR.pdf" class="help-button" title="Descargar Manual de Usuario">
+        ❔
+    </a>
 
     <!-- Modal de Perfil -->
     <div class="modal-overlay" id="profileModal">
